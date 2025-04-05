@@ -1,0 +1,20 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>Encuesta: Disposición a Juzgar</h1>
+  <p style="font-style: italic; color: #555;">
+    En esta sección, responderás a preguntas sobre tu disposición a juzgar (negativa o positivamente) la opinión de otros individuos sobre los temas de la sección anterior. Por favor, lee atentamente cada pregunta. Cada una de las respuestas se utilizarán para la etapa 2 del experimento. Específicamente, te darán la opción de juzgar, o no, a las opiniones de los demás. Si te ofrecen la oportunidad de juzgar las opiniones de los demás en cada uno de los temas de las preguntas binarias ¿Estarías dispuesto(a) a incurrir en un costo de 20 pesos mexicanos para ello?
+  </p>
+  <form method="post">
+    {% for question, field in questions_and_fields %}
+      <div style="margin-bottom: 20px;">
+        <p><strong>Para la pregunta:</strong> {{ question }}</p>
+        <p>¿Estarías dispuesto(a) a incurrir en un costo de 20 pesos mexicanos para poder juzgar la opinión de un individuo?</p>
+        {{ field }}
+      </div>
+      <hr>
+    {% endfor %}
+    {{ next_button }}
+  </form>
+{% endblock %}
+
+

@@ -1,0 +1,15 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>Decisión Pública</h1>
+  <p>
+    Como se informó en la página anterior, volverán a responder a la pregunta:
+    <strong>{{ current_question }}</strong>
+    pero esta vez de manera pública. Ambos miembros del grupo responderán de manera simultánea.
+  </p>
+  <p>Por favor, selecciona una de las siguientes opciones:</p>
+  {{ form.second_choice }}
+  {{ next_button }}
+{% endblock %}
+
+
+

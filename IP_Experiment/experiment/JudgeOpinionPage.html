@@ -1,0 +1,17 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>Evalúa la Decisión de tu Compañero</h1>
+  <p>
+    <strong>Pregunta:</strong> {{ current_question }}
+  </p>
+  <p>
+    La respuesta pública de tu compañero fue: <strong>{{ partner_choice }}</strong>
+  </p>
+  <p>
+    Por favor, juzga la opinión de tu compañero. Un juicio positivo le estaría destinando 30 pesos mexicanos a tu compañero. Al contrario, un juicio negativo le estaría restando 30 pesos mexicanos a tu compañero.
+  </p>
+  {{ formfield 'juicio' }}
+  {{ next_button }}
+{% endblock %}
+
+

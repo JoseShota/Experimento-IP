@@ -1,0 +1,70 @@
+{% extends "global/Page.html" %}
+{% block content %} 
+<h1>Instrucciones Detalladas del Experimento</h1>
+<p>
+  Nuevamente, ¡Bienvenido(a) al experimento! Tu colaboración es de gran importancia para este proyecto de investigación sobre interacciones en entornos grupales. 
+  A lo largo de este documento encontrarás las instrucciones detalladas que deberás seguir con atención durante el estudio.
+</p>
+<p>
+  El experimento se compone de <strong>dos etapas</strong> distribuidas a lo largo de <strong>11 rondas</strong>. A continuación, se describe brevemente lo que ocurrirá en cada una de las etapas:
+</p>
+
+
+<h2>Etapa 1 (Ronda 1)</h2>
+<ol>
+  <li>
+    <strong>Consentimiento Informado:</strong> Antes de responder cualquier pregunta, se te presentará un texto que explica el propósito y alcances del estudio. Tras leerlo, podrás aceptar o rechazar participar.
+  </li>
+  <li>
+    <strong>Cuestionario Inicial:</strong> Después de otorgar tu consentimiento, completarás un breve formulario con datos personales (edad, sexo, ingreso mensual aproximado, participación previa en experimentos).
+  </li>
+  <li>
+    <strong>10 Preguntas Binarias:</strong> Se te mostrarán 10 preguntas con dos opciones de respuesta. Elige la opción que mejor represente tu postura u opinión.
+  </li>
+  <li>
+    <strong>Disposición a Juzgar:</strong> Indicarás si estarías dispuesto(a) a incurrir en un costo de 25 pesos mexicanos para juzgar la respuesta de otros participantes en rondas posteriores.
+  </li>
+</ol>
+<p>
+  Al finalizar esta primera etapa, se generará un orden aleatorio de esas 10 preguntas, que servirá para tu emparejamiento en las rondas siguientes.
+</p>
+
+
+<h2>Etapa 2 (Rondas 2 a 11)</h2>
+<p>
+  En la Etapa 2 se te asginará a un compañero(a) en cada ronda, dependiendo de la pregunta binaria seleccionada para cada ronda. El orden de las preguntas es aleatorio. Para fines de la explicación, supón que una de las preguntas binarias de la primera etapa fue "¿Qué es mejor, el rojo o el azul?" y fue seleccionada como la pregunta de la primera ronda.:
+</p>
+<ol>
+  <li>
+    <strong>Formación de Pareja:</strong> Serás emparejado con otro participante usando la pregunta de la ronda correspondiente, en este caso, "¿Qué es mejor, el rojo o el azul?". El método de emparejamiento se escogerá en cada ronda de manera aleatoria entre dos tratamientos principales:
+    <ul>
+      <li><strong>Tratamiento 50%:</strong> La probabilidad de que el otro compañero(a) prefiera la opción rojo en la pregunta "¿Qué es mejor, el rojo o el azul?" es del 50%.</li>
+      <li><strong>Tratamiento 70%:</strong> La probabilidad de que el otro compañero(a) prefiera la opción rojo en la pregunta "¿Qué es mejor, el rojo o el azul?" es del 70%.</li>
+    </ul>
+    Si no es posible aplicar el método de emparejamiento, se te asignará un compañero(a) aleatorio, sin considerar las respuestas a la pregunta actual. Después, se asginará de manera aleatoria si las parejas reciben información sobre el porcentaje de los participantes totales que están dispuestos a incurrir en el costo de juzgar la opinión de los demás sobre la pregunta de la ronda actual, en este caso "¿Qué es mejor, el rojo o el azul?".
+  </li>
+  <li>
+    <strong>Respuesta Pública:</strong> Ambos contestarán de manera pública la pregunta que ha definido su emparejamiento para esa ronda, en este caso, "¿Qué es mejor, el rojo o el azul?".
+  </li>
+  <li>
+    <strong>Visualización:</strong> Podrás ver la respuesta que dio tu compañero(a).
+  </li>
+  <li>
+    <strong>Juicio Opcional:</strong> Si marcaste que estabas dispuesto(a) a incurrir en el costo de 25 pesos mexicanos a las opiniones de los demás sobre la pregunta "¿Qué es mejor, el rojo o el azul?", accederás a una sección especial para evaluar la respuesta de tu compañero(a). Un juicio positivo destinará 30 pesos mexicanos al compañero(a) y un juicio negativo restará 30 pesos mexicanos al compañero(a).
+  </li>
+  <li>
+    <strong>Opinión de Honestidad:</strong> Finalmente, se te consultará si consideras que tu compañero(a) mintió en su respuesta.
+  </li>
+</ol>
+
+<p>
+  Al terminar la ronda 11, concluirá el experimento. Agradecemos tu participación e interés en este proyecto. Tus respuestas se manejarán de forma anónima y segura, y se utilizarán exclusivamente con fines de investigación.
+</p>
+<p>
+  Por favor, mantente atento(a) a las indicaciones en pantalla y no refresques la página mientras participas, a menos que se te indique lo contrario. Si tienes alguna pregunta, no dudes en levantar la mano o comunicarte con el facilitador.
+</p>
+
+{{ next_button }}
+
+{% endblock %}
+

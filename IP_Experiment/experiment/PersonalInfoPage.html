@@ -1,0 +1,25 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>Información Personal</h1>
+  <form method="post">
+    <p>
+      <label>{{ form.age.label }}</label>
+      {{ form.age }}
+    </p>
+    <p>
+      <label>{{ form.gender.label }}</label>
+      {{ form.gender }}
+    </p>
+    <p>
+      <label>{{ form.monthly_income.label }}</label>
+      {{ form.monthly_income }}
+    </p>
+    <p>
+      <label>{{ form.previous_experiment.label }}</label>
+      {{ form.previous_experiment }}
+    </p>
+    {{ next_button }}
+  </form>
+{% endblock %}
+
+

@@ -1,0 +1,12 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>Decisión Pública del Grupo</h1>
+  <p>
+    <strong>Pregunta:</strong> {{ current_question }}
+  </p>
+  <p>
+    La respuesta pública de tu compañero fue: <strong>{{ partner_choice }}</strong>
+  </p>
+  {{ next_button }}
+{% endblock %}
+

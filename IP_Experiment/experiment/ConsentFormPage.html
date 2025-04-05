@@ -1,0 +1,12 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>Consentimiento Informado</h1>
+  <p>{{ consent_text }}</p>
+  <form method="post">
+    <p>
+      {{ form.consent }}
+      <label for="id_consent">He leído y doy mi consentimiento para participar en el estudio.</label>
+    </p>
+    {{ next_button }}
+  </form>
+{% endblock %}

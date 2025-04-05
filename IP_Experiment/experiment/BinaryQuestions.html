@@ -1,0 +1,41 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>Encuesta: Temas Diversos</h1>
+  
+  <!-- Pilot Instructions Section -->
+  <p style="font-style: italic; color: #555;">
+    Antes de responder, por favor lee atentamente las siguientes instrucciones:<br>
+    En esta encuesta responderás 10 preguntas binarias, en las que cada pregunta tiene dos opciones de respuesta. Elige la opción que mejor refleje tu opinión. 
+    Tus respuestas son fundamentales para determinar la formación de grupos en las siguientes rondas del experimento. Por favor, responde de forma honesta y cuidadosa.
+  </p>
+  
+  <form method="post">
+    {% for field in rendered_fields %}
+      <p>Pregunta {{ forloop.counter }}:
+      {% if forloop.counter == 1 %}
+        ¿La quesadilla lleva o no queso?
+      {% elif forloop.counter == 2 %}
+        ¿El arte que se exhibe en los museos de arte contemporáneo ya no tiene el mismo virtuosismo que el arte en los museos clásicos?
+      {% elif forloop.counter == 3 %}
+        ¿Qué es más importante, afrontar la crisis climática o terminar la pobreza extrema en México?
+      {% elif forloop.counter == 4 %}
+        ¿Estás de acuerdo con la frase "no hay paz sin la violencia"?
+      {% elif forloop.counter == 5 %}
+        ¿Estás de acuerdo con la nueva ley antitabaco en México?
+      {% elif forloop.counter == 6 %}
+        ¿Qué es lo más higiénico, bañarse en la mañana o en la noche?
+      {% elif forloop.counter == 7 %}
+        ¿Crees que las relaciones a distancia pueden ser tan satisfactorias como las relaciones en persona?
+      {% elif forloop.counter == 8 %}
+        Una persona rica y grosera tira un billete de cien pesos sin darse cuenta. ¿Se lo regresas?
+      {% elif forloop.counter == 9 %}
+        ¿Qué es mejor, la Condesa o Coyoacán?
+      {% elif forloop.counter == 10 %}
+        ¿Qué equipo de futbol es mejor: el América o las Chivas?
+      {% endif %}
+      </p>
+      {{ field }}
+    {% endfor %}
+    {{ next_button }}
+  </form>
+{% endblock %}
