@@ -325,17 +325,6 @@ class ConsentFormPage(Page):
     def is_displayed(player: Player) -> bool:
         return player.round_number == 1
 
-    @staticmethod
-    def vars_for_template(player: Player) -> dict:
-        consent_text = (
-            "Por favor, lea atentamente la siguiente información: Este estudio tiene como objetivo evaluar cómo interactúan "
-            "los participantes en un entorno grupal, analizando sus respuestas y decisiones en diversas situaciones. "
-            "La participación es completamente voluntaria y puede retirarse en cualquier momento sin penalización. "
-            "Toda la información recopilada será tratada de forma confidencial y se utilizará únicamente con fines de investigación. "
-            "Al marcar la casilla y hacer clic en 'Siguiente', usted confirma que ha leído y comprendido esta información y "
-            "da su consentimiento para participar en el estudio."
-        )
-        return {'consent_text': consent_text}
 
 class PersonalInfoPage(Page):
     form_model = 'player'
