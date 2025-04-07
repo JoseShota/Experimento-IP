@@ -94,12 +94,23 @@ class Player(BasePlayer):
         choices=[('M', 'Masculino'), ('F', 'Femenino'), ('O', 'Otro')],
         label="Sexo"
     )
-    monthly_income = models.StringField(label="Ingreso mensual aproximado")
-    previous_experiment = models.BooleanField(
-        choices=[[True, "Sí, he participado en un experimento de investigación previamente"],
-                 [False, "No, no he participado"]],
-        label="¿Has participado en algún experimento de investigación previamente?"
+    racial_identification = models.StringField(
+        choices=[
+            ('Mestizo', 'Mestiza/o'),
+            ('Indigena', 'Indígena'),
+            ('Caucasico', 'Caucásico'),
+            ('Afro', 'Afrodescendiente'),
+            ('Asiatico', 'Asiática/o'),
+            ('Arabe', 'Árabe'),
+            ('Otros', 'Otros:')
+        ],
+        label="¿Cómo te identificas racialmente?"
     )
+    previous_experiment = models.IntegerField(
+        label="¿En cuántos experimentos has participado previamente?",
+        min=0
+    )
+    
 
     # Binary survey responses for 10 questions with custom labels:
     binary_choice_1 = models.StringField(
@@ -316,7 +327,7 @@ class ConsentFormPage(Page):
 
 class PersonalInfoPage(Page):
     form_model = 'player'
-    form_fields = ['age', 'gender', 'monthly_income', 'previous_experiment']
+    form_fields = ['age', 'gender', 'racial_identification', 'previous_experiment']
     
     @staticmethod
     def is_displayed(player: Player) -> bool:
