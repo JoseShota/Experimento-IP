@@ -418,9 +418,8 @@ class TreatmentInformation(Page):
         
         # Get the current question text from SURVEY_QUESTIONS.
         current_question = SURVEY_QUESTIONS[question_index]
-        # Update the player's tag so that every repeated variable in this round is associated with the current question.
+        # Update the player's tag (no need to call player.save())
         player.current_question_tag = current_question
-        player.save()  # Persist the tag
         
         # Retrieve the first option text for the current question.
         first_option = FIRST_OPTIONS[question_index]
@@ -458,13 +457,11 @@ class TreatmentInformation(Page):
             f"Ahora pasarán a la interacción grupal donde ambos responderán simultáneamente a la pregunta: '{current_question}' de manera pública."
         )
         
-        # Append judge information text if 'inform' is True.
         if treatment.get('inform'):
             treatment_text += f" Te informamos que el {judge_percent:.0f}% de los participantes totales están dispuestos a incurrir en el costo de juzgar."
         
-        return {
-            'treatment_text': treatment_text
-        }
+        return {'treatment_text': treatment_text}
+
 
 class PublicDecision(Page):
     form_model = 'player'
