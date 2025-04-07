@@ -3,7 +3,6 @@ from otree.api import *
 import random, json, logging
 from typing import List, Tuple
 
-
 # Define the full survey questions as a module-level constant.
 SURVEY_QUESTIONS = [
     "¿La quesadilla lleva o no queso?",
@@ -45,7 +44,6 @@ SURVEY_OPTIONS = [
     ("El América", "Las Chivas")
 ]
 
-
 # -----------------------------------------------------------------------------
 # Logging configuration for debugging
 # -----------------------------------------------------------------------------
@@ -60,7 +58,6 @@ class C(BaseConstants):
     PLAYERS_PER_GROUP = 2
     NUM_BINARY_QUESTIONS = 10  # updated to 10 questions
     NUM_ROUNDS = NUM_BINARY_QUESTIONS + 1  # now 11 rounds total
-
 
 def set_partner(player: Player, partner: Player) -> None:
     """Store the partner's id_in_subsession in player's partner_id field."""
@@ -194,7 +191,9 @@ class Player(BasePlayer):
     juicio = models.StringField(choices=['Positivo', 'Negativo'], blank=False)
     Mentira = models.StringField(choices=['Sí', 'No'], blank=False, label="¿Crees que tu compañero mintió?")
     partner_id = models.IntegerField(blank=True, null=True)
-
+    
+    # New field: Tag to capture the binary question used for grouping in each round (Stage 2)
+    current_question_tag = models.StringField(blank=True)
 
 # -----------------------------------------------------------------------------
 # Pairing Function for Group Interaction Rounds (Stage 2)
@@ -292,30 +291,20 @@ class IntroductionPage(Page):
     def is_displayed(player: Player) -> bool:
         return player.round_number == 1
 
-    # No form is needed; just instructions and a next button.
     @staticmethod
     def vars_for_template(player: Player) -> dict:
         return {}
 
 class ExperimentInstructions(Page):
-    """
-    This page provides a detailed general exposure of the experiment's logic.
-    It explains the experiment, its structure, and the sequence of stages.
-    It is displayed only in round 1, right after the IntroductionPage.
-    """
-    # Optionally specify a custom template if you wish:
     template_name = 'experiment/ExperimentInstructions.html'
 
     @staticmethod
     def is_displayed(player: Player) -> bool:
-        # Show this page only during the survey stage (round 1)
         return player.round_number == 1
 
     @staticmethod
     def vars_for_template(player: Player) -> dict:
-        # You can pass additional context if needed; here it's empty.
         return {}
-
 
 class ConsentFormPage(Page):
     form_model = 'player'
@@ -325,7 +314,6 @@ class ConsentFormPage(Page):
     def is_displayed(player: Player) -> bool:
         return player.round_number == 1
 
-
 class PersonalInfoPage(Page):
     form_model = 'player'
     form_fields = ['age', 'gender', 'monthly_income', 'previous_experiment']
@@ -333,7 +321,6 @@ class PersonalInfoPage(Page):
     @staticmethod
     def is_displayed(player: Player) -> bool:
         return player.round_number == 1
-
 
 class BinaryQuestions(Page):
     form_model = 'player'
@@ -344,7 +331,7 @@ class BinaryQuestions(Page):
     
     @staticmethod
     def is_displayed(player: Player) -> bool:
-        return player.round_number == 1  # Show only in the survey round
+        return player.round_number == 1
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -363,7 +350,6 @@ class BinaryQuestions(Page):
         player.participant.vars['binary_choices'] = binary_choices
         logger.debug(f"Stored binary_choices: {binary_choices}")
 
-
 class WillingnessToPayCost(Page):
     form_model = 'player'
     
@@ -373,16 +359,14 @@ class WillingnessToPayCost(Page):
     
     @staticmethod
     def is_displayed(player: Player) -> bool:
-        return player.round_number == 1  # Show only in survey round
+        return player.round_number == 1
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         form = kwargs.get('form')
         field_names = [f"pay_to_judge_{i}" for i in range(1, C.NUM_BINARY_QUESTIONS + 1)]
         rendered_fields = [form[field_name] for field_name in field_names]
-        # Assuming SURVEY_QUESTIONS is defined at module level
         question_texts = SURVEY_QUESTIONS  
-        # Zip questions with corresponding fields:
         context['questions_and_fields'] = list(zip(question_texts, rendered_fields))
         return context
 
@@ -395,9 +379,8 @@ class WillingnessToPayCost(Page):
         player.participant.vars['pay_to_judge_choices'] = pay_choices
         logger.debug(f"Stored pay_to_judge_choices: {pay_choices}")
 
-
 class SurveyWaitPage(WaitPage):
-    wait_for_all_groups = True  # Ensures that the method is called with the subsession only.
+    wait_for_all_groups = True
 
     @staticmethod
     def is_displayed(player: Player) -> bool:
@@ -411,10 +394,7 @@ class SurveyWaitPage(WaitPage):
             subsession.session.vars['question_order'] = order
             logger.debug(f"SurveyWaitPage set question_order: {order}")
 
-
-
 # Stage 2: Group interaction pages (only for rounds > 1)
-
 class GroupingWaitPage(WaitPage):
     wait_for_all_groups = True
     @staticmethod
@@ -438,6 +418,10 @@ class TreatmentInformation(Page):
         
         # Get the current question text from SURVEY_QUESTIONS.
         current_question = SURVEY_QUESTIONS[question_index]
+        # Update the player's tag so that every repeated variable in this round is associated with the current question.
+        player.current_question_tag = current_question
+        player.save()  # Persist the tag
+        
         # Retrieve the first option text for the current question.
         first_option = FIRST_OPTIONS[question_index]
         
@@ -492,31 +476,26 @@ class PublicDecision(Page):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Determine the current survey question index for this round:
         question_order = self.player.session.vars['question_order']
-        # For round 2, use index 0; for round 3, index 1, etc.
         question_index = question_order[self.player.round_number - 2]
         current_question = SURVEY_QUESTIONS[question_index]
-        # Get the full answer options for this question.
         options = SURVEY_OPTIONS[question_index]
         
-        # Dynamically update the form field's choices and label:
         form = kwargs.get('form')
         if form:
             form.second_choice.choices = [('H', options[0]), ('L', options[1])]
             form.second_choice.label = current_question
         
-        # Pass data to the template in case you want to show additional info.
         context.update({
             'current_question': current_question,
             'options': options,
         })
         return context
 
-
 class SecondDecisionWaitPageForGroup(WaitPage):
     wait_for_all_groups = False
     template_name = 'otree/WaitPage.html'
+    
     @staticmethod
     def is_displayed(player: Player) -> bool:
         return player.round_number > 1
@@ -574,8 +553,6 @@ class JudgeOpinionPage(Page):
             partner_choice_text = "No se asignó compañero"
         return {'partner_choice': partner_choice_text, 'current_question': current_question}
 
-
-
 class LieQuestionPage(Page):
     form_model = 'player'
     form_fields = ['Mentira']
@@ -603,7 +580,6 @@ class LieQuestionPage(Page):
             partner_choice_text = "No se asignó compañero"
         return {'partner_choice': partner_choice_text, 'current_question': current_question}
 
-
 class ThankYouPage(Page):
     @staticmethod
     def is_displayed(player: Player) -> bool:
@@ -613,19 +589,18 @@ class ThankYouPage(Page):
     def vars_for_template(player: Player) -> dict:
         return {}
 
-
 # -----------------------------------------------------------------------------
 # Page Sequence
 # -----------------------------------------------------------------------------
 page_sequence = [
     IntroductionPage,
     ExperimentInstructions,
-    ConsentFormPage,       # New consent form page
-    PersonalInfoPage,      # New personal information page
-    BinaryQuestions,       # Stage 1: Survey (existing)
+    ConsentFormPage,
+    PersonalInfoPage,
+    BinaryQuestions,
     WillingnessToPayCost,
     SurveyWaitPage,
-    GroupingWaitPage,      # Stage 2: Group interaction rounds (r > 1)
+    GroupingWaitPage,
     TreatmentInformation,
     PublicDecision,
     SecondDecisionWaitPageForGroup,
@@ -634,4 +609,5 @@ page_sequence = [
     LieQuestionPage,
     ThankYouPage
 ]
+
 
