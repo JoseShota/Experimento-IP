@@ -4,9 +4,9 @@ import random, json, logging
 from typing import List, Tuple
 
 # Define the full survey questions as a module-level constant.
-PRACTICE_QUESTION = "¿La pizza debe llevar piña?"
-PRACTICE_OPTIONS = ("Sí, la pizza debe llevar piña", "No, la pizza no debe llevar piña")
-PRACTICE_FIRST_OPTION = "Sí, la pizza debe llevar piña"
+PRACTICE_QUESTION = "¿Qué es mejor, el rojo o el azul?"
+PRACTICE_OPTIONS = ("El rojo", "El azul")
+PRACTICE_FIRST_OPTION = "El rojo"
 
 SURVEY_QUESTIONS = [
     "¿La quesadilla lleva o no queso?",
