@@ -1,18 +1,13 @@
 {% extends "global/Page.html" %}
 {% block content %}
   <h1>Disponibilidad para darle o quitarle dinero a tu pareja después de ver su opinión</h1>
-  <p>Estás en la Parte 3 del experimento. Para ubicar dónde estás en el experimento, aquí está de nuevo la línea de tiempo.</p>
-  <embed src="{% static 'experiment/Timeline_IP_1.pdf' %}" type="application/pdf" width="100%" height="400px" />
-  <p>También, a manera de resumen, aquí está la tabla de pagos. </p>
-  <embed src="{% static 'experiment/Tabla_IP.pdf' %}" type="application/pdf" width="100%" height="400px" />
-  <p>
-    Ahora te vamos a pedir que nos digas, para el tema de la “conversación” que estás teniendo, si estás dispuesto/a a pagar 5 pesos para poder darle 20 pesos o quitarle 20 pesos a tu pareja después de observar la opinión que te expresó. Si decides pagar los 5 pesos, en una parte futura de esta conversación se te va a pedir tomar la decisión de darle o quitarle esos 20 pesos a tu pareja. Recuerda que los 20 pesos que le das o quitas a tu pareja no afectan tus pagos---tus pagos son afectados únicamente por los 5 pesos que tendrías que perder para poder quitarle o darle dinero a tu pareja. 
+    Ahora te vamos a pedir que nos digas, para el tema de la “conversación” que estás teniendo, si estás dispuesto/a a pagar 5 pesos para poder darle 20 pesos o quitarle 20 pesos a tu pareja después de observar la opinión que te expresó. Si decides pagar los 5 pesos, en una parte futura de esta “conversación” se te va a pedir tomar la decisión de darle o quitarle esos 20 pesos a tu pareja. Recuerda que los 20 pesos que le das o quitas a tu pareja no afectan tus pagos---tus pagos son afectados únicamente por los 5 pesos que tendrías que perder para poder quitarle o darle dinero a tu pareja. 
   </p>
   <form method="post">
     {% for question, field in questions_and_fields %}
       <div style="margin-bottom: 20px;">
         <p><strong>Para la pregunta:</strong> {{ question }}</p>
-        <p>¿Estás dispuesto/a a pagar 5 pesos para poder darle 20 pesos o quitarle 20 pesos a tu pareja después de observar su opinión?</p>
+        <p>¿Quieres pagar 5 pesos para poder darle 20 pesos o quitarle 20 pesos a tu pareja después de observar su opinión?</p>
         {{ field }}
       </div>
       <hr>

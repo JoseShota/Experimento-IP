@@ -191,13 +191,23 @@
     He leído la información anterior sobre <em>Explorando el Comportamiento en Grupos Pequeños: Un Estudio Experimental</em> y se me ha dado tiempo para hacer preguntas. Acepto participar en este estudio y se me dará una copia de este formulario de consentimiento firmado.
   </p>
   
-  <form method="post">
+  <form method="post" id="consentForm">
     <p>
-      <label for="consent">Por favor, ingresa tu nombre para confirmar tu consentimiento:</label><br>
-      <input type="text" id="consent" name="consent" required>
+      <input type="checkbox" id="consentCheckbox" name="consent" required>
+      <label for="consentCheckbox">He leído y doy mi consentimiento para participar en el estudio.</label>
     </p>
-    {{ next_button }}
+    <button type="submit" id="submitButton" disabled>Enviar</button>
   </form>
+  
+  <script>
+    const consentCheckbox = document.getElementById('consentCheckbox');
+    const submitButton = document.getElementById('submitButton');
+  
+    consentCheckbox.addEventListener('change', function() {
+      submitButton.disabled = !this.checked;
+    });
+  </script>
+  
   
 {% endblock %}
 

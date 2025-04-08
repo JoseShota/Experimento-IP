@@ -113,7 +113,7 @@ class Player(BasePlayer):
         doc="Tema de Conversación: ¿Qué color es mejor, el rojo o el azul?"
     )
     practice_pay_to_judge = models.BooleanField(
-        choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
+        choices=[[True, "Sí"], [False, "No"]],
         blank=False,
         doc="Respuesta de práctica sobre disposición a incurrir en el costo"
     )
@@ -186,43 +186,43 @@ class Player(BasePlayer):
 
     # Updated willingness-to-judge fields with custom display choices:
     pay_to_judge_1 = models.BooleanField(
-        choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
+        choices=[[True, "Sí"], [False, "No"]],
         blank=False
     )
     pay_to_judge_2 = models.BooleanField(
-        choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
+        choices=[[True, "Sí"], [False, "No"]],
         blank=False
     )
     pay_to_judge_3 = models.BooleanField(
-        choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
+        choices=[[True, "Sí"], [False, "No"]],
         blank=False
     )
     pay_to_judge_4 = models.BooleanField(
-        choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
+        choices=[[True, "Sí"], [False, "No"]],
         blank=False
     )
     pay_to_judge_5 = models.BooleanField(
-        choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
+        choices=[[True, "Sí"], [False, "No"]],
         blank=False
     )
     pay_to_judge_6 = models.BooleanField(
-        choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
+        choices=[[True, "Sí"], [False, "No"]],
         blank=False
     )
     pay_to_judge_7 = models.BooleanField(
-        choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
+        choices=[[True, "Sí"], [False, "No"]],
         blank=False
     )
     pay_to_judge_8 = models.BooleanField(
-        choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
+        choices=[[True, "Sí"], [False, "No"]],
         blank=False
     )
     pay_to_judge_9 = models.BooleanField(
-        choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
+        choices=[[True, "Sí"], [False, "No"]],
         blank=False
     )
     pay_to_judge_10 = models.BooleanField(
-        choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
+        choices=[[True, "Sí"], [False, "No"]],
         blank=False
     )
 
@@ -549,7 +549,7 @@ class PracticeTreatmentInformation(Page):
         # Información adicional (si aplica)
         inform_text = ""
         if treatment.get('inform'):
-            inform_text = f"Te informamos que el {judge_percent:.0f}% de los participantes están dispuestos a incurrir en el costo de juzgar."
+            inform_text = f"Te informamos que el {judge_percent:.0f}% de los participantes están dispuestos a pagar 5 pesos para darle o quitarle 20 pesos a su pareja después de observar la opinión que le expresó."
 
         # ⬅️ Se devuelven ambos textos juntos
         return {
@@ -805,7 +805,7 @@ class TreatmentInformation(Page):
         # Información adicional (si aplica)
         inform_text = ""
         if treatment.get('inform'):
-            inform_text = f"Te informamos que el {judge_percent:.0f}% de los participantes están dispuestos a incurrir en el costo de juzgar."
+            inform_text = f"Te informamos que el {judge_percent:.0f}% de los participantes están dispuestos a pagar 5 pesos para darle o quitarle 20 pesos a su pareja después de observar la opinión que le expresó."
 
         # ⬅️ Se devuelven ambos textos juntos
         return {
