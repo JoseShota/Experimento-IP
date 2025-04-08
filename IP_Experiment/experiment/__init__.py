@@ -393,6 +393,14 @@ def pair_players(subsession: Subsession) -> None:
 # Page Definitions
 # -----------------------------------------------------------------------------
 # Stage 1: Survey pages (only in round 1)
+class ConsentFormPage(Page):
+    form_model = 'player'
+    form_fields = ['consent']
+    
+    @staticmethod
+    def is_displayed(player: Player) -> bool:
+        return player.round_number == 1
+
 class IntroductionPage(Page):
     # This page is only shown in round 1
     @staticmethod
@@ -413,14 +421,6 @@ class ExperimentInstructions(Page):
     @staticmethod
     def vars_for_template(player: Player) -> dict:
         return {}
-
-class ConsentFormPage(Page):
-    form_model = 'player'
-    form_fields = ['consent']
-    
-    @staticmethod
-    def is_displayed(player: Player) -> bool:
-        return player.round_number == 1
 
 class PracticeBinaryQuestion(Page):
     form_model = 'player'
@@ -923,9 +923,9 @@ class ThankYouPage(Page):
 # -----------------------------------------------------------------------------
 page_sequence = [
     # --- Round 1: Pre-Practice Survey Stage ---
-    IntroductionPage,             # Only in round 1
-    ExperimentInstructions,       # Only in round 1
     ConsentFormPage,              # Only in round 1
+    # IntroductionPage,             # Only in round 1
+    ExperimentInstructions,       # Only in round 1
     PracticeBinaryQuestion,       # Only in round 1 (practice survey)
     PracticeWillingnessToPayCost, # Only in round 1 (practice survey)
     PracticeSurveyWaitPage,       # Only in round 1 (practice survey wait)
