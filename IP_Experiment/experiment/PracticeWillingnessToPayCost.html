@@ -1,0 +1,16 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>Encuesta: Disposición a Juzgar (Práctica)</h1>
+  <p style="font-style: italic; color: red;">
+      ESTO ES UNA PRÁCTICA. La respuesta no se usará para el emparejamiento real.
+  </p>
+  <p><strong>Pregunta de Práctica:</strong> {{ practice_question }}</p>
+  <p>
+      ¿Estarías dispuesto(a) a incurrir en un costo de 20 pesos mexicanos para juzgar la opinión de otro participante sobre esta pregunta?
+  </p>
+  <form method="post">
+    {{ form.practice_pay_to_judge }}
+    {{ next_button }}
+  </form>
+{% endblock %}
+

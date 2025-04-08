@@ -1,0 +1,15 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>Decisión Pública (Práctica)</h1>
+  <p style="font-style: italic; color: red;">
+    ESTA ES UNA PRÁCTICA. Tu decisión no tendrá consecuencias reales.
+  </p>
+  <p>
+    Como se informó, vuelve a responder a la pregunta:
+    <strong>{{ current_question }}</strong>
+    de forma pública.
+  </p>
+  {{ form.second_choice }}
+  {{ next_button }}
+{% endblock %}
+

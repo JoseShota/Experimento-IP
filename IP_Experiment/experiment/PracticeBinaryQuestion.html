@@ -1,0 +1,24 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>Encuesta de Práctica</h1>
+  <p style="font-style: italic; color: red;">
+      ESTO ES UNA PRÁCTICA. La respuesta no contará para el estudio.
+  </p>
+  <p><strong>Pregunta de Práctica:</strong> {{ practice_question }}</p>
+  <form method="post">
+    <p>
+      <label>
+        <input type="radio" name="practice_binary_choice" value="H">
+        {{ practice_options.0 }}
+      </label>
+    </p>
+    <p>
+      <label>
+        <input type="radio" name="practice_binary_choice" value="L">
+        {{ practice_options.1 }}
+      </label>
+    </p>
+    {{ next_button }}
+  </form>
+{% endblock %}
+
