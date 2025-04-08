@@ -1,100 +1,90 @@
 {% extends "global/Page.html" %}
-{% load static %}
 {% block content %} 
 <h1>Instrucciones Detalladas del Experimento</h1>
 <p>
-  A lo largo de este documento encontrarás las instrucciones detalladas que deberás seguir con atención durante el estudio.
+A lo largo de este documento encontrarás las instrucciones detalladas que deberás seguir con atención durante el estudio.
 </p>
 <p>
   El experimento se compone de <strong>cuatro partes</strong>, descritas en la línea de tiempo. A continuación, se describe brevemente lo que ocurrirá en cada una de las partes:
 </p>
-
-<!-- Línea de tiempo -->
 <h2>Línea de Tiempo</h2>
-<p>
-  A continuación, observa la línea de tiempo del experimento:
-</p>
-<embed src="{% static 'experiment/Timeline_IP_1.pdf' %}" type="application/pdf" width="100%" height="600px" />
+<embed src="{% static 'experiment/Timeline_IP_1.pdf' %}" type="application/pdf" width="100%" height="400px" />
 
 <h2>Parte 1</h2>
 <p>
-  <strong>Cuestionario Inicial:</strong> Completarás un breve formulario con datos personales (edad, sexo, ingreso mensual aproximado, participación previa en experimentos).
+    <strong>Cuestionario Inicial:</strong> Completarás un breve formulario con datos personales (edad, sexo, ingreso mensual aproximado, participación previa en experimentos).
 </p>
-
-<h2>Parte 2</h2>
+  <h2>Parte 2</h2>
 <p>
-  <strong>“Conversación” de Práctica:</strong> En el experimento vas a tener una “conversación” sobre diez temas diferentes, cada una con una pareja distinta. “Conversación” está en comillas porque no es una conversación libre: seguirás un protocolo muy específico. En esta segunda parte, realizarás una ronda de práctica en donde podrás ver todas las decisiones que tomarás como parte de la “conversación”.
+  <strong>“Conversación” de Práctica:</strong> En el experimento vas a tener una “conversación” sobre diez temas diferentes, cada una con una pareja diferente. “Conversación” está en comillas porque no es una conversación libre---vas a seguir un protocolo muy específico en la “conversación”. En esta segunda parte, llevarás a cabo una ronda de práctica en donde podrás ver todas las decisiones que tomarás como parte de la “conversación”. 
 </p>
-
 <h2>Parte 3</h2>
 <p>
-  <strong>Opiniones Privadas y Disponibilidad Económica:</strong> Se te presentarán diez temas sobre los que tendrás una “conversación”. Para cada tema, te mostraremos dos posturas diferentes. Estos temas fueron seleccionados a partir de una encuesta previa realizada a una muestra similar a los participantes del experimento, de modo que la opinión se divida aproximadamente a la mitad.
+    <strong>Para cada tema, opiniones privadas y disponibilidad a  darle o quitarle dinero a tu pareja después de ver la opinión que te expresó. </strong> En esta parte se te presentarán los diez temas sobre los que vas a tener una “conversación”. Para cada tema, te vamos a presentar dos posturas diferentes. Para escoger los temas, encuestamos a un grupo de personas que sacamos de la misma población de donde sacamos a las personas que hoy están tomando parte del experimento. Esto es, las personas que ya encuestamos son muy similares en muchos sentidos a las personas que están en el experimento el día de hoy. Escogimos los temas que dividían a los encuestados más o menos a la mitad---esto es, más o menos la mitad favorecía una de las posturas, y más o menos la mitad favorecía la otra. 
 </p>
 <p>
-  Te pediremos que marques la postura que mejor represente tu opinión; esta será tu <strong>opinión privada</strong> y no será visible para ningún otro participante. Además, deberás indicarnos si estarías dispuesto a ajustar el monto de dinero (sumar o restar 20 pesos) a tu pareja tras ver su opinión expresada durante la “conversación”. Para ello, en caso de gastar 5 pesos de la compensación otorgada, decidirás si otorgar o descontar 20 pesos según la opinión recibida.
+Te vamos a pedir que nos indiques la postura que mejor represente tu opinión. Esta opinión que nos expreses no la verá ninguna persona en la sesión de hoy (y nadie fuera de la sesión de hoy podrá saber qué opinión expresaste tú, porque no tenemos información con la que podamos identificar qué persona expresó qué opinión). Ésta es tu <strong>opinión privada</strong>.
 </p>
 <p>
-  Cuando tengas la “conversación”, tu pareja tendrá la oportunidad de expresarte su opinión. Recuerda: no se observa la opinión privada.
+ Cuando tengas la “conversación”, tu pareja va a tener una oportunidad de expresarte su opinión (la opinión que te expresa puede o no ser la misma que nos anunció en privado).  Además de la opinión que le quieres expresar a tu pareja, te vamos a preguntar si estarías dispuesto a darle o quitarle dinero a tu pareja después de ver la opinión que te expresó. En particular, si gastas 5 pesos de los que te dimos por participar en el experimento, vas a tener que decidir si le quitas 20 pesos o le das 20 pesos a tu pareja por la opinión que haya expresado en la “conversación” (de nuevo, no observas su opinión privada). Los 20 pesos que le das o quitas a tu pareja no afectan tus pagos---tus pagos son afectados únicamente por los 5 pesos que tendrías que perder para poder quitarle o darle dinero a tu pareja.
 </p>
-
 <h2>Parte 4 (10 “Conversaciones”)</h2>
 <p>
-  En la cuarta parte se te asignará una pareja en cada “conversación”, es decir, para cada uno de los 10 temas. El orden de presentación de los temas es aleatorio.
+  En la cuarta parte se te asignará a una pareja en cada “conversación”, esto es, para cada uno de los 10 temas. El orden en el que se presentan los temas es aleatorio. 
 </p>
 <p>
-  La “conversación” sigue el siguiente orden:
+La “conversación” sucede en el siguiente orden. 
 </p>
 <ol>
-  <li>
-    <strong>Anuncio del Tema:</strong> Se anuncia el tema de la “conversación”.
-  </li>
-  <li>
-    <strong>Procedimiento de Selección:</strong> Se te informará cuál de los tres procedimientos estadísticos se usó para asignar a la pareja:
-    <ul>
-      <li>
-        Cinco personas a favor de una postura y cinco a favor de la otra.
-      </li>
-      <li>
-        Siete personas a favor de una postura y tres a favor de la otra.
-      </li>
-      <li>
-        Selección aleatoria sin tener en cuenta las posturas.
-      </li>
-    </ul>
-  </li>
-  <li>
-    <strong>Revelación de Información:</strong> Se anunciará, de manera aleatoria, el porcentaje de personas dispuestas a ajustar el monto de dinero en esta “conversación”.
-  </li>
-  <li>
-    <strong>Expresión de Opiniones:</strong> Ambos miembros de la pareja seleccionan simultáneamente qué opinión expresar, la cual puede diferir de su opinión privada. Si optas por comunicar tu opinión privada, obtendrás un pago extra de 10 pesos.
-  </li>
-  <li>
-    <strong>Visualización:</strong> Ambos observarán la opinión que su pareja les expresó.
-  </li>
-  <li>
-    <strong>Ajuste Económico:</strong> Entre los participantes que pagaron 5 pesos, deberán decidir si otorgar o descontar 20 pesos a su pareja, decisión que se toma después de ver la opinión expresada.
-  </li>
-  <li>
-    <strong>Adivinar Honestidad:</strong> Finalmente, se te preguntará si consideras que la opinión de tu pareja es la misma que la expresada en privado. Si aciertas, recibirás 10 pesos adicionales.
-  </li>
+<li> 
+<strong> Se anuncia el tema de la “conversación”. </strong>
+<li>
+    <strong>Aprendes cómo se escogieron los dos que están en la pareja:</strong> Te vamos a anunciar cuál de tres procedimientos utilizamos para escoger a las personas en la pareja. Para construir la pareja que va a tener la “conversación”, hicimos un procedimiento estadístico que es equivalente a lo que ahora vamos a describir. Tomamos a diez personas para escoger a una persona de la pareja (o sea, a ti), y a diez personas más para escoger a la otra persona de la pareja (o sea, a tu pareja). Las diez personas que tomamos para escoger un individuo en la pareja tienen diferentes opiniones sobre el tema de la “conversación”. Hay tres opciones sobre cómo son las opiniones de esas diez personas, y una de las tres opciones será escogida aleatoriamente.
+<ul>
+<li>
+Hay <strong> cinco </strong> personas a favor de una de las dos posturas del tema, y <strong> cinco </strong> a favor de la otra postura del tema. 
+</li>
+<li>
+Hay <strong> siete </strong> personas a favor de una de las dos posturas del tema, y <strong> tres </strong> a favor de la otra postura del tema. 
+</li>
+<li>
+Escogimos el grupo sin tomar en cuenta las posturas de las diez personas.
+</li>
+</ul>
+<p>
+Como dijimos, en este paso vamos a anunciar cuál de las tres opciones se siguió para armar la pareja de la que formas parte.
+</p>
+<li>
+   <strong>Tal vez aprendes cuánta gente está dispuesta a darle o quitarle dinero a su pareja después de ver la opinión que le expresaron:</strong> En la parte tres del experimento, les preguntamos a todos si, para el tema de la “conversación”, estarían dispuesto a darle o quitarle dinero a su pareja después de ver la opinión que le expresó. Entonces, para cada tema, sabemos el porcentaje de personas en la sesión que están dispuestas a dar o quitar dinero. Escogeremos aleatoriamente a qué parejas les revelaremos ese porcentaje, y esa revelación sucederá en esta parte de la conversación. 
+</li>
+<li>
+<strong> Ambos miembros de la pareja escogen simultáneamente qué opinión expresarle a la otra persona. </strong> En esta parte de la conversación tienen que decidir qué opinión expresar a su pareja respecto al tema de la “conversación”. La opinión que le expresan a la pareja puede o no ser la opinión que hayan expresado en la Parte 2 del experimento, donde nos expresaron en privado su opinión. Los sujetos que le expresen a su pareja su opinión privada obtienen un pago extra de 10 pesos. 
+</li>
+<li>
+<strong> Ambos miembros de la pareja observan lo que su pareja le expresó. </strong> De nuevo, no observan su opinión privada.
+</li>
+<li>
+<strong>Entre quienes pagaron cinco pesos por hacerlo, tienen que decidir si dar o quitar dinero a su pareja.</strong>Nota que esta decisión se toma después de haber visto lo que la otra persona te expresó.
+</li>
+<li>
+<strong>Adivinar si la opinión que tu pareja te expresó es la misma que expresó en privado. </strong> Te vamos a preguntar si consideras que la opinión que tu pareja te expresó es la misma que nos expresó en privado. Si tu respuesta es correcta, te pagaremos diez pesos. 
+</li>
 </ol>
 
 <p>
-  A manera de resumen, a continuación se muestra la <strong>tabla de costos y pagos</strong> del experimento:
-</p>
+A manera de resumen, en la tabla de abajo ponemos los diferentes pagos y costos que surgen en el experimento. 
 
-<!-- Tabla de Costos y Pagos -->
 <h2>Tabla de Costos y Pagos</h2>
-<embed src="{% static 'experiment/Tabla_IP.pdf' %}" type="application/pdf" width="100%" height="600px" />
+<embed src="{% static 'experiment/Tabla_IP.pdf' %}" type="application/pdf" width="100%" height="400px" />
 
-<p>
-  Al concluir la décima “conversación”, finalizará el experimento. Agradecemos tu participación e interés en este proyecto. Tus respuestas se manejarán de forma anónima y segura, y serán utilizadas exclusivamente con fines de investigación.
 </p>
 <p>
-  Por favor, mantente atento(a) a las indicaciones en pantalla y evita refrescar la página durante tu participación, salvo que se te indique lo contrario. Si tienes alguna pregunta, no dudes en levantar la mano o comunicarte con el facilitador.
+  Al terminar la décima conversación, concluirá el experimento. Agradecemos tu participación e interés en este proyecto. Tus respuestas se manejarán de forma anónima y segura, y se utilizarán exclusivamente con fines de investigación.
 </p>
+<p>
+  Por favor, mantente atento(a) a las indicaciones en pantalla y no refresques la página mientras participas, a menos que se te indique lo contrario. Si tienes alguna pregunta, no dudes en levantar la mano o comunicarte con el facilitador.
+</p>
+
 
 {{ next_button }}
 {% endblock %}
-
-

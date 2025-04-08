@@ -4,7 +4,7 @@ import random, json, logging
 from typing import List, Tuple
 
 # Define the full survey questions as a module-level constant.
-PRACTICE_QUESTION = "¿Qué es mejor, el rojo o el azul?"
+PRACTICE_QUESTION = "¿Qué color es mejor, el rojo o el azul?"
 PRACTICE_OPTIONS = ("El rojo", "El azul")
 PRACTICE_FIRST_OPTION = "El rojo"
 
@@ -94,9 +94,9 @@ class Player(BasePlayer):
     
     # New fields for the Practice Round (pre-practice survey)
     practice_binary_choice = models.StringField(
-        choices=[('H', "Sí, la pizza debe llevar piña"), ('L', "No, la pizza no debe llevar piña")],
+        choices=[('H', "El rojo"), ('L', "El azul")],
         blank=True,
-        doc="Respuesta de práctica para la pregunta: ¿La pizza debe llevar piña?"
+        doc="Respuesta de práctica para la pregunta: ¿Qué color es mejor, el rojo o el azul?"
     )
     practice_pay_to_judge = models.BooleanField(
         choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
