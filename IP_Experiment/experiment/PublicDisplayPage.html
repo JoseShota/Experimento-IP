@@ -1,12 +1,21 @@
 {% extends "global/Page.html" %}
 {% block content %}
-  <h1>Decisión Pública del Grupo</h1>
-  <p>
-    <strong>Pregunta:</strong> {{ current_question }}
-  </p>
-  <p>
-    La respuesta pública de tu compañero fue: <strong>{{ partner_choice }}</strong>
-  </p>
+  <h1>“Conversación”</h1>
+
+  <h2>Ambos miembros de la pareja observan lo que su pareja le expresó.</h2>
+  <p><strong>Pregunta:</strong> {{ current_question }}</p>
+  <p>La respuesta que tu pareja te expresó fue: <strong>{{ partner_choice }}</strong></p>
+
+  {% if show_judge_form %}
+    <hr>
+    <h2>Decide si darle o quitar dinero a tu pareja</h2>
+    <p>
+      Esta pantalla se muestra solo a quienes decidieron pagar cinco pesos por dar o quitar veinte pesos a su pareja
+      después de ver qué opinión le expresó.
+    </p>
+    {{ formfield "juicio" }}
+  {% endif %}
+
   {{ next_button }}
 {% endblock %}
 

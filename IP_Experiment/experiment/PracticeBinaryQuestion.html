@@ -1,11 +1,29 @@
 {% extends "global/Page.html" %}
 {% block content %}
-  <h1>Encuesta de Práctica</h1>
-  <p style="font-style: italic; color: red;">
-      ESTO ES UNA PRÁCTICA. La respuesta no contará para el estudio.
+  <h1>“Conversación” de Práctica</h1>
+  <p>
+    Ahora estás en la Parte 2 del experimento. Para ubicar dónde estás en el experimento, aquí está de nuevo la línea de tiempo.  
   </p>
-  <p><strong>Pregunta de Práctica:</strong> {{ practice_question }}</p>
+  <embed src="{% static 'experiment/Timeline_IP_1.pdf' %}" type="application/pdf" width="100%" height="400px" />
+  <p>También, a manera de resumen, aquí está la tabla de pagos. </p>
+  <embed src="{% static 'experiment/Tabla_IP.pdf' %}" type="application/pdf" width="100%" height="400px" />
+  <p>Vas a completar una “conversación” de práctica para que veas todos los componentes de una “conversación”. Esto es, vamos a hacerte todas las preguntas que corresponden a las Partes 3 y 4 del experimento, pero para una sola “conversación”. Esto va a ser diferente a lo que vas a hacer después en varios sentidos. </p>
+  
+  <ol>
+    <li>Primero, porque aquí te vamos a estar explicando cada paso con más detalle de lo que lo vamos a hacer después. Te vamos a explicar cada paso, y qué pasaría si hubieras tomado decisiones diferentes.</li>
+    <li>Segundo, porque esta ronda no va a afectar tus pagos de ninguna manera.</li>
+    <li>Tercero, porque te vamos a hacer las preguntas que corresponden a las Partes 3 y 4 una tras otra. En contraste, para las diez “conversaciones” vamos a primero hacerte las preguntas de la Parte 3 para todos los temas, y luego vas a tener las conversaciones de todos los temas en la Parte 4.</li>
+    <li>Cuarto, porque aquí sólo hay un solo tema, y en las Partes 3 y 4 van a haber diez temas.</li>
+  </ol>
+
+  <h2>Expresas tu opinión privada</h2>
+
+  <p>Lo primero que va a suceder es que te vamos a pedir que nos des tu opinión sobre una pregunta específica. Todas las preguntas tienen dos respuestas posibles, y queremos que nos digas honestamente la respuesta que mejor refleja tu opinión. Recuerda que esta respuesta no la va a observar nadie en la sesión, y como no tenemos manera de vincular tus respuestas a tu identidad, tampoco nadie fuera de la sesión va a poder saber qué respondiste. También recuerda que escogimos los temas encuestando a una muestra que obtuvimos de la misma población de donde obtuvimos las personas en esta sesión, y escogimos temas en los que aproximadamente la mitad tomaba cada una de las posturas.</p>
+  <p>En esta “conversación” de práctica, el tema de conversación es el siguiente:</p>
+
+  <p><strong>Tema de Conversación:</strong> {{ practice_question }}</p>
   <form method="post">
+    <p>Por favor dinos honestamente la respuesta que mejor refleja tu opinión personal.</p>
     <p>
       <label>
         <input type="radio" name="practice_binary_choice" value="H">
@@ -18,6 +36,8 @@
         {{ practice_options.1 }}
       </label>
     </p>
+    <!-- Aquí se muestran los errores del campo -->
+    {{ formfield_errors 'practice_binary_choice' }}
     {{ next_button }}
   </form>
 {% endblock %}

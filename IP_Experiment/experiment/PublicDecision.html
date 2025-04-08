@@ -1,10 +1,8 @@
 {% extends "global/Page.html" %}
 {% block content %}
-  <h1>Decisión Pública</h1>
+  <h1>Decisión simultánea</h1>
   <p>
-    Como se informó en la página anterior, volverán a responder a la pregunta:
-    <strong>{{ current_question }}</strong>
-    pero esta vez de manera pública. Ambos miembros del grupo responderán de manera simultánea.
+    En esta parte de la conversación tienes que decidir qué opinión expresar a tu pareja respecto al tema de la “conversación”: <strong>{{ current_question }}</strong>. La opinión que expresas a la pareja puede o no ser la opinión que hayas expresado en la Parte 2 del experimento, donde nos expresaste en privado tu opinión. Los sujetos que le expresen a su pareja su opinión privada obtienen un pago extra de 10 pesos.
   </p>
   <p>Por favor, selecciona una de las siguientes opciones:</p>
   {{ form.second_choice }}

@@ -1,12 +1,14 @@
 {% extends "global/Page.html" %}
 {% block content %}
-  <h1>Encuesta: Temas Diversos</h1>
+  <h1>Opiniones Privadas</h1>
+  <p>Ahora estás en la Parte 3 del experimento. Para ubicar dónde estás en el experimento, aquí está de nuevo la línea de tiempo.</p>
+  <embed src="{% static 'experiment/Timeline_IP_1.pdf' %}" type="application/pdf" width="100%" height="400px" />
+  <p>También, a manera de resumen, aquí está la tabla de pagos. </p>
+  <embed src="{% static 'experiment/Tabla_IP.pdf' %}" type="application/pdf" width="100%" height="400px" />
+
   
-  <!-- Pilot Instructions Section -->
-  <p style="font-style: italic; color: #555;">
-    Antes de responder, por favor lee atentamente las siguientes instrucciones:<br>
-    En esta encuesta responderás 10 preguntas binarias, en las que cada pregunta tiene dos opciones de respuesta. Elige la opción que mejor refleje tu opinión. 
-    Tus respuestas son fundamentales para determinar la formación de grupos en las siguientes rondas del experimento. Por favor, responde de forma honesta y cuidadosa.
+  <p>
+    Te vamos a pedir que nos des tu opinión sobre una pregunta específica. Todas las preguntas tienen dos respuestas posibles, y queremos que nos digas honestamente la respuesta que mejor refleja tu opinión. Recuerda que esta respuesta no la va a observar nadie en la sesión, y como no tenemos manera de vincular tus respuestas a tu identidad, tampoco nadie fuera de la sesión va a poder saber qué respondiste. También recuerda que escogimos los temas encuestando a una muestra que obtuvimos de la misma población de donde obtuvimos las personas en esta sesión, y escogimos temas en los que aproximadamente la mitad tomaba cada una de las posturas.
   </p>
   
   <form method="post">
@@ -15,21 +17,21 @@
       {% if forloop.counter == 1 %}
         ¿La quesadilla lleva o no queso?
       {% elif forloop.counter == 2 %}
-        ¿El arte que se exhibe en los museos de arte contemporáneo ya no tiene el mismo virtuosismo que el arte en los museos clásicos?
+        Verdadero o falso: El arte que se exhibe en los museos de arte contemporáneo ya no tiene el mismo virtuosismo que el arte en los museos clásicos
       {% elif forloop.counter == 3 %}
-        ¿Qué es más importante, afrontar la crisis climática o terminar la pobreza extrema en México?
+        ¿Qué es más importante, afrontar la crisis climática o terminar la pobreza extrema en el mundo?
       {% elif forloop.counter == 4 %}
         ¿Estás de acuerdo con la frase "no hay paz sin la violencia"?
       {% elif forloop.counter == 5 %}
-        ¿Estás de acuerdo con la nueva ley antitabaco en México?
+      ​  ¿Estás de acuerdo con las recientes reformas a la Ley General para el Control del Tabaco en México que prohíben fumar en espacios públicos como playas, parques y plazas comerciales?
       {% elif forloop.counter == 6 %}
         ¿Qué es lo más higiénico, bañarse en la mañana o en la noche?
       {% elif forloop.counter == 7 %}
-        ¿Crees que las relaciones a distancia pueden ser tan satisfactorias como las relaciones en persona?
+        ¿Crees que las relaciones a distancia pueden ser tan exitosas como las relaciones en persona?
       {% elif forloop.counter == 8 %}
-        Una persona rica y grosera tira un billete de cien pesos sin darse cuenta. ¿Se lo regresas?
+        Una persona rica y grosera tira un billete de cien pesos sin darse cuenta. ¿Deberías devolvérselo?
       {% elif forloop.counter == 9 %}
-        ¿Qué es mejor, la Condesa o Coyoacán?
+        ¿Qué lugar es mejor, la Condesa o Coyoacán?
       {% elif forloop.counter == 10 %}
         ¿Qué equipo de futbol es mejor: el América o las Chivas?
       {% endif %}

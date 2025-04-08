@@ -1,7 +1,12 @@
 {% extends "global/Page.html" %}
 {% block content %}
-  <h1>Información de Formación de Grupo</h1>
+  <h1>¿Cómo se escogieron los dos que están en la pareja? (Tal vez aprendes cuántos están dispuestos a darle o quitarle dinero a su pareja)</h1>
+  <p>Ahora estás en la Parte 4 del experimento. Para ubicar dónde estás en el experimento, aquí está de nuevo la línea de tiempo.</p>
+  <embed src="{% static 'experiment/Timeline_IP_1.pdf' %}" type="application/pdf" width="100%" height="400px" />
+  <p>También, a manera de resumen, aquí está la tabla de pagos. </p>
+  <embed src="{% static 'experiment/Tabla_IP.pdf' %}" type="application/pdf" width="100%" height="400px" />
   <p>{{ treatment_text }}</p>
+  <p>{{ inform_text}}</p>
   {{ next_button }}
 {% endblock %}
 

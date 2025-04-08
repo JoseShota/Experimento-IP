@@ -7,43 +7,57 @@ from typing import List, Tuple
 PRACTICE_QUESTION = "¿Qué color es mejor, el rojo o el azul?"
 PRACTICE_OPTIONS = ("El rojo", "El azul")
 PRACTICE_FIRST_OPTION = "El rojo"
+PRACTICE_SECOND_OPTION = "El azul"
 
 SURVEY_QUESTIONS = [
     "¿La quesadilla lleva o no queso?",
-    "¿El arte que se exhibe en los museos de arte contemporáneo ya no tiene el mismo virtuosismo que el arte en los museos clásicos?",
-    "¿Qué es más importante, afrontar la crisis climática o terminar la pobreza extrema en México?",
+    "Verdadero o falso: El arte que se exhibe en los museos de arte contemporáneo ya no tiene el mismo virtuosismo que el arte en los museos clásicos",
+    "¿Qué es más importante, afrontar la crisis climática o terminar la pobreza extrema en el mundo?",
     "¿Estás de acuerdo con la frase 'no hay paz sin la violencia'?",
-    "¿Estás de acuerdo con la nueva ley antitabaco en México?",
+    "​¿Estás de acuerdo con las recientes reformas a la Ley General para el Control del Tabaco en México que prohíben fumar en espacios públicos como playas, parques y plazas comerciales?",
     "¿Qué es lo más higiénico, bañarse en la mañana o en la noche?",
-    "¿Crees que las relaciones a distancia pueden ser tan satisfactorias como las relaciones en persona?",
-    "Una persona rica y grosera tira un billete de cien pesos sin darse cuenta. ¿Se lo regresas?",
-    "¿Qué es mejor, la Condesa o Coyoacán?",
+    "¿Crees que las relaciones a distancia pueden ser tan exitosas como las relaciones en persona?",
+    "Una persona rica y grosera tira un billete de cien pesos sin darse cuenta. ¿Deberías devolvérselo?",
+    "¿Qué lugar es mejor, la Condesa o Coyoacán?",
     "¿Qué equipo de futbol es mejor: el América o las Chivas?"
 ]
 
 FIRST_OPTIONS = [
     "Sí, la quesadilla lleva queso",
-    "Sí tiene el mismo virtuosismo",
+    "Verdadero",
     "Afrontar la crisis climática",
     "De acuerdo",
     "De acuerdo",
     "Bañarse en la mañana",
     "Sí lo pueden ser",
-    "Sí, se lo regreso",
+    "Sí, debería devolvérselo",
     "La Condesa",
     "El América"
+]
+
+SECOND_OPTIONS = [
+    "No, la quesadilla no lleva queso",
+    "Falso",
+    "Terminar la pobreza extrema en el mundo",
+    "En desacuerdo",
+    "En desacuerdo",
+    "Bañarse en la noche",
+    "No pueden llegar a serlo",
+    "No, no debería devolvérselo",
+    "Coyoacán",
+    "Las Chivas"
 ]
 
 # New constant with both answer options for each survey question
 SURVEY_OPTIONS = [
     ("Sí, la quesadilla lleva queso", "No, la quesadilla no lleva queso"),
-    ("Sí tiene el mismo virtuosismo", "No tiene el mismo virtuosismo"),
-    ("Afrontar la crisis climática", "Terminar la pobreza extrema en México"),
+    ("Verdadero", "Falso"),
+    ("Afrontar la crisis climática", "Terminar la pobreza extrema en el mundo"),
     ("De acuerdo", "En desacuerdo"),
     ("De acuerdo", "En desacuerdo"),
     ("Bañarse en la mañana", "Bañarse en la noche"),
     ("Sí lo pueden ser", "No pueden llegar a serlo"),
-    ("Sí, se lo regreso", "No, no se lo regreso"),
+    ("Sí, debería devolvérselo", "No, no debería devolvérselo"),
     ("La Condesa", "Coyoacán"),
     ("El América", "Las Chivas")
 ]
@@ -95,12 +109,12 @@ class Player(BasePlayer):
     # New fields for the Practice Round (pre-practice survey)
     practice_binary_choice = models.StringField(
         choices=[('H', "El rojo"), ('L', "El azul")],
-        blank=True,
-        doc="Respuesta de práctica para la pregunta: ¿Qué color es mejor, el rojo o el azul?"
+        blank=False,
+        doc="Tema de Conversación: ¿Qué color es mejor, el rojo o el azul?"
     )
     practice_pay_to_judge = models.BooleanField(
         choices=[[True, "Sí estoy dispuesto"], [False, "No estoy dispuesto"]],
-        blank=True,
+        blank=False,
         doc="Respuesta de práctica sobre disposición a incurrir en el costo"
     )
 
@@ -134,11 +148,11 @@ class Player(BasePlayer):
         blank=False
     )
     binary_choice_2 = models.StringField(
-        choices=[('H', "Sí tiene el mismo virtuosismo"), ('L', "No tiene el mismo virtuosismo")],
+        choices=[('H', "Verdadero"), ('L', "Falso")],
         blank=False
     )
     binary_choice_3 = models.StringField(
-        choices=[('H', "Afrontar la crisis climática"), ('L', "Terminar la pobreza extrema")],
+        choices=[('H', "Afrontar la crisis climática"), ('L', "Terminar la pobreza extrema en el mundo")],
         blank=False
     )
     binary_choice_4 = models.StringField(
@@ -158,7 +172,7 @@ class Player(BasePlayer):
         blank=False
     )
     binary_choice_8 = models.StringField(
-        choices=[('H', "Sí, se lo regreso"), ('L', "No, no se lo regreso")],
+        choices=[('H', "Sí, debería devolvérselo"), ('L', "No, no debería devolvérselo")],
         blank=False
     )
     binary_choice_9 = models.StringField(
@@ -214,8 +228,8 @@ class Player(BasePlayer):
 
     treatment = models.LongStringField(blank=False)
     second_choice = models.StringField(choices=['H', 'L'], blank=False)
-    juicio = models.StringField(choices=['Positivo', 'Negativo'], blank=False)
-    Mentira = models.StringField(choices=['Sí', 'No'], blank=False, label="¿Crees que tu compañero mintió?")
+    juicio = models.StringField(choices=['Dar 20 pesos a mi pareja', 'Quitar 20 pesos a mi pareja'], blank=False, label= "Por favor, decide si dar o quitar 20 pesos a tu pareja.")
+    Mentira = models.StringField(choices=['Sí', 'No'], blank=False, label="¿Consideras que la opinión que tu pareja te expresó es la misma que nos expresó en privado?")
     partner_id = models.IntegerField(blank=True, null=True)
     
     # New field: Tag to capture the binary question used for grouping in each round (Stage 2)
@@ -498,17 +512,16 @@ class PracticeTreatmentInformation(Page):
 
     @staticmethod
     def vars_for_template(player: Player) -> dict:
-        # For practice, we don't use question_order; simply use the practice question.
         current_question = PRACTICE_QUESTION
-        player.current_question_tag = current_question  # update the player's tag
+        player.current_question_tag = current_question
 
         first_option = PRACTICE_FIRST_OPTION
-        
-        # For practice, compute judge percentage using the stored practice pay response (if available)
+        second_option = PRACTICE_SECOND_OPTION
+
         players = player.subsession.get_players()
         judge_yes = sum(
             1 for p in players
-            if p.participant.vars.get('practice_pay_to_judge')  # expects a Boolean value
+            if p.participant.vars.get('practice_pay_to_judge')
         )
         judge_percent = (judge_yes / len(players)) * 100 if players else 0
 
@@ -517,26 +530,33 @@ class PracticeTreatmentInformation(Page):
         except (TypeError, json.JSONDecodeError):
             treatment = {'prob_H': 'Control', 'inform': False, 'practice': True}
 
+        # Selección según tratamiento
         if treatment['prob_H'] == "Control":
-            selection_text = "Escogimos al otro compañero de manera aleatoria, sin considerar su respuesta a la pregunta de práctica."
+            selection_text = "Escogimos el grupo sin tomar en cuenta las posturas de las diez personas."
         elif treatment['prob_H'] == 0.5:
-            selection_text = f"La probabilidad de que el otro compañero prefiera '{first_option}' en la pregunta de práctica es del 50%."
+            selection_text = f"Para determinar cada individuo de la pareja, tomamos un grupo de diez candidatos. Hay <strong> cinco </strong> personas a favor de '{first_option}', y <strong> cinco </strong> a favor de '{second_option}'. Escogemos una de ellas al azar."
         elif treatment['prob_H'] == 0.7:
-            selection_text = f"La probabilidad de que el otro compañero prefiera '{first_option}' en la pregunta de práctica es del 70%."
+            selection_text = f"Para determinar cada individuo de la pareja, tomamos un grupo de diez candidatos. Hay <strong> siete </strong> personas a favor de '{first_option}', y <strong> tres </strong> a favor de '{second_option}'. Escogemos una de ellas al azar."
         else:
             selection_text = "Método de agrupación desconocido."
 
+        # Texto principal
         treatment_text = (
-            f"Bienvenido a la ronda de práctica de interacción grupal. "
-            f"Te hemos agrupado con otro compañero usando la pregunta de práctica: '{current_question}'. "
-            f"{selection_text} "
-            f"Ahora ambos responderán de forma pública la misma pregunta."
+            f"Para esta “conversación” de práctica, te hemos agrupado con otro compañero usando la pregunta de práctica: '{current_question}'. "
+            f"{selection_text}"
         )
 
+        # Información adicional (si aplica)
+        inform_text = ""
         if treatment.get('inform'):
-            treatment_text += f" Te informamos que el {judge_percent:.0f}% de los participantes están dispuestos a incurrir en el costo de juzgar."
-        
-        return {'treatment_text': treatment_text}
+            inform_text = f"Te informamos que el {judge_percent:.0f}% de los participantes están dispuestos a incurrir en el costo de juzgar."
+
+        # ⬅️ Se devuelven ambos textos juntos
+        return {
+            'treatment_text': treatment_text,
+            'inform_text': inform_text
+        }
+
 
 class PracticePublicDecision(Page):
     form_model = 'player'
@@ -570,15 +590,25 @@ class PracticeSecondDecisionWaitPageForGroup(WaitPage):
         return player.round_number == 2
 
 class PracticePublicDisplayPage(Page):
+    form_model = 'player'
+
     @staticmethod
     def is_displayed(player: Player) -> bool:
         return player.round_number == 2
 
     @staticmethod
+    def get_form_fields(player: Player):
+        if player.participant.vars.get('practice_pay_to_judge'):
+            return ['juicio']
+        else:
+            return []
+
+    @staticmethod
     def vars_for_template(player: Player) -> dict:
         partner = get_partner(player)
         current_question = PRACTICE_QUESTION
         options = PRACTICE_OPTIONS
+
         if partner:
             if partner.second_choice == 'H':
                 partner_choice_text = options[0]
@@ -588,34 +618,13 @@ class PracticePublicDisplayPage(Page):
                 partner_choice_text = "No ha respondido"
         else:
             partner_choice_text = "No se asignó compañero"
-        return {'partner_choice': partner_choice_text, 'current_question': current_question}
 
-class PracticeJudgeOpinionPage(Page):
-    form_model = 'player'
-    form_fields = ['juicio']
-
-    @staticmethod
-    def is_displayed(player: Player) -> bool:
-        # Show only if round==2 and the participant indicated willingness in the practice stage.
-        return (player.round_number == 2 and 
-                player.participant.vars.get('practice_pay_to_judge') is True)
-
-    @staticmethod
-    def vars_for_template(player: Player) -> dict:
-        partner = get_partner(player)
-        current_question = PRACTICE_QUESTION
-        options = PRACTICE_OPTIONS
-        if partner:
-            if partner.second_choice == 'H':
-                partner_choice_text = options[0]
-            elif partner.second_choice == 'L':
-                partner_choice_text = options[1]
-            else:
-                partner_choice_text = "No ha respondido"
-        else:
-            partner_choice_text = "No se asignó compañero"
-        return {'partner_choice': partner_choice_text, 'current_question': current_question}
-
+        return {
+            'partner_choice': partner_choice_text,
+            'current_question': current_question,
+            'show_judge_form': player.participant.vars.get('practice_pay_to_judge') is True,
+        }
+    
 class PracticeLieQuestionPage(Page):
     form_model = 'player'
     form_fields = ['Mentira']
@@ -641,13 +650,24 @@ class PracticeLieQuestionPage(Page):
         return {'partner_choice': partner_choice_text, 'current_question': current_question}
 
 
+class ExperimentInstructions2(Page):
+    template_name = 'experiment/ExperimentInstructions2.html'
+
+    @staticmethod
+    def is_displayed(player: Player) -> bool:
+        return player.round_number == 2
+
+    @staticmethod
+    def vars_for_template(player: Player) -> dict:
+        return {}
+
 class PersonalInfoPage(Page):
     form_model = 'player'
     form_fields = ['age', 'gender', 'racial_identification', 'previous_experiment']
     
     @staticmethod
     def is_displayed(player: Player) -> bool:
-        return player.round_number == 3
+        return player.round_number == 1
 
 class BinaryQuestions(Page):
     form_model = 'player'
@@ -750,6 +770,7 @@ class TreatmentInformation(Page):
         
         # Retrieve the first option text for the current question.
         first_option = FIRST_OPTIONS[question_index]
+        second_option = SECOND_OPTIONS[question_index]
         
         # Calculate the percentage of players willing to pay.
         players = player.subsession.get_players()
@@ -767,27 +788,31 @@ class TreatmentInformation(Page):
         
         # Build the partner selection text.
         if treatment['prob_H'] == "Control":
-            selection_text = "Escogimos al otro compañero de manera aleatoria, sin considerar su respuesta a la pregunta actual."
+            selection_text = "Escogimos el grupo sin tomar en cuenta las posturas de las diez personas."
         elif treatment['prob_H'] == 0.5:
-            selection_text = f"La probabilidad de que el otro compañero prefiera '{first_option}' a la pregunta '{current_question}' es del 50%."
+            selection_text = f"Para determinar cada individuo de la pareja, tomamos un grupo de diez candidatos. Hay <strong> cinco </strong> personas a favor de '{first_option}', y <strong> cinco </strong> a favor de '{second_option}'. Escogemos una de ellas al azar."
         elif treatment['prob_H'] == 0.7:
-            selection_text = f"La probabilidad de que el otro compañero prefiera '{first_option}' a la pregunta '{current_question}' es del 70%."
+            selection_text = f"Para determinar cada individuo de la pareja, tomamos un grupo de diez candidatos. Hay <strong> siete </strong> personas a favor de '{first_option}', y <strong> tres </strong> a favor de '{second_option}'. Escogemos una de ellas al azar."
         else:
             selection_text = "Método de agrupación desconocido."
         
-        # Construct the complete treatment message.
+        # Texto principal
         treatment_text = (
-            f"Bienvenido a la ronda {player.round_number-1} de interacción grupal. "
-            f"Te hemos agrupado con otro compañero de la siguiente forma: "
-            f"Hemos usado la pregunta: '{current_question}' para agruparte con otro compañero. "
-            f"{selection_text} "
-            f"Ahora pasarán a la interacción grupal donde ambos responderán simultáneamente a la pregunta: '{current_question}' de manera pública."
+            f"Para esta “conversación”, te hemos agrupado con otro compañero usando la pregunta de práctica: '{current_question}'. "
+            f"{selection_text}"
         )
-        
+
+        # Información adicional (si aplica)
+        inform_text = ""
         if treatment.get('inform'):
-            treatment_text += f" Te informamos que el {judge_percent:.0f}% de los participantes totales están dispuestos a incurrir en el costo de juzgar."
-        
-        return {'treatment_text': treatment_text}
+            inform_text = f"Te informamos que el {judge_percent:.0f}% de los participantes están dispuestos a incurrir en el costo de juzgar."
+
+        # ⬅️ Se devuelven ambos textos juntos
+        return {
+            'treatment_text': treatment_text,
+            'inform_text': inform_text
+        }
+
 
 
 class PublicDecision(Page):
@@ -825,43 +850,25 @@ class SecondDecisionWaitPageForGroup(WaitPage):
         return player.round_number > 3
 
 class PublicDisplayPage(Page):
+    form_model = 'player'
+
     @staticmethod
     def is_displayed(player: Player) -> bool:
         return player.round_number > 3
 
     @staticmethod
-    def vars_for_template(player: Player) -> dict:
-        partner = get_partner(player)
-        question_order = player.session.vars['question_order']
-        question_index = question_order[player.round_number - 4]
-        current_question = SURVEY_QUESTIONS[question_index]
-        options = SURVEY_OPTIONS[question_index]
-        
-        if partner:
-            if partner.second_choice == 'H':
-                partner_choice_text = options[0]
-            elif partner.second_choice == 'L':
-                partner_choice_text = options[1]
-            else:
-                partner_choice_text = "No ha respondido"
-        else:
-            partner_choice_text = "No se asignó compañero"
-        return {'partner_choice': partner_choice_text, 'current_question': current_question}
-
-class JudgeOpinionPage(Page):
-    form_model = 'player'
-    form_fields = ['juicio']
-
-    @staticmethod
-    def is_displayed(player: Player) -> bool:
-        if player.round_number <= 3:
-            return False
+    def get_form_fields(player: Player):
         question_order = player.session.vars.get('question_order')
-        if question_order is None:
-            return False
+        if not question_order:
+            return []
+
         question_index = question_order[player.round_number - 4]
         pay_choices = player.participant.vars.get('pay_to_judge_choices', [False] * C.NUM_BINARY_QUESTIONS)
-        return pay_choices[question_index]
+
+        if pay_choices[question_index]:
+            return ['juicio']
+        else:
+            return []
 
     @staticmethod
     def vars_for_template(player: Player) -> dict:
@@ -870,7 +877,7 @@ class JudgeOpinionPage(Page):
         question_index = question_order[player.round_number - 4]
         current_question = SURVEY_QUESTIONS[question_index]
         options = SURVEY_OPTIONS[question_index]
-        
+
         if partner:
             if partner.second_choice == 'H':
                 partner_choice_text = options[0]
@@ -880,7 +887,15 @@ class JudgeOpinionPage(Page):
                 partner_choice_text = "No ha respondido"
         else:
             partner_choice_text = "No se asignó compañero"
-        return {'partner_choice': partner_choice_text, 'current_question': current_question}
+
+        pay_choices = player.participant.vars.get('pay_to_judge_choices', [False] * C.NUM_BINARY_QUESTIONS)
+        show_judge_form = pay_choices[question_index]
+
+        return {
+            'partner_choice': partner_choice_text,
+            'current_question': current_question,
+            'show_judge_form': show_judge_form
+        }
 
 class LieQuestionPage(Page):
     form_model = 'player'
@@ -924,8 +939,8 @@ class ThankYouPage(Page):
 page_sequence = [
     # --- Round 1: Pre-Practice Survey Stage ---
     ConsentFormPage,              # Only in round 1
-    # IntroductionPage,             # Only in round 1
     ExperimentInstructions,       # Only in round 1
+    PersonalInfoPage,            # Only in round 1
     PracticeBinaryQuestion,       # Only in round 1 (practice survey)
     PracticeWillingnessToPayCost, # Only in round 1 (practice survey)
     PracticeSurveyWaitPage,       # Only in round 1 (practice survey wait)
@@ -936,11 +951,10 @@ page_sequence = [
     PracticePublicDecision,               # Only in round 2
     PracticeSecondDecisionWaitPageForGroup,  # Only in round 2
     PracticePublicDisplayPage,            # Only in round 2
-    PracticeJudgeOpinionPage,             # Only in round 2
     PracticeLieQuestionPage,              # Only in round 2
+    ExperimentInstructions2,
 
     # --- Round 3: Actual Survey Stage ---
-    PersonalInfoPage,            # Only in round 3
     BinaryQuestions,             # Only in round 3
     WillingnessToPayCost,        # Only in round 3
     SurveyWaitPage,              # Only in round 3
@@ -951,7 +965,6 @@ page_sequence = [
     PublicDecision,              # Only in rounds >=4
     SecondDecisionWaitPageForGroup,  # Only in rounds >=4
     PublicDisplayPage,           # Only in rounds >=4
-    JudgeOpinionPage,            # Only in rounds >=4
     LieQuestionPage,             # Only in rounds >=4
     ThankYouPage                 # Only in round 13
 ]
