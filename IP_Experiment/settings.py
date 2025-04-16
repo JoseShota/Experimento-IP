@@ -6,7 +6,7 @@ SESSION_CONFIGS = [
         'name': 'experiment',
         'display_name': "IP Experiment",
         'num_demo_participants': 2,
-        'app_sequence': ['experiment_phase'],
+        'app_sequence': ['survey_phase'],
     },
 ]
 
@@ -34,7 +34,7 @@ ROOMS = [
     dict(
         name='IP_experiment',
         display_name='IP_experiment',
-        participant_label_file='_rooms/econ101.txt',
+        participant_label_file='_rooms/LICSlab.txt',
     ),
     dict(name='live_demo', display_name='Room for live demo (no participant labels)'),
 ]
@@ -51,7 +51,3 @@ Here are some oTree games.
 SECRET_KEY = '6733807089493'
 
 INSTALLED_APPS = ['otree']
-
-# Evaluation Summary:
-# - Standard and secure configuration.
-# - Session and currency settings are correctly defined.
