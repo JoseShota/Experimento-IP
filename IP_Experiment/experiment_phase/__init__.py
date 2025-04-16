@@ -72,7 +72,7 @@ logger.setLevel(logging.DEBUG)
 # Constants and Helper Functions
 # -----------------------------------------------------------------------------
 class C(BaseConstants):
-    NAME_IN_URL = 'experiment'
+    NAME_IN_URL = 'experiment_phase'
     PLAYERS_PER_GROUP = 2
     NUM_BINARY_QUESTIONS = 10  # updated to 10 questions
     NUM_ROUNDS = 13  # now 13 rounds total
@@ -426,7 +426,7 @@ class IntroductionPage(Page):
         return {}
 
 class ExperimentInstructions(Page):
-    template_name = 'experiment/ExperimentInstructions.html'
+    template_name = 'experiment_phase/ExperimentInstructions.html'
 
     @staticmethod
     def is_displayed(player: Player) -> bool:
@@ -651,7 +651,7 @@ class PracticeLieQuestionPage(Page):
 
 
 class ExperimentInstructions2(Page):
-    template_name = 'experiment/ExperimentInstructions2.html'
+    template_name = 'experiment_phase/ExperimentInstructions2.html'
 
     @staticmethod
     def is_displayed(player: Player) -> bool:

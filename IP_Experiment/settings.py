@@ -6,7 +6,7 @@ SESSION_CONFIGS = [
         'name': 'experiment',
         'display_name': "IP Experiment",
         'num_demo_participants': 2,
-        'app_sequence': ['experiment'],
+        'app_sequence': ['experiment_phase'],
     },
 ]
 
