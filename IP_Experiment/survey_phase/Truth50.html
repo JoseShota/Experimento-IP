@@ -1,0 +1,21 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}Reacciones a opiniones{% endblock %}
+
+{% block content %}
+<p>
+    En esta parte nos interesa saber <strong>cómo reaccionarías</strong> ante la opinión de otra persona sobre cada uno de los temas anteriores. Para cada tema, indica si diriía la verdad o mentirías, sabiendo que la probabilidad de que una persona pague 5 pesos para darte o quitarte 20 pesos es del (variamos).
+</p>
+
+<ol class="list-group list-group-numbered">
+  {% for field in form %}
+    <li class="list-group-item">
+      {{ formfield field }}
+    </li>
+  {% endfor %}
+</ol>
+
+{% next_button "Continuar" %}
+{% endblock %}
+

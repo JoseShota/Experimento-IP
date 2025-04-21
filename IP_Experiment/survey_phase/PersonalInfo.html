@@ -1,0 +1,30 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+Cuestionario sobre información básica
+{% endblock %}
+
+{% block content %}
+  <p>Por favor, responde las siguientes preguntas personales. Recuerda que tu identidad permanecerá confidencial durante todo el estudio.</p>
+  
+  <form method="post">
+    <p>
+      <label>{{ form.age.label }}</label>
+      {{ form.age }}
+    </p>
+    <p>
+      <label>{{ form.gender.label }}</label>
+      {{ form.gender }}
+    </p>
+    <p>
+      <label>{{ form.racial_identification.label }}</label>
+      {{ form.racial_identification }}
+    </p>
+    <p>
+      <label>{{ form.previous_experiment.label }}</label>
+      {{ form.previous_experiment }}
+    </p>
+    {{ next_button }}
+  </form>
+{% endblock %}

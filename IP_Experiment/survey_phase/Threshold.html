@@ -1,0 +1,32 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}Reacciones a opiniones{% endblock %}
+
+{% block content %}
+<p>
+  Ahora piensa que compartes tu opinión con alguien que <em>sabes</em> discrepa
+  de ti. Esa persona podría pagar <strong>5 pesos</strong> para premiarte o
+  castigarte con <strong>± 20 pesos</strong>.<br><br>
+  Para cada tema escribe un número entre <strong>0 y 100</strong> que indique la
+  <strong>probabilidad mínima</strong> con la que esa persona tendría que pagar para que tu mientas. Esto quiere decir:
+  <ul class="mb-0">
+    <li>Si la probabilidad real está <strong>por debajo</strong> de tu cifra,
+        dirías la verdad.</li>
+    <li>Si la probabilidad real está <strong>por encima</strong>,
+        preferirías mentir.</li>
+  </ul>
+  Introduce solo números enteros sin símbolo %.
+</p>
+
+<ol class="list-group list-group-numbered">
+  {% for field in form %}
+    <li class="list-group-item">
+      {{ formfield field }}
+    </li>
+  {% endfor %}
+</ol>
+
+{% next_button "Continuar" %}
+{% endblock %}
+

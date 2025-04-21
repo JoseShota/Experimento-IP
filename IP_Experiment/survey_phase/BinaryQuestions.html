@@ -1,0 +1,28 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+Opiniones sobre temas
+{% endblock %}
+
+{% block content %}
+
+<p>
+  Muchas gracias por participar. A continuación verás <strong>37 preguntas dicotómicas</strong>
+  sobre temas potencialmente divisivos en México.  
+  Selecciona la opción que mejor refleje tu opinión.  
+  <em>No lo pienses demasiado; buscamos tu reacción inmediata.</em>
+</p>
+
+<ol class="list-group list-group-numbered">
+  {# recorremos todos los campos del formulario en el orden definido #}
+  {% for field in form %}
+    <li class="list-group-item">
+      {{ formfield field.name }}
+    </li>
+  {% endfor %}
+</ol>
+
+{% next_button "Siguiente" %}
+
+{% endblock %}

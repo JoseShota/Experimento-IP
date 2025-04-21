@@ -1,0 +1,78 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+Encuesta sobre temas divisivos en México
+{% endblock %}
+
+{% block content %}
+
+<p>
+  Ahora formas parte de un proyecto de investigación. El propósito de esta encuesta es identificar cuáles son los temas divisivos en México. Tu colaboración es fundamental y no tomará más de <strong>30&nbsp;minutos</strong>.
+</p>
+
+<h4>¿Cómo está organizada la encuesta?</h4>
+<table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Parte</th>
+        <th>Duración aprox.</th>
+        <th>Qué harás</th>
+      </tr>
+    </thead>
+  
+    <tbody>
+      <tr>
+        <td><strong>1. Información básica</strong></td>
+        <td>5&nbsp;min</td>
+        <td>Proporcionarás datos demográficos generales (edad, género, raza, participación previa en experimentos).</td>
+      </tr>
+  
+      <tr>
+        <td><strong>2. Opiniones sobre temas</strong></td>
+        <td>10&nbsp;min</td>
+        <td>
+          Responderás a <em>preguntas dicotómicas</em> sobre distintos temas.<br>
+          Ejemplo: “¿Qué galletas son mejores, Chokis o Oreo?”.
+        </td>
+      </tr>
+  
+      <tr>
+        <td><strong>3. Reacciones a opiniones</strong></td>
+        <td>15&nbsp;min</td>
+        <td>
+          Para cada tema de la parte&nbsp;2, responderás:
+          <ul class="mb-0">
+            <li><strong>Pregunta 1 (opción sin incentivos compatibles):</strong>  
+                Vas a escuchar la opinión de una persona sobre el tema&nbsp;<em>X</em> (Ejemplo: “¿Qué galletas son mejores, Chokis o Oreo?”).  
+                ¿Pagarías <strong>5 pesos</strong> de lo que tienes para darle o quitarle <strong>20 pesos</strong> a esa persona?</li>
+  
+            <li><strong>Pregunta 1 (opción con incentivos compatibles):</strong>  
+                Vas a escuchar la opinión de una persona sobre el tema &nbsp;<em>X</em> (Ejemplo: “¿Qué galletas son mejores, Chokis o Oreo?”).
+                ¿Cuánto dinero estás dispuesto a pagar para darle o quitarle <strong>20 pesos</strong> a esa persona? Considera que después de dar tu respuesta tiraremos un dado 
+                (<em>¿De cuántas caras? Es decir, ¿damos algún rango de la cantidad de dinero?</em>), si el dado sale por arriba de lo que tú dijiste no pagas nada, si cae por debajo de lo que dijiste pagarás la cantidad que salga.</li>
+            
+            <li><strong>Pregunta 2 (Opción 1):</strong>  
+                Vas a dar tu opinión a una persona sobre el tema &nbsp;<em>X</em> (Ejemplo: “¿Qué galletas son mejores, Chokis o Oreo?”). La probabilidad de que la otra persona haya pagado <strong>5 pesos</strong> para darte o quitarte <strong>20 pesos</strong> después de dar tu opinión es de (<em>variar qué tan probable que una persona te vaya a juzgar</em>). Si dices la verdad, te damos <strong>10 pesos</strong> y si te juzgan negativamente te quitamos <strong>20 pesos</strong>.</li>
+
+            <li><strong>Pregunta 2 (Opción 2):</strong>
+                Imagínate que una persona con una opinión diferente a ti va a escuchar tu opinión sobre el tema &nbsp;<em>X</em> (Ejemplo: “¿Qué galletas son mejores, Chokis o Oreo?”). ¿Qué tan probable tiene que ser que esa persona pague <strong>5 pesos</strong> para darte o quitarte <strong>20 pesos</strong> para que mientas en el tema? Danos una probabilidad de la cual, por debajo das tu opinión verdadera y por arriba mientes sobre tu opinión.</li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+
+<h4>Instrucciones generales</h4>
+<ol>
+  <li><strong>Lee cada pregunta con atención.</strong> Elige la que mejor refleje tu punto de vista. </li>
+  <li><strong>Responde de forma honesta.</strong> Tu identidad permanecerá confidencial durante todo el estudio. </li>
+  <li><strong>Avanza a tu propio ritmo</strong>, pero evita interrupciones para mantener la coherencia de tus respuestas.</li>
+  <li><strong>Tu participación es anónima y voluntaria.</strong> Puedes abandonar la encuesta en cualquier momento sin consecuencia alguna.</li>
+</ol>
+
+<p>Al completar la encuesta estarás contribuyendo a una investigación sobre interacciones grupales. Si tienes dudas, comunícate con el equipo investigador.</p>
+
+{% next_button "Comenzar la encuesta" %}
+{% endblock %}

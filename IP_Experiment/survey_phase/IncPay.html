@@ -1,0 +1,22 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}Reacciones a opiniones{% endblock %}
+
+{% block content %}
+<p>
+  Para cada tema indica la cantidad (en pesos) que estarías dispuesto a pagar
+  para darle o quitarle <strong>20 pesos</strong> a una persona por su opinión de los temas anteriores.
+  Ingresa un número entero ≥ 0.
+</p>
+
+<ol class="list-group list-group-numbered">
+  {% for field in form %}
+    <li class="list-group-item">
+      {{ formfield field }}
+    </li>
+  {% endfor %}
+</ol>
+
+{% next_button "Continuar" %}
+{% endblock %}
