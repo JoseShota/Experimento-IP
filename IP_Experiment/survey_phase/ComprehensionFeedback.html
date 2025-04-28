@@ -1,0 +1,25 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}Resultados del cuestionario{% endblock %}
+
+{% block content %}
+<p>Acertaste {{ score }} de {{ total }} preguntas.</p>
+
+{% for fname, info in results.items %}
+  <hr>
+  <p>{{ info.text|safe }}</p>
+
+  {% if info.ok %}
+      <p class="text-success">✔ Respuesta correcta: <strong>{{ info.given }}</strong></p>
+  {% else %}
+      <p class="text-danger">✘ Tu respuesta: <strong>{{ info.given }}</strong></p>
+      <p><strong>Respuesta correcta:</strong> {{ info.correct }}</p>
+  {% endif %}
+{% endfor %}
+
+{{ next_button }}
+{% endblock %}
+
+
+

@@ -2,77 +2,394 @@
 {% load otree %}
 
 {% block title %}
-Encuesta sobre temas divisivos en México
+Encuesta sobre una variedad de temas
 {% endblock %}
 
 {% block content %}
 
 <p>
-  Ahora formas parte de un proyecto de investigación. El propósito de esta encuesta es identificar cuáles son los temas divisivos en México. Tu colaboración es fundamental y no tomará más de <strong>30&nbsp;minutos</strong>.
+  Ahora formas parte de un proyecto de investigación. Contestarás una encuesta sobre una variedad de temas. Cada tema tiene dos posturas. Para cada tema nos interesa saber: (1) tu postura, (2) cuál es tu reacción a las posturas de los demás y (3) qué postura le expresarías a los demás en diferentes circunstancias, más adelante te explicaremos qué tipo de circunstancias. En particular, para cada tema te vamos a hacer cinco preguntas:
 </p>
-
-<h4>¿Cómo está organizada la encuesta?</h4>
-<table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Parte</th>
-        <th>Duración aprox.</th>
-        <th>Qué harás</th>
-      </tr>
-    </thead>
-  
-    <tbody>
-      <tr>
-        <td><strong>1. Información básica</strong></td>
-        <td>5&nbsp;min</td>
-        <td>Proporcionarás datos demográficos generales (edad, género, raza, participación previa en experimentos).</td>
-      </tr>
-  
-      <tr>
-        <td><strong>2. Opiniones sobre temas</strong></td>
-        <td>10&nbsp;min</td>
-        <td>
-          Responderás a <em>preguntas dicotómicas</em> sobre distintos temas.<br>
-          Ejemplo: “¿Qué galletas son mejores, Chokis o Oreo?”.
-        </td>
-      </tr>
-  
-      <tr>
-        <td><strong>3. Reacciones a opiniones</strong></td>
-        <td>15&nbsp;min</td>
-        <td>
-          Para cada tema de la parte&nbsp;2, responderás:
-          <ul class="mb-0">
-            <li><strong>Pregunta 1 (opción sin incentivos compatibles):</strong>  
-                Vas a escuchar la opinión de una persona sobre el tema&nbsp;<em>X</em> (Ejemplo: “¿Qué galletas son mejores, Chokis o Oreo?”).  
-                ¿Pagarías <strong>5 pesos</strong> de lo que tienes para darle o quitarle <strong>20 pesos</strong> a esa persona?</li>
-  
-            <li><strong>Pregunta 1 (opción con incentivos compatibles):</strong>  
-                Vas a escuchar la opinión de una persona sobre el tema &nbsp;<em>X</em> (Ejemplo: “¿Qué galletas son mejores, Chokis o Oreo?”).
-                ¿Cuánto dinero estás dispuesto a pagar para darle o quitarle <strong>20 pesos</strong> a esa persona? Considera que después de dar tu respuesta tiraremos un dado 
-                (<em>¿De cuántas caras? Es decir, ¿damos algún rango de la cantidad de dinero?</em>), si el dado sale por arriba de lo que tú dijiste no pagas nada, si cae por debajo de lo que dijiste pagarás la cantidad que salga.</li>
-            
-            <li><strong>Pregunta 2 (Opción 1):</strong>  
-                Vas a dar tu opinión a una persona sobre el tema &nbsp;<em>X</em> (Ejemplo: “¿Qué galletas son mejores, Chokis o Oreo?”). La probabilidad de que la otra persona haya pagado <strong>5 pesos</strong> para darte o quitarte <strong>20 pesos</strong> después de dar tu opinión es de (<em>variar qué tan probable que una persona te vaya a juzgar</em>). Si dices la verdad, te damos <strong>10 pesos</strong> y si te juzgan negativamente te quitamos <strong>20 pesos</strong>.</li>
-
-            <li><strong>Pregunta 2 (Opción 2):</strong>
-                Imagínate que una persona con una opinión diferente a ti va a escuchar tu opinión sobre el tema &nbsp;<em>X</em> (Ejemplo: “¿Qué galletas son mejores, Chokis o Oreo?”). ¿Qué tan probable tiene que ser que esa persona pague <strong>5 pesos</strong> para darte o quitarte <strong>20 pesos</strong> para que mientas en el tema? Danos una probabilidad de la cual, por debajo das tu opinión verdadera y por arriba mientes sobre tu opinión.</li>
-          </ul>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  
-
-<h4>Instrucciones generales</h4>
 <ol>
-  <li><strong>Lee cada pregunta con atención.</strong> Elige la que mejor refleje tu punto de vista. </li>
-  <li><strong>Responde de forma honesta.</strong> Tu identidad permanecerá confidencial durante todo el estudio. </li>
-  <li><strong>Avanza a tu propio ritmo</strong>, pero evita interrupciones para mantener la coherencia de tus respuestas.</li>
-  <li><strong>Tu participación es anónima y voluntaria.</strong> Puedes abandonar la encuesta en cualquier momento sin consecuencia alguna.</li>
+  <li>Lo primero que se te va a preguntar es tu opinión sobre el tema. Queremos saber si tu opinión se parece más a la primera o a la segunda postura del tema.</li>
 </ol>
 
-<p>Al completar la encuesta estarás contribuyendo a una investigación sobre interacciones grupales. Si tienes dudas, comunícate con el equipo investigador.</p>
+<div style="max-width: 800px; margin: auto;">
+
+  <p style="
+      margin-left: 1em;
+      margin-right: 1em;
+      padding: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;">
+    Para ayudarte a entender mejor cada parte de la encuesta, te presentaremos un ejemplo continuo usando participantes ficticios. A lo largo de las instrucciones, iremos mostrando cómo responden estos participantes para ilustrar cómo funciona cada parte de la encuesta.
+  </p>
+
+  <p style="
+      margin-top: 1em;
+      margin-left: 1em;
+      margin-right: 1em;
+      padding: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;">
+    <strong>Ejemplo continuo:</strong><br>
+    María y Juan están participando en la encuesta. El tema es "¿Cuáles son mejores, las oreos o las chokis?". Las dos posturas son:<br>
+    • Primera postura: Las chokis.<br>
+    • Segunda postura: Las oreos.<br>
+    
+    María decide que su opinión se parece más a la segunda postura (las oreos). Juan decide que su opinión se parece más a la primera postura (las chokis).
+  </p>
+
+</div>
+
+
+<ol start="2">
+  <li>Lo segundo que se te va a preguntar es: "En una escala del 1 al 10, ¿Qué tan seguro estás sobre tu opinión sobre el tema?"</li>
+</ol>
+
+<div style="max-width: 800px; margin: auto;">
+
+  <div style="
+      margin-left: 1em;
+      margin-right: 1em;
+      padding: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;">
+    <strong>Ejemplo continuo:</strong>
+    <ul>
+    <li>María indica que está 9/10 segura de que prefiere la segunda postura (las oreos).</li>
+    <li>Juan indica que está 7/10 seguro de que prefiere la primera postura (las chokis).</li>
+    </ul>
+  </div>
+
+</div>
+
+<div>
+  <p>
+    La respuesta a las dos preguntas anteriores son completamente privadas. Los otros sujetos en la sesión no van a poder ver lo que respondiste. Ni siquiera los experimentadores
+    vamos a poder identificar quién dio qué respuesta, como no estamos registrando tu nombre, no podemos asociar tu identidad con tus respuestas. Queremos que te sientas cómodo respondiendo
+    con honestidad. Nos interesa saber tu verdadera opinión y qué tan seguro estás sobre ella. Es más, no te conviene mentir sobre tus respuestas a las primeras dos preguntas, porque cómo podrás ver,
+    tus pagos no dependerán de tu opinión privada sino de la opinión que le expreses a otra persona, que puede o no ser tu opinión privada. De ahora en adelante, llamaremos "opinión privada"
+    a la respuesta que diste a la primera pregunta.
+  </p>
+  <p>
+    Para las últimas tres preguntas, te vamos a emparejar con otra persona en esta sesión. Tú y tu pareja van a tener la oportunidad de expresarse mutuamente una opinión sobre el tema
+    (que puede ser la misma a tu opinión privada o puede ser diferente). Tú y tu pareja también van a tener la oportunidad de darse o quitarse 20 pesos dependiendo de la opinión que se expresen.
+  </p>
+
+  <div style="max-width: 800px; margin: auto;">
+
+    <div style="
+        margin-left: 1em;
+        margin-right: 1em;
+        padding: 1em;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;">
+      <strong>Ejemplo continuo:</strong>
+      María está emparejada con Juan. Sin embargo ninguno de los dos sabe la identidad del otro.
+  </div>
+  
+  </div>
+
+  <p>
+    El procedimiento va a ser el siguiente:
+  </p>
+
+<ol start="3">
+  <li> Tú tienes que pagar un costo para poder decidir si darle o quitarle 20 pesos a tu pareja dependiendo de la opinión que exprese. Este costo puede ser desde 0 pesos (en este caso sería gratis para ti tomar la decisión)
+    hasta 20 pesos. La tercera pregunta de cinco es que nos digas cuánto dinero estás dispuesto(a) a pagar para que puedas tomar esa decisión.
+    Tu respuesta tiene que ser de la forma "estoy dispuesto(a) a pagar X pesos o menos para decidir si le doy o le quito 20 pesos a mi pareja después de ver qué opinión me expresa". Queremos que nos des el valor X que aplique en tu caso.
+  </li>
+</ol>
+
+<div style="max-width: 800px; margin: auto;">
+
+  <div style="
+      margin-left: 1em;
+      margin-right: 1em;
+      padding: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;">
+    <strong>Ejemplo continuo:</strong>
+    <ul>
+    <li>María indica que está dispuesta a pagar 16 pesos o menos para decidir si le da o le quita 20 pesos a Juan dependiendo de la opinión que exprese.</li>
+    <li>Juan indica que está dispuesto a pagar 10 pesos o menos para decidir si le da o le quita 20 pesos a María dependiendo de la opinión que exprese.</li>
+    </ul>
+  </div>
+</div>
+
+
+<ol start="4">
+  <li>La cuarta pregunta que te vamos a hacer es: "¿Para cuál opinión que te exprese tu pareja le darías 20 pesos y para cuál opinión le quitarías 20 pesos?".</li>
+</ol>
+
+<div style="max-width: 800px; margin: auto;">
+
+  <div style="
+      margin-left: 1em;
+      margin-right: 1em;
+      padding: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;">
+    <strong>Ejemplo continuo:</strong>
+    <ul>
+    <li>María decide que, si Juan le expresa la primera postura (las chokis), le quitaría 20 pesos; y si le expresa la segunda postura (las oreos), le daría 20 pesos.</li>
+    <li>Juan decide que, si María le expresa la primera postura (las chokis), le daría 20 pesos; y si le expresa la segunda postura (las oreos), le quitaría 20 pesos.</li>
+    </ul>
+  </div>
+</div>
+
+
+<ol start="5">
+  <li>La quinta pregunta que te vamos a hacer es sobre qué opinión expresarle a tu pareja. Lo que nos tienes que decir es cuándo estarías dispuesto a expresar una opinión diferente a tu opinión privada. Tu opinión privada puede ser la opinión mayoritaria
+    o minoritaria entre los participantes en esta sesión, y qué opinión expreses puede depender de eso. La pregunta que te haremos es: "Supón que tu opinión privada es la opinión minoritaria entre los participantes en esta sesión y al menos Y por ciento de los participantes en esta sesión pagaron el costo para decidir si le dan o le quitan 20 pesos a su pareja, ¿Cuál es el valor de Y mínimo con el que estás dispuesto a expresar una opinión alterna a tu opinión privada?". 
+    Queremos que nos des el valor de Y que aplique en tu caso. Si le expresas tu opinión privada a tu pareja, te damos 10 pesos.
+  </li>
+</ol>
+
+<div style="max-width: 800px; margin: auto;">
+
+  <div style="
+      margin-left: 1em;
+      margin-right: 1em;
+      padding: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;">
+    <strong>Ejemplo continuo:</strong>
+    <ul>
+    <li>María indica que expresaría una opinión alterna a su opinión privada sólo si su opinión privada es la minoritaria entre los participantes de la sesión y al menos el 70% de los participantes pagaron para poder decidir dar o quitar 20 pesos a su pareja después de observar la opinión que expresó.</li>
+    <li>Juan indica que expresaría una opinión alterna a su opinión privada sólo si su opinión privada es la minoritaria entre los participantes de la sesión y al menos el 40% de los participantes pagaron para poder decidir dar o quitar 20 pesos a su pareja después de observar la opinión que expresó.</li>
+    </ul>
+  </div>
+</div>
+
+<p>A continuación te presentamos un diagrama de flujo a modo de resumen de las cinco preguntas que te haremos para cada tema.</p>
+{% include "global/timeline.html" %}
+
+<p>
+  Después de que todos nos den sus respuestas en un tema, vamos a seleccionar con igual probabilidad un costo Z entre 0 y 20 pesos para ese tema. Este número va a determinar cómo se desenvuelve el juego para ese tema.
+</p>
+<p>
+  Para ese tema, el costo Z que seleccionamos va a determinar quiénes van a poder decidir si les dan o les quitan 20 pesos a su pareja.  En particular, quienes van a poder tomar esa decisión son quienes hayan dicho que el rango de costos que están dispuestos a pagar incluye el costo Z que hayamos seleccionado. Por ejemplo, si seleccionamos el costo Z de 3 pesos, quienes van a poder tomar esa decisión son todos los que dijeron que el máximo costo que estarían dispuestos a pagar es un número mayor o igual a tres. Los que dijeron que el máximo costo que estarían dispuestos a pagar es 0, 1 o 2 no podrán tomar esa decisión.
+</p>
+<div style="max-width: 800px; margin: auto;">
+
+  <div style="
+      margin-left: 1em;
+      margin-right: 1em;
+      padding: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;">
+    <strong>Ejemplo continuo:</strong>
+    Para el tema "¿Cuáles son mejores, las oreos o las chokis?", supongamos que el costo Z que seleccionamos es de 12 pesos. Esto implica que:
+    <ul>
+    <li>María, quien había indicado que está dispuesta a pagar 16 pesos o menos para decidir si dar o quitar 20 pesos a Juan dependiendo de la opinión que exprese, sí podrá tomar la decisión. Esto se sigue porque el costo Z de 12 pesos está dentro del rango de la respuesta de María. En este caso, María pagaría 12 pesos en vez de los 16 pesos que estaba dispuesta a pagar para la decisión.</li>
+    <li>Juan, quien había indicado que está dispuesto a pagar 10 pesos o menos para decidir si dar o quitar 20 pesos a María dependiendo de la opinión que exprese, no podrá tomar la decisión. Esto se sigue porque el costo Z de 12 pesos está fuera del rango de la respuesta de Juan.</li>
+    </ul>
+  </div>
+</div>
+
+<p>
+  Noten que, dada la regla para determinar quién toma esa decisión, lo que más te conviene es decirnos el costo X que justo es lo más que estarías dispuesto a pagar para poder tomar esa decisión. Si das un costo X más grande, puede que tengas que pagar un costo mayor al que estarías dispuesto a pagar. Si das un costo X más chico, va a haber algunos costos que estarías dispuesto a pagar para tomar la decisión pero en los que no vas a poder tomar la decisión.
+</p>
+
+<div style="max-width: 800px; margin: auto;">
+  <div style="
+      margin-top: 1em;
+      margin-left: 1em;
+      margin-right: 1em;
+      padding: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #eef9f9;">
+    <strong>También recuerda:</strong><br>
+    Tu respuesta sobre tu opinión privada no afecta tus pagos en la encuesta. Es decir, no hay ventaja en tus pagos por tener una opinión privada a favor de una postura o de la otra. 
+  </div>
+</div>
+
+Dado que el costo Z que seleccionamos aleatoriamente determina quiénes deciden dar o quitar 20 pesos a su pareja dependiendo de la opinión que expresen, ese número también determina cuántos toman esa decisión. Por ejemplo:
+
+<div style="max-width: 800px; margin: auto;">
+
+  <div style="
+      margin-left: 1em;
+      margin-right: 1em;
+      padding: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;">
+    <strong>Ejemplo continuo:</strong>
+    Recordemos que para el tema "¿Cuáles son mejores, las oreos o las chokis?" habíamos seleccionado un costo Z de 12 pesos. Ahora supongamos que el 60% de los participantes en la sesión están dispuestos a pagar un cantidad X igual a 16 pesos para decidir si dar o quitar 20 pesos a su pareja y 40% escogieron un X igual a 10 pesos. Entonces, hay 60% de participantes que van a tomar la decisión de dar o quitar 20 pesos a su pareja, porque 60% de los participantes escogieron un X (16 pesos) por arriba del costo Z (12 pesos) que seleccionamos aleatoriamente.
+  </div>
+</div>
+
+<p>
+  Cuánta gente toma la decisión de dar o quitar 20 pesos a su pareja determina a su vez si vas a reportar tu opinión privada o no. Recuerda que en tu quinta decisión nos dijiste que reportarías la opinión alterna a tu opinión privada si estás en la opinión minoritaria de la sesión y si por lo menos Y por ciento de la gente en la sesión pagaron el costo para decidir si les dan o quitan 20 pesos a su pareja dependiendo de la opinión que les expresen. Entonces, como tenemos el número de gente que toma esa decisión, vamos a poder determinar si le expresas tu opinión privada o no a tu pareja. 
+</p>
+
+<div style="max-width: 800px; margin: auto;">
+
+  <div style="
+      margin-left: 1em;
+      margin-right: 1em;
+      padding: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;">
+    <strong>Ejemplo continuo:</strong>
+    <p>Anteriormente dijimos que, para el tema "¿Cuáles son mejores, las oreos o las chokis?":</p>
+    <ol style="list-style-type: lower-alpha;">
+      <li>Seleccionamos aleatoriamente un costo Z de 12 pesos.</li>
+      <li>60% de los participantes en la sesión están dispuestos a pagar un valor X igual a 16 pesos para decidir si dar o quitar 20 pesos a su pareja y 40% escogieron un X igual a 10 pesos.</li>
+    </ol>
+    <p>Ahora agreguemos que:</p> 
+    <ol style="list-style-type: lower-alpha;" start="3">
+      <li> La mayoría en la sesión tienen una opinión privada diferente a la de Juan.</li>
+    </ol>
+    <p>También recordemos que:</p>
+    <ol style="list-style-type: lower-alpha;" start="4">
+      <li>Juan indicó que expresaría una opinión alterna a su opinión privada si al menos el 40% de los participantes pagaron para poder decidir dar o quitar 20 pesos a su pareja después de observar la opinión que expresó. Es decir, Juan escogió un Y igual a 40 por ciento.</li>  
+    </ol>
+    <p>Ya establecimos que hay 60% que van a tomar la decisión de dar o quitar 20 pesos a su pareja. Como Juan escogió un Y igual a 40 por ciento y el porcentaje de gente que van a tomar la decisión es mayor (60%), entonces qué opinión Juan le expresa a María depende de si su opinión es mayoritaria o minoritaria. Como su opinión privada está en la minoría y el porcentaje supera su Y, Juan expresa a María la opinión alterna a su opinión privada. Si su opinión privada en vez estuviera en la mayoría, o si Juan hubiera dado un número Y mayor a 60 por ciento, Juan le hubiera expresado su opinión privada a María. </p>
+  </div>
+</div>
+
+  <p>
+  ¿En qué debes pensar para decidir el porcentaje mínimo Y de personas que deben decidir si dar o quitar 20 pesos para que tú expreses una opinión diferente a tu opinión privada, en caso de estar en la minoría? 
+  </p>
+  <p>  
+  Por una parte, toma en cuenta los pagos monetarios: recibes 10 pesos por expresar tu opinión privada, y puedes ganar o perder 20 pesos si tu pareja puede tomar esa decisión. Por otra parte, considera si es importante para ti expresar tu opinión privada sobre el tema independientemente de los pagos. Otras consideraciones personales que no mencionamos aquí también pueden ser válidas.
+  </p>
+  <p>  
+  Nota que, como tú estás determinando el porcentaje mínimo Y de personas que deben poder decidir, no necesitas preocuparte por adivinar cuál será el porcentaje real en la sesión. Concéntrate en si el porcentaje mínimo que tú das realmente captura el punto a partir del cual dejarías de querer expresar tu opinión privada si pertenecieras a la minoría. Así como te convenía ser honesto sobre el costo máximo X que estarías dispuesto a pagar, también te conviene ser honesto al establecer tu porcentaje mínimo Y.
+  </p>
+  
+  <div style="max-width: 800px; margin: auto;">
+
+    <div style="
+        margin-left: 1em;
+        margin-right: 1em;
+        padding: 1em;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;">
+  
+      <strong>Ejemplo continuo:</strong>
+      <p>
+        Concluimos el ejemplo de María y Juan presentando sus pagos para el tema "¿Cuáles son mejores, las oreos o las chokis?". Para ello, recuerda que:
+      </p>
+      <ul>
+        <li>María indicó que su opinión privada es la segunda postura (las oreos)</li>
+        <li>Juan indicó que su opinión privada es la primera postura (las chokis)</li>
+        <li>El costo Z que escogimos aleatoriamente fue de 12 pesos.</li>
+        <li>María, que había indicado que estaba dispuesta a pagar 16 pesos o menos para decidir si da o quita 20 pesos, sí puede tomar la decisión porque su máximo X (16) es mayor al costo Z (12). María paga el costo Z de 12 pesos para poder tomar esa decisión.</li>
+        <li>Juan, que había indicado que estaba dispuesto a pagar 10 pesos o menos, no puede tomar la decisión porque su máximo X (10) es menor al costo Z (12).</li>
+        <li>La opinión privada de Juan está en la minoría. Como el 60% de los participantes pagaron para poder decidir y Juan había escogido un porcentaje mínimo Y igual a 40%, y 60% es mayor que 40%, entonces Juan expresa una opinión alterna a su opinión privada a María (es decir, expresa la segunda postura: las oreos).</li>
+        <li>Como la opinión privada de Juan está en la minoría, necesariamente la opinión privada de María está en la mayoría. Entonces, María le expresa su opinión privada a Juan (es decir, expresa la segunda postura: las oreos).</li>
+        <li>María había dicho que, si su pareja expresaba la segunda postura (las oreos), le daría 20 pesos. Como Juan expresa la segunda postura, María le da 20 pesos.</li>
+        <li>Juan había dicho que, si su pareja expresaba la segunda postura (las oreos), le quitaría 20 pesos. Como María expresa la segunda postura, Juan le quita 20 pesos.</li>
+        <li>María expresó su opinión privada, por lo que recibe 10 pesos adicionales. Juan no recibe los 10 pesos porque expresó la opinión alterna a su opinión privada.</li>
+        <li><strong>Compensación base:</strong> Cada participante recibe 50 pesos sólo por participar.</li>
+      </ul>
+  
+      <p style="margin-top:0.8em;">
+        <em>Resultados finales de este tema:</em>
+      </p>
+      <ul>
+        <li>María: 50 pesos (base) + 10 pesos (por haber expresado su opinión privada a Juan) - 12 pesos (costo para poder dar o quitar 20 pesos a tu pareja) = 48 pesos.</li>
+        <li>Juan: 50 pesos (base) + 20 pesos (20 pesos que María le da a Juan) = 70 pesos.</li>
+      </ul>
+  
+    </div>
+  </div>
+
+  <p>A continuación, te presentamos una tabla que resume cómo se calculan los pagos en la encuesta.</p>
+
+  <div style="max-width: 800px; margin: auto;">
+  
+    <h3 style="text-align: center; margin-bottom: 0.5em;">Tabla de pagos</h3>
+  
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1em;">
+      <thead>
+        <tr>
+          <th style="border: 1px solid #ccc; padding: 0.5em; background-color: #f0f0f0; text-align: left;">Concepto</th>
+          <th style="border: 1px solid #ccc; padding: 0.5em; background-color: #f0f0f0; text-align: left;">¿Cómo se gana o se paga?</th>
+          <th style="border: 1px solid #ccc; padding: 0.5em; background-color: #f0f0f0; text-align: left;">Ejemplo (María)</th>
+          <th style="border: 1px solid #ccc; padding: 0.5em; background-color: #f0f0f0; text-align: right;">Impacto en tu pago</th>
+        </tr>
+      </thead>
+  
+      <tbody>
+        <!-- Compensación base -->
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 0.5em;">Compensación base</td>
+          <td style="border: 1px solid #ccc; padding: 0.5em;">
+            Recibes 50 pesos por participar. Este monto puede cambiar con base en tus respuestas, ya sea incrementar o disminuir.
+          </td>
+          <td style="border: 1px solid #ccc; padding: 0.5em;">
+            María tiene un pago inicial de 50 pesos por participar.
+          </td>
+          <td style="border: 1px solid #ccc; padding: 0.5em; text-align: right;">50</td>
+        </tr>
+  
+        <!-- Bono opinión privada -->
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 0.5em;">Bono por expresar tu opinión privada</td>
+          <td style="border: 1px solid #ccc; padding: 0.5em;">
+            Recibes 10 pesos adicionales si expresas tu opinión privada a tu pareja. Esto se determina una vez que todos los participantes han respondido las cinco preguntas para un tema y hallamos seleccionado de manera aleatoria el valor de Z (el costo para decidir si dar o quitar 20 pesos a tu pareja).
+          </td>
+          <td style="border: 1px solid #ccc; padding: 0.5em;">
+            María expresa su opinión privada (segunda postura: las oreos) a Juan y recibe +10 pesos.
+          </td>
+          <td style="border: 1px solid #ccc; padding: 0.5em; text-align: right;">+10</td>
+        </tr>
+  
+        <!-- Costo de tomar la decisión -->
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 0.5em;">Costo por tomar la decisión</td>
+          <td style="border: 1px solid #ccc; padding: 0.5em;">
+            Pagas el costo Z si el valor X que escogiste, el costo máximo que estás dispuesto a pagar para dar o quitar 20 pesos a tu pareja, es mayor o igual al Z que seleccionamos aleatoriamente. El costo Z se resta de tus pagos.
+          </td>
+          <td style="border: 1px solid #ccc; padding: 0.5em;">
+            María indica un máximo X de 16 pesos. Seleccionamos aleatoriamente un costo Z de 12 pesos. Como 16 ≥ 12, María paga 12 pesos para poder decidir.
+          </td>
+          <td style="border: 1px solid #ccc; padding: 0.5em; text-align: right;">–12</td>
+        </tr>
+  
+        <!-- Transferencia de pesos -->
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 0.5em;">Transferencia de tu pareja</td>
+          <td style="border: 1px solid #ccc; padding: 0.5em;">
+            Ganas o pierdes 20 pesos dependiendo de la opinión que expreses a tu pareja. Si tu postura coincide con la postura que decidió tu pareja dar los 20 pesos, ganas 20 pesos. Lo contrario, pierdes 20 pesos.
+          </td>
+          <td style="border: 1px solid #ccc; padding: 0.5em;">
+            En este caso, María no recibe o pierde nada porque Juan no puede decidir. Esto se sigue porque el valor Z que seleccionamos es mayor que el valor X de 10 de pesos de Juan.
+          </td>
+          <td style="border: 1px solid #ccc; padding: 0.5em; text-align: right;">0</td>
+        </tr>
+  
+        <!-- Resultado final -->
+        <tr>
+          <td colspan="3" style="border: 1px solid #ccc; padding: 0.5em; font-weight: bold;">
+            <strong>Pago total de María en este tema</strong>
+          </td>
+          <td style="border: 1px solid #ccc; padding: 0.5em; text-align: right; font-weight: bold;">
+            50 + 10 – 12 = <strong>48</strong>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
 
 {% next_button "Comenzar la encuesta" %}
 {% endblock %}

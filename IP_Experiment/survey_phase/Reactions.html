@@ -1,9 +1,90 @@
 {% extends "global/Page.html" %} {% load otree %}
 
-{% block title %}Reacciones a opiniones{% endblock %}
+{% block title %}Seguridad sobre tu postura{% endblock %}
 
 {% block content %}
 
-<p> En esta parte nos interesa saber <strong>cómo reaccionarías</strong> ante la opinión de otra persona sobre cada uno de los temas anteriores. Para cada tema indica si pagarías <strong>5 MXN</strong> para darle o quitarle <strong>20 MXN</strong> a esa persona. <em>Responde de forma rápida e intuitiva.</em> </p> 
+{% include "global/timeline.html" %}
+
+
+<p>A continuación, te presentamos nuevamente la tabla que resume cómo se calculan los pagos en la encuesta.</p>
+
+<div style="max-width: 800px; margin: auto;">
+
+  <h3 style="text-align: center; margin-bottom: 0.5em;">Tabla de pagos</h3>
+
+  <table style="width: 100%; border-collapse: collapse; margin-bottom: 1em;">
+    <thead>
+      <tr>
+        <th style="border: 1px solid #ccc; padding: 0.5em; background-color: #f0f0f0; text-align: left;">Concepto</th>
+        <th style="border: 1px solid #ccc; padding: 0.5em; background-color: #f0f0f0; text-align: left;">¿Cómo se gana o se paga?</th>
+        <th style="border: 1px solid #ccc; padding: 0.5em; background-color: #f0f0f0; text-align: left;">Ejemplo (María)</th>
+        <th style="border: 1px solid #ccc; padding: 0.5em; background-color: #f0f0f0; text-align: right;">Impacto en tu pago</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <!-- Compensación base -->
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 0.5em;">Compensación base</td>
+        <td style="border: 1px solid #ccc; padding: 0.5em;">
+          Recibes 50 pesos por participar. Este monto puede cambiar con base en tus respuestas, ya sea incrementar o disminuir.
+        </td>
+        <td style="border: 1px solid #ccc; padding: 0.5em;">
+          María tiene un pago inicial de 50 pesos por participar.
+        </td>
+        <td style="border: 1px solid #ccc; padding: 0.5em; text-align: right;">50</td>
+      </tr>
+
+      <!-- Bono opinión privada -->
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 0.5em;">Bono por expresar tu opinión privada</td>
+        <td style="border: 1px solid #ccc; padding: 0.5em;">
+          Recibes 10 pesos adicionales si expresas tu opinión privada a tu pareja. Esto se determina una vez que todos los participantes han respondido las cinco preguntas para un tema y hallamos seleccionado de manera aleatoria el valor de Z (el costo para decidir si dar o quitar 20 pesos a tu pareja).
+        </td>
+        <td style="border: 1px solid #ccc; padding: 0.5em;">
+          María expresa su opinión privada (segunda postura: las oreos) a Juan y recibe +10 pesos.
+        </td>
+        <td style="border: 1px solid #ccc; padding: 0.5em; text-align: right;">+10</td>
+      </tr>
+
+      <!-- Costo de tomar la decisión -->
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 0.5em;">Costo por tomar la decisión</td>
+        <td style="border: 1px solid #ccc; padding: 0.5em;">
+          Pagas el costo Z si el valor X que escogiste, el costo máximo que estás dispuesto a pagar para dar o quitar 20 pesos a tu pareja, es mayor o igual al Z que seleccionamos aleatoriamente. El costo Z se resta de tus pagos.
+        </td>
+        <td style="border: 1px solid #ccc; padding: 0.5em;">
+          María indica un máximo X de 16 pesos. Seleccionamos aleatoriamente un costo Z de 12 pesos. Como 16 ≥ 12, María paga 12 pesos para poder decidir.
+        </td>
+        <td style="border: 1px solid #ccc; padding: 0.5em; text-align: right;">–12</td>
+      </tr>
+
+      <!-- Transferencia de pesos -->
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 0.5em;">Transferencia de tu pareja</td>
+        <td style="border: 1px solid #ccc; padding: 0.5em;">
+          Ganas o pierdes 20 pesos dependiendo de la opinión que expreses a tu pareja. Si tu postura coincide con la postura que decidió tu pareja dar los 20 pesos, ganas 20 pesos. Lo contrario, pierdes 20 pesos.
+        </td>
+        <td style="border: 1px solid #ccc; padding: 0.5em;">
+          En este caso, María no recibe o pierde nada porque Juan no puede decidir. Esto se sigue porque el valor Z que seleccionamos es mayor que el valor X de 10 de pesos de Juan.
+        </td>
+        <td style="border: 1px solid #ccc; padding: 0.5em; text-align: right;">0</td>
+      </tr>
+
+      <!-- Resultado final -->
+      <tr>
+        <td colspan="3" style="border: 1px solid #ccc; padding: 0.5em; font-weight: bold;">
+          <strong>Pago total de María en este tema</strong>
+        </td>
+        <td style="border: 1px solid #ccc; padding: 0.5em; text-align: right; font-weight: bold;">
+          50 + 10 – 12 = <strong>48</strong>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p> Para cada tema te preguntaremos: "En una escala del 1 al 10, ¿Qué tan seguro estás sobre tu opinión sobre el tema?"</em> </p> 
 <ol class="list-group list-group-numbered"> {% for field in form %} <li class="list-group-item"> {{ formfield field }} </li> {% endfor %} </ol>
 {% next_button "Continuar" %} {% endblock %}

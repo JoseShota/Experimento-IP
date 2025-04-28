@@ -1,0 +1,47 @@
+{% load static %}
+
+<div class="mb-4">
+
+  <!-- PROGRESS BAR -->
+  <div class="progress" style="height:0.6rem; {% if progress == 0 %}visibility:hidden;{% endif %}">
+    <div class="
+         progress-bar
+         {% if progress == 0 %}
+             bg-secondary
+         {% else %}
+             bg-primary progress-bar-striped progress-bar-animated
+         {% endif %}
+         "
+         role="progressbar"
+         style="width: {{ progress }}%;"
+         aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <ul class="d-flex justify-content-between list-unstyled mt-3 flex-wrap">
+    {% for label, desc in tl_labels %}
+        {% with idx=forloop.counter0 %}
+          {# breakpoint xs: 15%; md+: 18% #}
+          <li class="d-flex flex-column text-center"
+              style="min-width: 15%; min-width: clamp(15%,18%,18%);">
+            {% if idx < current %}
+              <span class="badge bg-success">{{ forloop.counter }}</span>
+              <span class="fw-bold text-success">{{ label }}</span>
+              <span class="small text-success">{{ desc }}</span>
+            {% elif idx == current %}
+              <span class="badge bg-primary">{{ forloop.counter }}</span>
+              <span class="fw-bold text-primary">{{ label }}</span>
+              <span class="small text-primary">{{ desc }}</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ forloop.counter }}</span>
+              <span class="text-muted">{{ label }}</span>
+              <span class="small text-muted">{{ desc }}</span>
+            {% endif %}
+          </li>
+        {% endwith %}
+    {% endfor %}
+  </ul>
+</div>
+
+
