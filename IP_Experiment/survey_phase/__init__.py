@@ -8,10 +8,10 @@ class C(BaseConstants):
 
     TIMELINE = [
         ('Pregunta 1', 'Indica tu postura <br> sobre el tema'),
-        ('Pregunta 2', 'Indica qué tan seguro(a) <br> te sientes con tu postura'),
+        ('Pregunta 2', 'Indica qué tan seguro(a) <br> te sientes sobre tu postura'),
         ('Pregunta 3', 'Indica cuánto dinero estás <br> dispuesto(a) a pagar para decidir <br> dar o quitar 20 pesos a tu pareja'),
         ('Pregunta 4', 'Indica para qué opinión <br> le darías 20 pesos y para <br> cuál le quitarías 20 pesos <br> a tu pareja sobre el tema'),
-        ('Pregunta 5', 'Indica el procentaje mínimo <br> de personas que toman la decisión <br> con el que estás dispuesto(a) a <br> expresar una opinión alterna'),
+        ('Pregunta 5', 'Indica el porcentaje mínimo <br> de personas que toman la decisión <br> de dar o quitar 20 pesos <br> tal que estás dispuesto(a) a <br> expresar la opinión alterna'),
     ]
     TIMELINE_PAGES = [
         'BinaryQuestions', 'Reactions', 'IncPay', 'Truth50', 'Threshold'
@@ -37,7 +37,7 @@ class C(BaseConstants):
             'la decisión con el que expresarías la opinión alterna a tu opinión privada, '
             '¿Qué situación se puede dar?'),
         comp_q4=('4. La <strong>quinta pregunta</strong> te pide dar un porcentaje '
-            '<strong>Y</strong> mínimo, porcentaje de gente que toma la decisión de dar o quitar 20 pesos a su pareja, con el que estás dispuesto a expresar una opinión alterna a tu opinión privada. ¿Cuándo <u>expresas una opinión alterna</u> '
+            '<strong>Y</strong> mínimo, porcentaje de gente que toma la decisión de dar o quitar 20 pesos a su pareja, con el que estás dispuesto a expresar la opinión alterna a tu opinión privada. ¿Cuándo <u>expresas la opinión alterna</u> '
             'a tu opinión privada?'),
         comp_q5=('5. ¿Cuántos <strong>pesos adicionales</strong> recibes si '
             'expresas tu opinión privada a tu pareja?'),
@@ -415,7 +415,7 @@ class Player(BasePlayer):
     comp_q4 = models.StringField(
         label=(
             '4. La <strong>quinta pregunta</strong> te pide dar un porcentaje '
-            '<strong>Y</strong> mínimo, porcentaje de gente que toma la decisión de dar o quitar 20 pesos a su pareja, con el que estás dispuesto a expresar una opinión alterna a tu opinión privada. ¿Cuándo <u>expresas una opinión alterna</u> '
+            '<strong>Y</strong> mínimo, porcentaje de gente que toma la decisión de dar o quitar 20 pesos a su pareja, con el que estás dispuesto a expresar la opinión alterna a tu opinión privada. ¿Cuándo <u>expresas la opinión alterna</u> '
             'a tu opinión privada?'
         ),
         choices=[
@@ -536,7 +536,7 @@ for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
             min=0,
             max=100,
             label=(
-                f'Para el tema <strong>{topic}</strong>: Supón que tu opinión privada es la opinión minoritaria entre los participantes en esta sesión y al menos Y por ciento de los participantes en esta sesión pagaron el costo para decidir si le dan o le quitan 20 pesos a su pareja, ¿Cuál es el valor de Y mínimo con el que estás dispuesto a expresar una opinión alterna a tu opinión privada?'
+                f'Para el tema <strong>{topic}</strong>: Supón que tu opinión privada es la opinión minoritaria entre los participantes en esta sesión y al menos Y por ciento de los participantes en esta sesión pagaron el costo para decidir si le dan o le quitan 20 pesos a su pareja, ¿Cuál es el valor de Y mínimo con el que estás dispuesto a expresar la opinión alterna a tu opinión privada?'
             )
         ),
     )
