@@ -10,7 +10,7 @@ class C(BaseConstants):
         ('Pregunta 1', 'Indica tu postura <br> sobre el tema'),
         ('Pregunta 2', 'Indica qué tan seguro(a) <br> te sientes con tu postura'),
         ('Pregunta 3', 'Indica cuánto dinero estás <br> dispuesto(a) a pagar para decidir <br> dar o quitar 20 pesos a tu pareja'),
-        ('Pregunta 4', 'Indica para qué opinión <br> le darías 20 pesos y para <br> cuál le quitarías 20 pesos <br> a tu pareja sobre el tema?'),
+        ('Pregunta 4', 'Indica para qué opinión <br> le darías 20 pesos y para <br> cuál le quitarías 20 pesos <br> a tu pareja sobre el tema'),
         ('Pregunta 5', 'Indica el procentaje mínimo <br> de personas que toman la decisión <br> con el que estás dispuesto(a) a <br> expresar una opinión alterna'),
     ]
     TIMELINE_PAGES = [
