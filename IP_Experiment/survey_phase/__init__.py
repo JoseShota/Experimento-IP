@@ -25,9 +25,9 @@ class C(BaseConstants):
             'Si para ese mismo tema seleccionamos aleatoriamente un '
             '<strong>costo Z de 12 pesos</strong>, ¿qué sucede?'),
         comp_q2=('2. Marca las afirmaciónes correctas sobre tus respuestas en la '
-            '<strong>primera</strong> (tu postura sobre el tema) y <strong>segunda pregunta</strong> (qué tan seguro(a) te sientes con tu respuesta a la primera pregunta):'
+            '<strong>primera pregunta</strong> (la postura que más se acerca a tu opinión sobre el tema) y <strong>segunda pregunta</strong> (qué tan seguro(a) te sientes sobre tu respuesta a la primera pregunta):'
             '<br>  1) Tu pareja puede verlas.<br>'
-            '  2) <em>Nadie puede identificar quién dio qué respuesta.</em><br>'
+            '  2) Nadie puede identificar quién dio qué respuesta.<br>'
             '  3) Los experimentadores pueden asociarlas contigo.<br>'
             '  4) Las respuestas no afectan directamente tus pagos.'
             '<br><br>'
@@ -37,26 +37,26 @@ class C(BaseConstants):
             'la decisión con el que expresarías la opinión alterna a tu opinión privada, '
             '¿Qué situación se puede dar?'),
         comp_q4=('4. La <strong>quinta pregunta</strong> te pide dar un porcentaje '
-            '<strong>Y</strong> mínimo, porcentaje de gente que toma la decisión de dar o quitar 20 pesos a su pareja, con el que estás dispuesto a expresar la opinión alterna a tu opinión privada. ¿Cuándo <u>expresas la opinión alterna</u> '
+            '<strong>Y</strong> mínimo con el que estás dispuesto a expresar la opinión alterna a tu opinión privada. Recuerda que Y se refiere al porcentaje de gente que toma la decisión de dar o quitar 20 pesos a su pareja. ¿Cuándo <u>expresas la opinión alterna</u> '
             'a tu opinión privada?'),
-        comp_q5=('5. ¿Cuántos <strong>pesos adicionales</strong> recibes si '
-            'expresas tu opinión privada a tu pareja?'),
-        comp_q6=('6. Escenario:<br>'
-            '  • Tercera pregunta: estás dispuesto a pagar 10 pesos o menos para decidir dar o quitar 20 pesos a tu pareja.<br>'
-            '  • Costo Z: seleccionamos aleatoriamente un costo Z de 8 pesos.<br>'
-            '  • Cuarta pregunta: Indicaste <em>dar</em> 20 pesos si tu pareja expresa la '
-            'primera postura.<br>'
+        comp_q5=('5. Considera el siguiente escenario:<br>'
+            '  • En la tercera pregunta indicaste que estás dispuesto a pagar 10 pesos o menos para decidir dar o quitar 20 pesos a tu pareja.<br>'
+            '  • Seleccionamos aleatoriamente un costo Z de 8 pesos.<br>'
+            '  • En la cuarta pregunta indicaste <em>dar</em> 20 pesos si tu pareja expresa la '
+            'preferencia azul.<br>'
+            '  • Tu pareja sí va a decidir entre darte o quitarte 20 pesos dependiendo de lo que le expresas y además te expresa la preferencia azul.<br>'
+            '¿Qué puedes afirmar con lo que sabes hasta ahora?'
             '  • Tu pareja sí puede decidir entre darte o quitarte 20 pesos dependiendo de lo que le expresas y además te expresa la primera postura del tema.<br>'
             '¿Qué puedes afirmar con lo que sabes hasta ahora?'),
-        comp_q7=('7. “Si declaras en la <strong>tercera pregunta</strong> (disposición a pagar para decidir dar o quitar 20 pesos a tu pareja) un valor '
+        comp_q6=('6. “Si declaras en la <strong>tercera pregunta</strong> (disposición a pagar para decidir dar o quitar 20 pesos a tu pareja) un valor '
             'máximo mayor al que realmente estarías dispuesto a pagar, '
             'podrías terminar pagando un costo demasiado alto.”'),
-        comp_q8=('8. Datos del tema:<br>'
-            '  • Tercera pregunta: estás dispuesto a pagar 15 pesos o menos para decidir dar o quitar 20 pesos a tu pareja.<br>'
-            '  • Costo Z: seleccionamos aleatoriamente un costo Z de 18 pesos.<br>'
-            '  • Opinión privada en la mayoría.<br>'
-            '  • Quinta pregunta: El procentaje mínimo con el que estarías dispuesto a dar tu opinión alterna a tu opinión privada es de Y = 50 %.<br>'
-            '  • 60 % de los participantes pagaron para decidir dar o quitar 20 pesos a su pareja.<br><br>'
+        comp_q7=('7. Considera el siguiente escenario:<br>'
+            '  • En la tercera pregunta indicaste que estás dispuesto a pagar 15 pesos o menos para decidir dar o quitar 20 pesos a tu pareja.<br>'
+            '  • Seleccionamos aleatoriamente un costo Z de 18 pesos.<br>'
+            '  • Tu opinión privada está en la mayoría.<br>'
+            '  • En la quinta pregunta indicaste que el procentaje mínimo con el que estarías dispuesto a dar tu opinión alterna a tu opinión privada es de Y = 50 %.<br>'
+            '  • El 60 % de los participantes pagaron para decidir dar o quitar 20 pesos a su pareja.<br><br>'
             'Selecciona lo que sucede:'),
     )
 
@@ -65,10 +65,9 @@ class C(BaseConstants):
         comp_q2='2-4',
         comp_q3='c',        # tu BooleanField usa True/False
         comp_q4='d',
-        comp_q5=10,
+        comp_q5='a',
         comp_q6='a',
         comp_q7='a',
-        comp_q8='a',
     )
 
     # ► Etiquetas en el mismo orden que binary_choice_1 … binary_choice_37
@@ -380,18 +379,18 @@ class Player(BasePlayer):
     comp_q2 = models.StringField(
         label=(
             '2. Marca las afirmaciónes correctas sobre tus respuestas en la '
-            '<strong>primera</strong> (tu postura sobre el tema) y <strong>segunda pregunta</strong> (qué tan seguro(a) te sientes con tu respuesta a la primera pregunta):'
+            '<strong>primera pregunta</strong> (la postura que más se acerca a tu opinión sobre el tema) y <strong>segunda pregunta</strong> (qué tan seguro(a) te sientes sobre tu respuesta a la primera pregunta):'
             '<br>  1) Tu pareja puede verlas.<br>'
-            '  2) <em>Nadie puede identificar quién dio qué respuesta.</em><br>'
+            '  2) Nadie puede identificar quién dio qué respuesta.<br>'
             '  3) Los experimentadores pueden asociarlas contigo.<br>'
             '  4) Las respuestas no afectan directamente tus pagos.'
             '<br><br>'
             'Selecciona la combinación correcta:'
         ),
         choices=[
-            ('2-4', 'a) Sólo 1 y 3.'),
+            ('1-3', 'a) Sólo 1 y 3.'),
             ('1-2', 'b) Sólo 1 y 2.'),
-            ('1-3', 'c) Sólo 2 y 4.'),
+            ('2-4', 'c) Sólo 2 y 4.'),
             ('3-4', 'd) Sólo 3 y 4.')
         ],
         blank=False,
@@ -406,7 +405,7 @@ class Player(BasePlayer):
         ),
         choices=[
             ('a', 'a) Si además mi opinión privada es la mayoritaria, entonces expreso la opinión alterna a mi pareja.'),
-            ('b', 'b) Si además contesté la segunda pregunta, sobre qué tan seguro estoy de mi respuesta a la primera pregunta, con uno 5 o menos, entonces expreso mi opinión privada a mi pareja'),
+            ('b', 'b) Si además contesté la segunda pregunta, sobre qué tan seguro estoy de mi respuesta a la primera pregunta, con 5 o menos, entonces expreso mi opinión privada a mi pareja'),
             ('c', 'c) Si además mi opinión privada es la minoritaria, entonces expreso la opinión alterna a mi pareja'),
             ('d', 'd) Si además seleccionamos un costo Z mayor al costo máximo que estoy dispuesto a pagar para decidir dar o quitar 20 pesos a mi pareja, entonces expreso mi opinión privada a mi pareja.')
         ], 
@@ -415,35 +414,26 @@ class Player(BasePlayer):
     comp_q4 = models.StringField(
         label=(
             '4. La <strong>quinta pregunta</strong> te pide dar un porcentaje '
-            '<strong>Y</strong> mínimo, porcentaje de gente que toma la decisión de dar o quitar 20 pesos a su pareja, con el que estás dispuesto a expresar la opinión alterna a tu opinión privada. ¿Cuándo <u>expresas la opinión alterna</u> '
+            '<strong>Y</strong> mínimo con el que estás dispuesto a expresar la opinión alterna a tu opinión privada. Recuerda que Y se refiere al porcentaje de gente que toma la decisión de dar o quitar 20 pesos a su pareja. ¿Cuándo <u>expresas la opinión alterna</u> '
             'a tu opinión privada?'
         ),
         choices=[
-            ('a', 'a) Cuando el costo Z que seleccionames para ese tema es menor que el monto máximo que estás dispuesto a pagar para decidir dar o quitar 20 pesos a tu pareja después de expresarte una opinión sobre el tema.'),
+            ('a', 'a) Cuando el costo Z que seleccionamos para ese tema es menor que el monto máximo que estás dispuesto a pagar para decidir dar o quitar 20 pesos a tu pareja después de expresarte una opinión sobre el tema.'),
             ('b', 'b) Cuando tu opinión privada está en mayoría y el procentaje de gente que toma la decisión es exactamente tu Y'),
             ('c', 'c) Siempre que tu pareja tenga la misma opinión privada que tú.'),
-            ('d', 'd) Cuando tu opinión privada está en minoría y ≥ el procentaje de gente que toma la decisión es mayor o igual a tu Y.'),
+            ('d', 'd) Cuando tu opinión privada está en minoría y el procentaje de gente que toma la decisión es mayor o igual a tu Y.'),
         ],
         blank=False,
     )
 
-    comp_q5 = models.IntegerField(
+    comp_q5 = models.StringField(
         label=(
-            '5. ¿Cuántos <strong>pesos adicionales</strong> recibes si '
-            'expresas tu opinión privada a tu pareja?'
-        ),
-        min=0,
-        max=20,
-    )
-
-    comp_q6 = models.StringField(
-        label=(
-            '6. Escenario:<br>'
-            '  • Tercera pregunta: estás dispuesto a pagar 10 pesos o menos para decidir dar o quitar 20 pesos a tu pareja.<br>'
-            '  • Costo Z: seleccionamos aleatoriamente un costo Z de 8 pesos.<br>'
-            '  • Cuarta pregunta: Indicaste <em>dar</em> 20 pesos si tu pareja expresa la '
-            'primera postura.<br>'
-            '  • Tu pareja sí puede decidir entre darte o quitarte 20 pesos dependiendo de lo que le expresas y además te expresa la primera postura del tema.<br>'
+            '5. Considera el siguiente escenario:<br>'
+            '  • En la tercera pregunta indicaste que estás dispuesto a pagar 10 pesos o menos para decidir dar o quitar 20 pesos a tu pareja.<br>'
+            '  • Seleccionamos aleatoriamente un costo Z de 8 pesos.<br>'
+            '  • En la cuarta pregunta indicaste <em>dar</em> 20 pesos si tu pareja expresa la '
+            'preferencia azul.<br>'
+            '  • Tu pareja sí va a decidir entre darte o quitarte 20 pesos dependiendo de lo que le expresas y además te expresa la preferencia azul.<br>'
             '¿Qué puedes afirmar con lo que sabes hasta ahora?'
         ),
         choices=[
@@ -455,9 +445,9 @@ class Player(BasePlayer):
         blank=False,
     )
 
-    comp_q7 = models.StringField(
+    comp_q6 = models.StringField(
         label=(
-            '7. “Si declaras en la <strong>tercera pregunta</strong> (disposición a pagar para decidir dar o quitar 20 pesos a tu pareja) un valor '
+            '6. “Si declaras en la <strong>tercera pregunta</strong> (sobre la disposición a pagar para decidir dar o quitar 20 pesos a tu pareja) un valor '
             'máximo mayor al que realmente estarías dispuesto a pagar, '
             'podrías terminar pagando un costo demasiado alto.”'
         ),
@@ -468,21 +458,21 @@ class Player(BasePlayer):
         blank=False,
     )
 
-    comp_q8 = models.StringField(
+    comp_q7 = models.StringField(
         label=(
-            '8. Datos del tema:<br>'
-            '  • Tercera pregunta: estás dispuesto a pagar 15 pesos o menos para decidir dar o quitar 20 pesos a tu pareja.<br>'
-            '  • Costo Z: seleccionamos aleatoriamente un costo Z de 18 pesos.<br>'
-            '  • Opinión privada en la mayoría.<br>'
-            '  • Quinta pregunta: El procentaje mínimo con el que estarías dispuesto a dar tu opinión alterna a tu opinión privada es de Y = 50 %.<br>'
-            '  • 60 % de los participantes pagaron para decidir dar o quitar 20 pesos a su pareja.<br><br>'
+            '7. Considera el siguiente escenario:<br>'
+            '  • En la tercera pregunta indicaste que estás dispuesto a pagar 15 pesos o menos para decidir dar o quitar 20 pesos a tu pareja.<br>'
+            '  • Seleccionamos aleatoriamente un costo Z de 18 pesos.<br>'
+            '  • Tu opinión privada está en la mayoría.<br>'
+            '  • En la quinta pregunta indicaste que el procentaje mínimo con el que estarías dispuesto a dar tu opinión alterna a tu opinión privada es de Y = 50 %.<br>'
+            '  • El 60 % de los participantes pagaron para decidir dar o quitar 20 pesos a su pareja.<br><br>'
             'Selecciona lo que sucede:'
         ),
         choices=[
-            ('a', 'a) No pagas, expresas tu opinión privada y recibes 10 pesos.'),
-            ('b', 'b) No pagas, expresas la opinión alterna y no recibes 10 pesos.'),
-            ('c', 'c) Pagas 18 pesos, expresas tu opinión privada y recibes 10 pesos.'),
-            ('d', 'd) Pagas 18 pesos, expresas la opinión alterna y no recibes 10 pesos.'),
+            ('a', 'a) No pagas y expresas tu opinión privada.'),
+            ('b', 'b) No pagas y expresas la opinión alterna a tu opinión privada'),
+            ('c', 'c) Pagas 18 pesos y expresas tu opinión privada.'),
+            ('d', 'd) Pagas 18 pesos y expresas la opinión alterna a tu opinión privada.'),
         ],
         blank=False,
     )
@@ -494,7 +484,7 @@ for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
         models.IntegerField(
             min=0,
             max=10,
-            blank=False, label=( f'En una escala del 1 al 10, ¿Qué tan seguro estás sobre tu opinión sobre el tema <strong>{topic}</strong>?' ) ), )
+            blank=False, label=( f'Supón que te volviéramos a preguntar diez veces más sobre cuál de las posturas se acerca más a tu opinión sobre el tema <strong>{topic}</strong>. Imagínate que te volviéramos a preguntar esto tiempo después, y en diferentes estados físicos y emocionales (por ejemplo, más o menos cansado(a), más o menos hambriento(a), más o menos contento(a), etc). ¿En cuántas de las diez veces que preguntamos nos darías la misma respuesta?' ) ), )
 
 # ─── 1) ¿Cuánto dinero pagaría?  (Currency / Integer) ───────────────
 for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
@@ -653,8 +643,7 @@ class Threshold(TimelineMixin, Page):
 
 
 page_sequence = [
-    ConsentForm,
-    Intro,          # instrucciones
+    ConsentForm,         # instrucciones
     Comprehension,  # ← cuestionario recién creado
     ComprehensionFeedback,
     PersonalInfo,
