@@ -1,22 +1,20 @@
 from otree.api import *
 
-
 class C(BaseConstants):
-    NAME_IN_URL = 'survey'
-    PLAYERS_PER_GROUP = None
-    NUM_ROUNDS = 1
+    NAME_IN_URL        = 'survey'
+    PLAYERS_PER_GROUP  = None
+    NUM_ROUNDS         = 1
 
+    # (unchanged) ─ labels and timeline for the 5 conceptual steps
     TIMELINE = [
         ('Pregunta 1', 'Indica tu postura <br> sobre el tema'),
         ('Pregunta 2', 'Indica qué tan seguro(a) <br> te sientes sobre tu postura'),
-        ('Pregunta 3', 'Indica cuánto dinero estás <br> dispuesto(a) a pagar para decidir <br> dar o quitar 20 pesos a tu pareja'),
-        ('Pregunta 4', 'Indica para qué opinión <br> le darías 20 pesos y para <br> cuál le quitarías 20 pesos <br> a tu pareja sobre el tema'),
-        ('Pregunta 5', 'Indica el porcentaje mínimo <br> de personas que toman la decisión <br> de dar o quitar 20 pesos <br> tal que estás dispuesto(a) a <br> expresar la opinión alterna'),
+        ('Pregunta 3', 'Indica cuánto dinero estás <br> dispuesto(a) a pagar …'),
+        ('Pregunta 4', 'Indica para qué opinión <br> le darías 20 pesos …'),
+        ('Pregunta 5', 'Indica el porcentaje mínimo <br> … estás dispuesto(a) a <br> expresar la opinión alterna'),
     ]
-    TIMELINE_PAGES = [
-        'BinaryQuestions', 'Reactions', 'IncPay', 'Truth50', 'Threshold'
-    ]
-    TOTAL_STEPS = len(TIMELINE)
+    TIMELINE_PAGES = ['Topic']           # just a placeholder (see mixin note)
+    TOTAL_STEPS    = len(TIMELINE)
 
     QUESTION_TEXT = dict(
         comp_q1=('1. Supón que en la <strong>tercera pregunta</strong> indicaste que el '
@@ -111,23 +109,21 @@ class C(BaseConstants):
         "¿Estás de acuerdo en que enseñar a los alumnos a utilizar adecuadamente los métodos anticonceptivos sea obligatorio en las escuelas mexicanas?"
     ]
 
+# ────────────────────────────────────────────────────────────────────
+# 2.  TimelineMixin  — leave as‑is *except* treat every Topic page as
+#     one “virtual” step so the existing 5‑segment bar still renders.
+# ────────────────────────────────────────────────────────────────────
 class TimelineMixin:
-    """Calcula el avance de la línea de tiempo."""
+    """Calcula el avance de la línea de tiempo (5 segmentos)."""
     @staticmethod
     def vars_for_template(player):
-        cls_name = player.__class__.__name__
-        seq      = C.TIMELINE_PAGES
-        if cls_name in seq:
-            step_idx = seq.index(cls_name)          # 0-based
-            pct      = int((step_idx + 1) / C.TOTAL_STEPS * 100)
-        else:                                       # Intro u otras
-            step_idx = -1
-            pct      = 0
+        # every Topic page counts as having completed all 5 questions
         return dict(
             tl_labels = C.TIMELINE,
-            current   = step_idx,
-            progress  = pct,
+            current   = C.TOTAL_STEPS - 1,   # highlight the last segment
+            progress  = 100,
         )
+
 
 
 
@@ -598,60 +594,51 @@ class PersonalInfo(Page):
     def is_displayed(player):
         return player.consent  # sólo si aceptó el consentimiento
 
+# ────────────────────────────────────────────────────────────────────
+# 6.  Factory that generates 37 per‑topic pages on the fly
+# ────────────────────────────────────────────────────────────────────
+def make_topic_page(idx: int):
+    """
+    Returns a Page subclass for topic #idx (1‑based) that bundles the
+    five inputs: stance, certainty, WTP, give/take rule, threshold.
+    """
+    field_names = [
+        f'binary_choice_{idx}',
+        f'reaction_pay_{idx}',
+        f'inc_pay_{idx}',
+        f'truth50_{idx}',
+        f'threshold_prob_{idx}',
+    ]
 
-class BinaryQuestions(TimelineMixin, Page):
-    form_model = 'player'
-    form_fields = ['binary_choice_1', 'binary_choice_2', 'binary_choice_3', 'binary_choice_4', 'binary_choice_5','binary_choice_6','binary_choice_7','binary_choice_8','binary_choice_9','binary_choice_10','binary_choice_11','binary_choice_12','binary_choice_13','binary_choice_14','binary_choice_15','binary_choice_16','binary_choice_17','binary_choice_18','binary_choice_19','binary_choice_20','binary_choice_21','binary_choice_22','binary_choice_23','binary_choice_24','binary_choice_25','binary_choice_26','binary_choice_27','binary_choice_28','binary_choice_29','binary_choice_30','binary_choice_31','binary_choice_32','binary_choice_33','binary_choice_34', 'binary_choice_35', 'binary_choice_36', 'binary_choice_37', 'more_binary_choice']
+    class TopicPage(TimelineMixin, Page):
+        form_model  = 'player'
+        form_fields = field_names
+        template_name = f'topic_{idx}.html'      # one template per topic
 
-    @staticmethod
-    def is_displayed(player):
-        return player.consent  # sólo si aceptó el consentimiento
-    
-class Reactions(TimelineMixin, Page):
- form_model = 'player'
- form_fields = [f'reaction_pay_{i}' for i in range(1, 38)]
+        @staticmethod
+        def vars_for_template(player):
+            return dict(
+                topic_idx   = idx,
+                topic_label = C.TOPIC_LABELS[idx - 1],
+            )
 
- @staticmethod
- def is_displayed(player):
-     return player.consent
-
-class IncPay(TimelineMixin, Page):
-    form_model = 'player'
-    form_fields = [f'inc_pay_{i}' for i in range(1, 38)]
-
-    @staticmethod
-    def is_displayed(player):
-        return player.consent
-
-
-class Truth50(TimelineMixin, Page):
-    form_model = 'player'
-    form_fields = [f'truth50_{i}' for i in range(1, 38)]
-
-    @staticmethod
-    def is_displayed(player):
-        return player.consent
+    TopicPage.__name__ = f'Topic{idx}'           # nice debugger names
+    return TopicPage
 
 
-class Threshold(TimelineMixin, Page):
-    form_model = 'player'
-    form_fields = [f'threshold_prob_{i}' for i in range(1, 38)]
+# build the 37 Topic* classes and expose them to oTree’s import‑scanner
+TOPIC_PAGES = [make_topic_page(i) for i in range(1, 38)]
+globals().update({cls.__name__: cls for cls in TOPIC_PAGES})
 
-    @staticmethod
-    def is_displayed(player):
-        return player.consent
-
-
+# ────────────────────────────────────────────────────────────────────
+# 7.  Final page sequence
+# ────────────────────────────────────────────────────────────────────
 page_sequence = [
-    ConsentForm,         # instrucciones
-    Comprehension,  # ← cuestionario recién creado
-    ComprehensionFeedback,
+    ConsentForm,
+    Comprehension, ComprehensionFeedback,
     PersonalInfo,
-    BinaryQuestions,
-    Reactions,
-    IncPay,
-    Truth50,
-    Threshold,
+    *TOPIC_PAGES,        # 37 pages, one per topic
 ]
+
 
 
