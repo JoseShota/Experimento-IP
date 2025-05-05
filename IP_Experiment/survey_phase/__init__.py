@@ -613,7 +613,8 @@ def make_topic_page(idx: int):
     class TopicPage(TimelineMixin, Page):
         form_model  = 'player'
         form_fields = field_names
-        template_name = f'topic_{idx}.html'      # one template per topic
+        template_name = 'topic_generic.html'     # <<— use one generic template
+      # one template per topic
 
         @staticmethod
         def vars_for_template(player):
