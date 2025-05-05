@@ -539,7 +539,7 @@ class ConsentForm(Page):
             return 'Debes aceptar para continuar.'
     
 
-class Intro(TimelineMixin, Page):
+class Intro(Page):
     @staticmethod
     def is_displayed(player):
         return player.consent  # sólo si aceptó el consentimiento
@@ -605,10 +605,11 @@ def make_topic_page(idx):
         f'threshold_prob_{idx}',
     ]
 
-    class TopicPage(TimelineMixin, Page):
+    class TopicPage(Page):
         form_model    = 'player'
         form_fields   = field_names
-        template_name = 'topic_generic.html'
+        template_name = 'survey_phase/topic_generic.html'
+
 
         @staticmethod
         def vars_for_template(player):
@@ -634,6 +635,7 @@ globals().update({cls.__name__: cls for cls in TOPIC_PAGES})
 # ────────────────────────────────────────────────────────────────────
 page_sequence = [
     ConsentForm,
+    Intro,
     Comprehension, ComprehensionFeedback,
     PersonalInfo,
     *TOPIC_PAGES,        # 37 pages, one per topic
