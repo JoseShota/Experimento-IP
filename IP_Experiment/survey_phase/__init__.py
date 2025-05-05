@@ -13,7 +13,7 @@ class C(BaseConstants):
         ('Pregunta 4', 'Indica para qué opinión <br> le darías 20 pesos …'),
         ('Pregunta 5', 'Indica el porcentaje mínimo <br> … estás dispuesto(a) a <br> expresar la opinión alterna'),
     ]
-    TIMELINE_PAGES = ['Topic']           # just a placeholder (see mixin note)
+   
     TOTAL_STEPS    = len(TIMELINE)
 
     QUESTION_TEXT = dict(
@@ -114,13 +114,12 @@ class C(BaseConstants):
 #     one “virtual” step so the existing 5‑segment bar still renders.
 # ────────────────────────────────────────────────────────────────────
 class TimelineMixin:
-    """Calcula el avance de la línea de tiempo (5 segmentos)."""
+    """Render the 5-segment progress bar at 100% on every topic page."""
     @staticmethod
     def vars_for_template(player):
-        # every Topic page counts as having completed all 5 questions
         return dict(
             tl_labels = C.TIMELINE,
-            current   = C.TOTAL_STEPS - 1,   # highlight the last segment
+            current   = C.TOTAL_STEPS - 1,
             progress  = 100,
         )
 
@@ -597,11 +596,7 @@ class PersonalInfo(Page):
 # ────────────────────────────────────────────────────────────────────
 # 6.  Factory that generates 37 per‑topic pages on the fly
 # ────────────────────────────────────────────────────────────────────
-def make_topic_page(idx: int):
-    """
-    Returns a Page subclass for topic #idx (1‑based) that bundles the
-    five inputs: stance, certainty, WTP, give/take rule, threshold.
-    """
+def make_topic_page(idx):
     field_names = [
         f'binary_choice_{idx}',
         f'reaction_pay_{idx}',
@@ -611,24 +606,27 @@ def make_topic_page(idx: int):
     ]
 
     class TopicPage(TimelineMixin, Page):
-        form_model  = 'player'
-        form_fields = field_names
-        template_name = 'topic_generic.html'     # <<— use one generic template
-      # one template per topic
+        form_model    = 'player'
+        form_fields   = field_names
+        template_name = 'topic_generic.html'
 
         @staticmethod
         def vars_for_template(player):
-            return dict(
-                topic_idx   = idx,
-                topic_label = C.TOPIC_LABELS[idx - 1],
-            )
+            # start with the mixin’s progress-bar context
+            context = TimelineMixin.vars_for_template(player)
+            # then add your per-topic bits
+            context.update({
+                'topic_idx':   idx,
+                'topic_label': C.TOPIC_LABELS[idx - 1],
+            })
+            return context
 
-    TopicPage.__name__ = f'Topic{idx}'           # nice debugger names
+    TopicPage.__name__ = f'Topic{idx}'
     return TopicPage
 
 
-# build the 37 Topic* classes and expose them to oTree’s import‑scanner
-TOPIC_PAGES = [make_topic_page(i) for i in range(1, 38)]
+# Build Topic1…Topic37 and register
+TOPIC_PAGES = [make_topic_page(i) for i in range(1, len(C.TOPIC_LABELS) + 1)]
 globals().update({cls.__name__: cls for cls in TOPIC_PAGES})
 
 # ────────────────────────────────────────────────────────────────────

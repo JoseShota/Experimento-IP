@@ -1,0 +1,21 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}Tema {{ topic_idx }}{% endblock %}
+
+{% block content %}
+  {# progress bar, if you want it #}
+  {# {% include "global/timeline.html" %} #}
+
+  <h4>{{ topic_label }}</h4>
+
+  <ol class="list-group list-group-numbered">
+    {% for field in form %}
+      <li class="list-group-item">
+        {{ formfield field }}
+      </li>
+    {% endfor %}
+  </ol>
+
+  {% next_button "Continuar" %}
+{% endblock %}
