@@ -1,5 +1,6 @@
 import random
 from otree.api import *
+from markupsafe import Markup 
 
 class C(BaseConstants):
     NAME_IN_URL        = 'survey'
@@ -9,10 +10,10 @@ class C(BaseConstants):
     # (unchanged) ─ labels and timeline for the 5 conceptual steps
     TIMELINE = [
         ('Pregunta 1', 'Indica tu postura <br> sobre el tema'),
-        ('Pregunta 2', 'Indica qué tan seguro(a) <br> te sientes sobre tu postura'),
-        ('Pregunta 3', 'Indica cuánto dinero estás <br> dispuesto(a) a pagar …'),
-        ('Pregunta 4', 'Indica para qué opinión <br> le darías 20 pesos …'),
-        ('Pregunta 5', 'Indica el porcentaje mínimo <br> … estás dispuesto(a) a <br> expresar la opinión alterna'),
+        ('Pregunta 2', 'Indica qué tan <br> seguro(a) te sientes <br> sobre tu postura'),
+        ('Pregunta 3', 'Indica cuánto dinero <br> estás dispuesto(a) a <br> pagar para decidir dar <br> o quitar 20 pesos a <br> tu pareja'),
+        ('Pregunta 4', 'Indica para cuál opinión <br> le darías 20 pesos y para <br> cuál le quitarías 20 <br> pesos a tu pareja <br> sobre el tema'),
+        ('Pregunta 5', 'Indica el porcentaje <br> mínimo de personas <br> que toman la decisión de <br> dar o quitar 20 pesos tal <br> que expresas la <br> opinión alterna'),
     ]
    
     TOTAL_STEPS    = len(TIMELINE)
@@ -44,8 +45,6 @@ class C(BaseConstants):
             '  • En la cuarta pregunta indicaste <em>dar</em> 20 pesos si tu pareja expresa la '
             'preferencia azul.<br>'
             '  • Tu pareja sí va a decidir entre darte o quitarte 20 pesos dependiendo de lo que le expresas y además te expresa la preferencia azul.<br>'
-            '¿Qué puedes afirmar con lo que sabes hasta ahora?'
-            '  • Tu pareja sí puede decidir entre darte o quitarte 20 pesos dependiendo de lo que le expresas y además te expresa la primera postura del tema.<br>'
             '¿Qué puedes afirmar con lo que sabes hasta ahora?'),
         comp_q6=('6. “Si declaras en la <strong>tercera pregunta</strong> (disposición a pagar para decidir dar o quitar 20 pesos a tu pareja) un valor '
             'máximo mayor al que realmente estarías dispuesto a pagar, '
@@ -67,6 +66,59 @@ class C(BaseConstants):
         comp_q5='a',
         comp_q6='a',
         comp_q7='a',
+    )
+
+    CORRECT_EXPLANATIONS = dict(
+        comp_q1='Indicaste un X mayor al Z que seleccionamos aleatoriamente. Es decir, estás dispuesto(a) a pagar un costo mayor que el costo actual para tomar la decisión de dar o quitar 20 a tu pareja, pues 13 es mayor a 12. Esto implica que tomarás la decisión y el costo de tomarlo es el que seleccionamos de 12 pesos.',
+        comp_q2='Sólo 2 y 4 son ciertas: las respuestas son anónimas, nadie podrá identificarte ni siquiera los investigadores. Las respuestas a la pregunta uno y dos no afectan tus pagos.',
+        comp_q3='El valor que indiques para Y es importante para entender en qué situaciones exresarías la oinión alterna a tu opinión privada. Las dos condiciones necesarias para que pase esto es que: (1) tu opinión privada esté en la minoría y (2) hayan más personas que toman la decisión de dar o quitar 20 pesos a su pareja que el porcentaje Y que indicaste.',
+        comp_q4='Las dos condiciones necesarias para que pase esto es que: (1) tu opinión privada esté en la minoría y (2) hayan más personas que toman la decisión de dar o quitar 20 pesos a su pareja que el porcentaje Y que indicaste.',
+        comp_q5='Todos los participantes reciben una compensación base de 50 pesos por participar en la encuesta. El valor X que indicaste es mayor al Z que seleccionamos aleatoriamente. Entonces lo único que sabes es que recibes los 50 pesos y cómo estás dispuesto a pagar un costo mayor al costo por decidir de 8 pesos, entonces pagas ese costo.',
+        comp_q6='Verdadero: si indicas un valor de X mayor al que estás dispuesto a pagar corres el riesgo de que seleccionemos un Z igual a ese costo. Eso quiere decir, que terminaste pagando un costo mayor al que realmente estás dispuesto a pagar.',
+        comp_q7='Indicaste un X menor al Z que seleccionamos aleatroriamente. Es decir, estás dispuesto(a) a pagar un costo menor que el costo actual para tomar la decisión de dar o quitar 20 a tu pareja, pues 15 es menor a 18. Esto implica que no tomarás la decisión. Como tu opinión privada está en la mayoría, entonces expresas tu opinón privada.',
+    )   
+
+    QUESTION_OPTIONS = dict(
+        comp_q1=[
+            ('a', 'a) Pagas 12 pesos y puedes decidir.'),
+            ('b', 'b) Pagas 13 pesos y puedes decidir.'),
+            ('c', 'c) No pagas nada y no puedes decidir.'),
+            ('d', 'd) No pagas nada pero sí puedes decidir.'),
+        ],
+        comp_q2=[
+            ('1-3', 'a) Sólo 1 y 3.'),
+            ('1-2', 'b) Sólo 1 y 2.'),
+            ('2-4', 'c) Sólo 2 y 4.'),
+            ('3-4', 'd) Sólo 3 y 4.'),
+        ],
+        comp_q3=[
+            ('a', 'a) Si además mi opinión privada es la mayoritaria, entonces expreso la opinión alterna a mi pareja.'),
+            ('b', 'b) Si además contesté la segunda pregunta, sobre qué tan seguro estoy de mi respuesta a la primera pregunta, con 5 o menos, entonces expreso mi opinión privada a mi pareja'),
+            ('c', 'c) Si además mi opinión privada es la minoritaria, entonces expreso la opinión alterna a mi pareja'),
+            ('d', 'd) Si además seleccionamos un costo Z mayor al costo máximo que estoy dispuesto a pagar para decidir dar o quitar 20 pesos a mi pareja, entonces expreso mi opinión privada a mi pareja.'),
+        ],
+        comp_q4=[
+            ('a', 'a) Cuando el costo Z que seleccionamos para ese tema es menor que el monto máximo que estás dispuesto a pagar para decidir dar o quitar 20 pesos a tu pareja después de expresarte una opinión sobre el tema.'),
+            ('b', 'b) Cuando tu opinión privada está en mayoría y el procentaje de gente que toma la decisión es exactamente tu Y'),
+            ('c', 'c) Siempre que tu pareja tenga la misma opinión privada que tú.'),
+            ('d', 'd) Cuando tu opinión privada está en minoría y el procentaje de gente que toma la decisión es mayor o igual a tu Y.'),
+        ],
+        comp_q5=[
+            ('a', 'a) Recibí 50 pesos por participar en la encuesta y se me restaron 8 pesos por decidir dar o quitar 20 pesos a mi pareja.'),
+            ('b', 'b) Mi pareja decidió quitarme 20 pesos. Se me restan de los 50 pesos que tengo por participar en la encuesta.'),
+            ('c', 'c) Mi pago final hasta ahora es de 50 pesos.'),
+            ('d', 'd) No tengo la información suficiente para afirmar que ha pasado algo con mis pagos.'),
+        ],
+        comp_q6=[
+            ('a', 'a) Verdadero'),
+            ('b', 'b) Falso'),
+        ],
+        comp_q7=[
+            ('a', 'a) No pagas y expresas tu opinión privada.'),
+            ('b', 'b) No pagas y expresas la opinión alterna a tu opinión privada'),
+            ('c', 'c) Pagas 18 pesos y expresas tu opinión privada.'),
+            ('d', 'd) Pagas 18 pesos y expresas la opinión alterna a tu opinión privada.'),
+        ],
     )
 
     # ► Etiquetas en el mismo orden que binary_choice_1 … binary_choice_37
@@ -488,7 +540,10 @@ for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
         models.IntegerField(
             min=0,
             max=10,
-            blank=False, label=( f'Supón que te volviéramos a preguntar diez veces más sobre cuál de las posturas se acerca más a tu opinión sobre el tema <strong>{topic}</strong>. Imagínate que te volviéramos a preguntar esto tiempo después, y en diferentes estados físicos y emocionales (por ejemplo, más o menos cansado(a), más o menos hambriento(a), más o menos contento(a), etc). ¿En cuántas de las diez veces que preguntamos nos darías la misma respuesta?' ) ), )
+            initial=5,
+            blank=False, label=Markup( f'Supón que te volviéramos a preguntar diez veces más sobre cuál de las posturas se acerca más a tu opinión sobre el tema <strong>{topic}</strong>. Imagínate que te volviéramos a preguntar esto tiempo después, y en diferentes estados físicos y emocionales (por ejemplo, más o menos cansado(a), más o menos hambriento(a), más o menos contento(a), etc). ¿En cuántas de las diez veces que preguntamos nos darías la misma respuesta?' )
+        ),
+    )
 
 # ─── 1) ¿Cuánto dinero pagaría?  (Currency / Integer) ───────────────
 for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
@@ -498,11 +553,12 @@ for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
         models.IntegerField(          # usa CurrencyField si conviertes a puntos
             min=0,
             max=20,
+            initial=10,
             blank=False,
-            label=(
+            label=Markup(
                 f'Para el tema <strong>{topic}</strong>: Tú tienes que pagar un costo para poder decidir si darle o quitarle 20 pesos a tu pareja dependiendo de la opinión que exprese. Este costo puede ser desde 0 pesos (en este caso sería gratis para ti tomar la decisión)'
-                'hasta 20 pesos. ¿Cuánto dinero estás dispuesto(a) a pagar para que puedas tomar esa decisión?'
-            )
+                ' hasta 20 pesos. ¿Cuánto dinero estás dispuesto(a) a pagar para que puedas tomar esa decisión?'
+            ),
         ),
     )
 
@@ -529,9 +585,10 @@ for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
         models.IntegerField(
             min=0,
             max=100,
-            label=(
+            initial=50,
+            label=Markup(
                 f'Para el tema <strong>{topic}</strong>: Supón que tu opinión privada es la opinión minoritaria entre los participantes en esta sesión y al menos Y por ciento de los participantes en esta sesión pagaron el costo para decidir si le dan o le quitan 20 pesos a su pareja, ¿Cuál es el valor de Y mínimo con el que estás dispuesto a expresar la opinión alterna a tu opinión privada?'
-            )
+            ),
         ),
     )
 
@@ -552,10 +609,28 @@ class ConsentForm(Page):
         return player.round_number == 1
     
 
+# ─── Intro ────────────────────────────────────────────────────────
 class Intro(Page):
+
     @staticmethod
     def is_displayed(player):
+        # Intro sólo en la primera ronda
         return player.round_number == 1
+
+    @staticmethod
+    def vars_for_template(player):
+        """
+        Datos para el include "global/timeline.html"
+        - tl_labels: lista de pasos (ya la tienes en C.TIMELINE)
+        - current:   índice del paso activo (0‑basado). 0 = Pregunta 1.
+        - progress:  % de barra completada; aquí 0 porque aún no se ha respondido nada.
+        """
+        return dict(
+            tl_labels = C.TIMELINE,
+            current   = -1,          # «Pregunta 1» aparece azul (activo)
+            progress  = 0,          # barra oculta (se muestra cuando >0)
+        )
+
 
 class Comprehension(Page):
     form_model = 'player'
@@ -590,13 +665,19 @@ class Comprehension(Page):
 class ComprehensionFeedback(Page):
     @staticmethod
     def vars_for_template(player):
-        results = player.participant.vars.get('comp_results', {})
-        score   = player.participant.vars.get('comp_score', 0)
+        results = player.participant.vars['comp_results']
+        score   = player.participant.vars['comp_score']
+
+        for fname, info in results.items():
+            info['options']     = C.QUESTION_OPTIONS[fname]
+            info['explanation'] = C.CORRECT_EXPLANATIONS[fname]
+
         return dict(
             results=results,
             score=score,
             total=len(C.CORRECT_ANSWERS),
         )
+
 
     @staticmethod
     def is_displayed(player):

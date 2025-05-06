@@ -1,63 +1,152 @@
 {% extends "global/Page.html" %}
 {% load otree %}
 
-{% block title %}Tema {{ topic_idx }}{% endblock %}
+{% block title %}Tema: {{ topic_label }}{% endblock %}
 
 {% block content %}
-  <h4>{{ topic_label }}</h4>
+  <style>
+    /* ---- Bubble que sigue al knob ---- */
+    .range-wrap   { position: relative; width: 100%; }
+    .range-value  {
+        position: absolute;
+        top: -1.8rem;                       /* arriba de la pista   */
+        background: #f8f9fa3b;
+        padding: .1rem .5rem;
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+        font-size: .8rem;
+        transform: translateX(-50%);
+        pointer-events: none;               /* no interfiere clicks */
+        white-space: nowrap;
+    }
+
+    /* ---- Espacio extra entre la pregunta y el slider ---- */
+    .slider-row { margin-top: 2rem; }        /* ajusta a tu gusto */
+  </style>
+
+<div class="alert alert-primary mb-4">
+  A continuación responderás las cinco preguntas para el tema <strong>{{ topic_label }}</strong>. </div>
 
   <ol class="list-group list-group-numbered">
     {% for field in form %}
       <li class="list-group-item">
+
+        {# ─── Slider reaction_pay 0–10 ──────────────────────────────── #}
         {% if "reaction_pay" in field.name %}
-          {# Pregunta 2: slider de 0 a 10 #}
           <label for="id_{{ field.name }}">{{ field.label }}</label>
-          <input
-            type="range"
-            name="{{ field.name }}"
-            id="id_{{ field.name }}"
-            min="0" max="10" step="1"
-            value="{{ field.value|default:'0' }}"
-            oninput="document.getElementById('out_{{ field.name }}').innerText=this.value"
-            required>
-          <output id="out_{{ field.name }}">{{ field.value|default:'0' }}</output>
 
+          <div class="d-flex align-items-center slider-row">
+            <span class="left-label">Nunca daría la misma respuesta</span>
+
+            <div class="range-wrap flex-grow-1">
+              <input type="range"
+                     name="{{ field.name }}"
+                     id="id_{{ field.name }}"
+                     min="0" max="10" step="1"
+                     value="{{ field.data or 0 }}"
+                     class="form-range"
+                     oninput="updateBubble(this)"
+                     required>
+              <span class="range-value"
+                    id="bubble_{{ field.name }}">{{ field.data or 0 }}</span>
+            </div>
+
+            <span class="right-label">Siempre daría la misma respuesta</span>
+          </div>
+          {{ formfield_errors field.name }}
+
+        {# ─── Slider inc_pay 0–20 ──────────────────────────────────── #}
         {% elif "inc_pay" in field.name %}
-          {# Pregunta 3: slider de 0 a 20 #}
           <label for="id_{{ field.name }}">{{ field.label }}</label>
-          <input
-            type="range"
-            name="{{ field.name }}"
-            id="id_{{ field.name }}"
-            min="0" max="20" step="1"
-            value="{{ field.value|default:'0' }}"
-            oninput="document.getElementById('out_{{ field.name }}').innerText=this.value"
-            required>
-          <output id="out_{{ field.name }}">{{ field.value|default:'0' }}</output>
 
+          <div class="d-flex align-items-center slider-row">
+            <span class="left-label">No estoy dispuesto(a) a pagar</span>
+
+            <div class="range-wrap flex-grow-1">
+              <input type="range"
+                     name="{{ field.name }}"
+                     id="id_{{ field.name }}"
+                     min="0" max="20" step="1"
+                     value="{{ field.data or 0 }}"
+                     class="form-range"
+                     oninput="updateBubble(this)"
+                     required>
+              <span class="range-value"
+                    id="bubble_{{ field.name }}">{{ field.data or 0 }}</span>
+            </div>
+
+            <span class="right-label">Estoy dispuesto(a) a pagar 20 pesos</span>
+          </div>
+          {{ formfield_errors field.name }}
+
+        {# ─── Slider threshold_prob 0–100 ──────────────────────────── #}
         {% elif "threshold_prob" in field.name %}
-          {# Pregunta 5: slider continuo de 0 a 100 con paso .1 #}
           <label for="id_{{ field.name }}">{{ field.label }}</label>
-          <input
-            type="range"
-            name="{{ field.name }}"
-            id="id_{{ field.name }}"
-            min="0" max="100" step="0.1"
-            value="{{ field.value|default:'0' }}"
-            oninput="document.getElementById('out_{{ field.name }}').innerText=this.value"
-            required>
-          <output id="out_{{ field.name }}">{{ field.value|default:'0' }}</output>
 
+          <div class="d-flex align-items-center slider-row">
+            <span class="left-label">Expresaría la opinión alterna aunque nadie pague</span>
+
+            <div class="range-wrap flex-grow-1">
+              <input type="range"
+                     name="{{ field.name }}"
+                     id="id_{{ field.name }}"
+                     min="0" max="100" step="1"
+                     value="{{ field.data or 0 }}"
+                     class="form-range"
+                     oninput="updateBubble(this)"
+                     required>
+              <span class="range-value"
+                    id="bubble_{{ field.name }}">{{ field.data or 0 }}</span>
+            </div>
+
+            <span class="right-label">Sólo expresaría la opinión alterna si todos están dispuestos a pagar</span>
+          </div>
+          {{ formfield_errors field.name }}
+
+        {# ─── Cualquier otro campo ─────────────────────────────────── #}
         {% else %}
-          {# Para las demás preguntas (1 y 4) usamos el render por defecto #}
           {{ formfield field }}
         {% endif %}
+
       </li>
     {% endfor %}
   </ol>
 
   {% next_button "Continuar" %}
+
+  <script>
+    /* Mantiene el globo sincronizado y posicionado */
+    function updateBubble(range) {
+        const bubble = document.getElementById('bubble_' + range.name);
+        const val    = range.value;
+        const min    = Number(range.min || 0);
+        const max    = Number(range.max || 100);
+        const pct    = (val - min) * 100 / (max - min);
+        bubble.textContent = val;
+
+        /* 8 px ≈ mitad del ancho del thumb; ajusta si usas un estilo distinto */
+        bubble.style.left = `calc(${pct}% + (${8 - pct * 0.15}px))`;
+    }
+
+    /* Inicializa todos los sliders al cargar la página */
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('input[type=range]').forEach(updateBubble);
+    });
+  </script>
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
