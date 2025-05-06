@@ -1,13 +1,10 @@
-import logging
 import random
 from otree.api import *
-
-logger = logging.getLogger(__name__)
 
 class C(BaseConstants):
     NAME_IN_URL        = 'survey'
     PLAYERS_PER_GROUP  = None
-    NUM_ROUNDS         = 1
+
 
     # (unchanged) ─ labels and timeline for the 5 conceptual steps
     TIMELINE = [
@@ -113,6 +110,8 @@ class C(BaseConstants):
         "¿Estás de acuerdo en que enseñar a los alumnos a utilizar adecuadamente los métodos anticonceptivos sea obligatorio en las escuelas mexicanas?"
     ]
 
+    NUM_ROUNDS      = len(TOPIC_LABELS)   # 37
+
 # ────────────────────────────────────────────────────────────────────
 # 2.  TimelineMixin  — leave as‑is *except* treat every Topic page as
 #     one “virtual” step so the existing 5‑segment bar still renders.
@@ -127,14 +126,17 @@ class TimelineMixin:
             progress  = 100,
         )
 
+
 class Subsession(BaseSubsession):
     def creating_session(self):
+        # build a list [1, 2, …, NUM_ROUNDS] and shuffle it
+        order = list(range(1, C.NUM_ROUNDS + 1))
+        random.shuffle(order)
         for p in self.get_players():
-            order = list(range(1, len(C.TOPIC_LABELS) + 1))
-            random.shuffle(order)
-            logger.info(f"Shuffled for P{p.id_in_subsession}: {order}")
             p.participant.vars['topic_order'] = order
-            p.participant.vars['topic_idx'] = 0
+
+
+
 
 
 class Group(BaseGroup):
@@ -545,11 +547,15 @@ class ConsentForm(Page):
         if not values['consent']:
             return 'Debes aceptar para continuar.'
     
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number == 1
+    
 
 class Intro(Page):
     @staticmethod
     def is_displayed(player):
-        return player.consent  # sólo si aceptó el consentimiento
+        return player.round_number == 1
 
 class Comprehension(Page):
     form_model = 'player'
@@ -573,6 +579,10 @@ class Comprehension(Page):
         # SOLO datos primitivos → siempre json-/pickle-safe
         player.participant.vars.update(comp_results=res, comp_score=score)
 
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number == 1
+
 
 
 
@@ -588,6 +598,9 @@ class ComprehensionFeedback(Page):
             total=len(C.CORRECT_ANSWERS),
         )
 
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number == 1
 
 
 
@@ -598,60 +611,49 @@ class PersonalInfo(Page):
     
     @staticmethod
     def is_displayed(player):
-        return player.consent  # sólo si aceptó el consentimiento
+        return player.round_number == 1
+    
+    @staticmethod
+    def vars_for_template(player):
+        return {
+            'debug_vars': player.participant.vars
+        }
+
 
 # ────────────────────────────────────────────────────────────────────
 # 6.  Factory that generates 37 per‑topic pages on the fly
 # ────────────────────────────────────────────────────────────────────
-def make_topic_page(idx):
-    field_names = [
-        f'binary_choice_{idx}',
-        f'reaction_pay_{idx}',
-        f'inc_pay_{idx}',
-        f'truth50_{idx}',
-        f'threshold_prob_{idx}',
-    ]
+class Topic(Page):
+    form_model = 'player'
 
-    class TopicPage(Page):
-        form_model    = 'player'
-        form_fields   = field_names
-        template_name = 'survey_phase/topic_generic.html'
+    @staticmethod
+    def get_form_fields(player):
+        # Fallback for Preview mode (which skips creating_session)
+        if 'topic_order' not in player.participant.vars:
+            fallback = list(range(1, C.NUM_ROUNDS + 1))
+            random.shuffle(fallback)
+            player.participant.vars['topic_order'] = fallback
+        # Pick the topic index for this round
+        idx = player.participant.vars['topic_order'][player.round_number - 1]
+        # Return the five fields for that topic
+        return [
+            f'binary_choice_{idx}',
+            f'reaction_pay_{idx}',
+            f'inc_pay_{idx}',
+            f'truth50_{idx}',
+            f'threshold_prob_{idx}',
+        ]
 
-        @staticmethod
-        def is_displayed(player):
-            order = player.participant.vars.get('topic_order')
-            # 1) never run if creating_session hasn't set it
-            if order is None:
-             return False
-            # 2) get current pointer (default to 0)
-            pos = player.participant.vars.get('topic_idx', 0)
-            # 3) guard against pos outside [0…len(order)-1]
-            if pos < 0 or pos >= len(order):
-             return False
-            # 4) only show the page whose idx matches this slot
-            return order[pos] == idx
-
-
-        @staticmethod
-        def before_next_page(player, timeout_happened):
-            player.participant.vars['topic_idx'] += 1
-
-        @staticmethod
-        def vars_for_template(player):
-            context = TimelineMixin.vars_for_template(player)
-            context.update({
-                'topic_idx':   idx,
-                'topic_label': C.TOPIC_LABELS[idx - 1],
-            })
-            return context
-
-    TopicPage.__name__ = f'Topic{idx}'
-    return TopicPage
+    @staticmethod
+    def vars_for_template(player):
+        idx = player.participant.vars['topic_order'][player.round_number - 1]
+        return {
+            'topic_idx':   idx,
+            'topic_label': C.TOPIC_LABELS[idx - 1],
+            **TimelineMixin.vars_for_template(player),
+        }
 
 
-# Build Topic1…Topic37 and register
-TOPIC_PAGES = [make_topic_page(i) for i in range(1, len(C.TOPIC_LABELS) + 1)]
-globals().update({cls.__name__: cls for cls in TOPIC_PAGES})
 
 # ────────────────────────────────────────────────────────────────────
 # 7.  Final page sequence
@@ -661,7 +663,7 @@ page_sequence = [
     Intro,
     Comprehension, ComprehensionFeedback,
     PersonalInfo,
-    *TOPIC_PAGES        # 37 pages, one per topic
+    Topic,        # 37 pages, one per topic
 ]
 
 

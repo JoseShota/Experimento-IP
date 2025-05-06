@@ -1,0 +1,63 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}Tema {{ topic_idx }}{% endblock %}
+
+{% block content %}
+  <h4>{{ topic_label }}</h4>
+
+  <ol class="list-group list-group-numbered">
+    {% for field in form %}
+      <li class="list-group-item">
+        {% if "reaction_pay" in field.name %}
+          {# Pregunta 2: slider de 0 a 10 #}
+          <label for="id_{{ field.name }}">{{ field.label }}</label>
+          <input
+            type="range"
+            name="{{ field.name }}"
+            id="id_{{ field.name }}"
+            min="0" max="10" step="1"
+            value="{{ field.value|default:'0' }}"
+            oninput="document.getElementById('out_{{ field.name }}').innerText=this.value"
+            required>
+          <output id="out_{{ field.name }}">{{ field.value|default:'0' }}</output>
+
+        {% elif "inc_pay" in field.name %}
+          {# Pregunta 3: slider de 0 a 20 #}
+          <label for="id_{{ field.name }}">{{ field.label }}</label>
+          <input
+            type="range"
+            name="{{ field.name }}"
+            id="id_{{ field.name }}"
+            min="0" max="20" step="1"
+            value="{{ field.value|default:'0' }}"
+            oninput="document.getElementById('out_{{ field.name }}').innerText=this.value"
+            required>
+          <output id="out_{{ field.name }}">{{ field.value|default:'0' }}</output>
+
+        {% elif "threshold_prob" in field.name %}
+          {# Pregunta 5: slider continuo de 0 a 100 con paso .1 #}
+          <label for="id_{{ field.name }}">{{ field.label }}</label>
+          <input
+            type="range"
+            name="{{ field.name }}"
+            id="id_{{ field.name }}"
+            min="0" max="100" step="0.1"
+            value="{{ field.value|default:'0' }}"
+            oninput="document.getElementById('out_{{ field.name }}').innerText=this.value"
+            required>
+          <output id="out_{{ field.name }}">{{ field.value|default:'0' }}</output>
+
+        {% else %}
+          {# Para las demás preguntas (1 y 4) usamos el render por defecto #}
+          {{ formfield field }}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ol>
+
+  {% next_button "Continuar" %}
+{% endblock %}
+
+
+
