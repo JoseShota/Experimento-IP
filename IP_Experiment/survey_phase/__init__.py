@@ -1,4 +1,8 @@
+import logging
+import random
 from otree.api import *
+
+logger = logging.getLogger(__name__)
 
 class C(BaseConstants):
     NAME_IN_URL        = 'survey'
@@ -123,11 +127,14 @@ class TimelineMixin:
             progress  = 100,
         )
 
-
-
-
 class Subsession(BaseSubsession):
-    pass
+    def creating_session(self):
+        for p in self.get_players():
+            order = list(range(1, len(C.TOPIC_LABELS) + 1))
+            random.shuffle(order)
+            logger.info(f"Shuffled for P{p.id_in_subsession}: {order}")
+            p.participant.vars['topic_order'] = order
+            p.participant.vars['topic_idx'] = 0
 
 
 class Group(BaseGroup):
@@ -610,12 +617,28 @@ def make_topic_page(idx):
         form_fields   = field_names
         template_name = 'survey_phase/topic_generic.html'
 
+        @staticmethod
+        def is_displayed(player):
+            order = player.participant.vars.get('topic_order')
+            # 1) never run if creating_session hasn't set it
+            if order is None:
+             return False
+            # 2) get current pointer (default to 0)
+            pos = player.participant.vars.get('topic_idx', 0)
+            # 3) guard against pos outside [0…len(order)-1]
+            if pos < 0 or pos >= len(order):
+             return False
+            # 4) only show the page whose idx matches this slot
+            return order[pos] == idx
+
+
+        @staticmethod
+        def before_next_page(player, timeout_happened):
+            player.participant.vars['topic_idx'] += 1
 
         @staticmethod
         def vars_for_template(player):
-            # start with the mixin’s progress-bar context
             context = TimelineMixin.vars_for_template(player)
-            # then add your per-topic bits
             context.update({
                 'topic_idx':   idx,
                 'topic_label': C.TOPIC_LABELS[idx - 1],
@@ -638,7 +661,7 @@ page_sequence = [
     Intro,
     Comprehension, ComprehensionFeedback,
     PersonalInfo,
-    *TOPIC_PAGES,        # 37 pages, one per topic
+    *TOPIC_PAGES        # 37 pages, one per topic
 ]
 
 
