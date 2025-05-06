@@ -5,6 +5,70 @@
 
 {% block content %}
   <style>
+    /* ——— red track & knob for Y ——— */
+    input[type=range].styled-red{
+        -webkit-appearance:none; width:100%; height:.4rem;
+        background:#dee2e6; border-radius:.2rem; outline:none;
+    }
+    input[type=range].styled-red::-webkit-slider-thumb{
+        -webkit-appearance:none; width:1rem; height:1rem;
+        border-radius:50%; background:#dc3545; border:none; cursor:pointer;
+    }
+    input[type=range].styled-red::-moz-range-thumb{
+        width:1rem; height:1rem; border-radius:50%;
+        background:#dc3545; border:none; cursor:pointer;
+    }
+
+    /* bubble (same markup as blue, reuse rules you already have) */
+
+    /* arrow P ≥ Y (pink) */
+    .y-range{
+        position:absolute; top:.05rem; height:.35rem;
+        background:#f5c2c7; pointer-events:none;
+    }
+    .y-range::after{
+        content:""; position:absolute; right:0; top:-.25rem;
+        border-left:.65rem solid #f5c2c7;
+        border-top:.35rem solid transparent;
+        border-bottom:.35rem solid transparent;
+    }
+
+    /* ——— track & knob ——— */
+    input[type=range].styled{
+        -webkit-appearance:none; width:100%; height:.4rem;
+        background:#dee2e6; border-radius:.2rem; outline:none;
+    }
+    input[type=range].styled::-webkit-slider-thumb{
+        -webkit-appearance:none; width:1rem; height:1rem;
+        border-radius:50%; background:#0d6efd; border:none; cursor:pointer;
+    }
+    input[type=range].styled::-moz-range-thumb{
+        width:1rem; height:1rem; border-radius:50%;
+        background:#0d6efd; border:none; cursor:pointer;
+    }
+
+    /* bubble */
+    .range-wrap{ position:relative; width:100%; }
+    .range-value{
+        position:absolute; top:-1.8rem;
+        background:#f8f9fa3b; padding:.1rem .5rem;
+        border:1px solid #ced4da; border-radius:.25rem;
+        font-size:.8rem; transform:translateX(-50%);
+        pointer-events:none; white-space:nowrap;
+    }
+
+    /* arrow 0 → X */
+    .z-range{
+        position:absolute; top:.05rem; height:.35rem;
+        background:#b6d4fe; pointer-events:none;
+    }
+    .z-range::after{
+        content:""; position:absolute; right:0; top:-.25rem;
+        border-left:.65rem solid #b6d4fe;
+        border-top:.35rem solid transparent;
+        border-bottom:.35rem solid transparent;
+    }
+
     /* ---- Bubble que sigue al knob ---- */
     .range-wrap   { position: relative; width: 100%; }
     .range-value  {
@@ -14,7 +78,7 @@
         padding: .1rem .5rem;
         border: 1px solid #ced4da;
         border-radius: .25rem;
-        font-size: .8rem;
+        font-size: 0.8rem;
         transform: translateX(-50%);
         pointer-events: none;               /* no interfiere clicks */
         white-space: nowrap;
@@ -22,6 +86,10 @@
 
     /* ---- Espacio extra entre la pregunta y el slider ---- */
     .slider-row { margin-top: 2rem; }        /* ajusta a tu gusto */
+    .reaction-sentence {
+      font-size: 1.1rem;   /* ~17 px; súbele a tu gusto */
+      line-height: 1.4;
+  }
   </style>
 
 <div class="alert alert-primary mb-4">
@@ -40,19 +108,26 @@
 
             <div class="range-wrap flex-grow-1">
               <input type="range"
-                     name="{{ field.name }}"
-                     id="id_{{ field.name }}"
-                     min="0" max="10" step="1"
-                     value="{{ field.data or 0 }}"
-                     class="form-range"
-                     oninput="updateBubble(this)"
-                     required>
-              <span class="range-value"
+                    name="{{ field.name }}"
+                    id="id_{{ field.name }}"
+                    min="0" max="10" step="1"
+                    value="{{ field.data or 0 }}"
+                    class="form-range"
+                    oninput="updateBubble(this)"
+                    required>
+              <span  class="range-value"
                     id="bubble_{{ field.name }}">{{ field.data or 0 }}</span>
             </div>
 
             <span class="right-label">Siempre daría la misma respuesta</span>
           </div>
+
+          {# ←── NUEVO: frase dinámica debajo del slider ──→ #}
+          <p id="sentence_{{ field.name }}"
+            class="reaction-sentence text-muted mt-1">
+            {{ field.data or 0 }} de 10&nbsp;veces respondería que prefiero mi respuesta a la primera pregunta
+          </p>
+
           {{ formfield_errors field.name }}
 
         {# ─── Slider inc_pay 0–20 ──────────────────────────────────── #}
@@ -60,48 +135,73 @@
           <label for="id_{{ field.name }}">{{ field.label }}</label>
 
           <div class="d-flex align-items-center slider-row">
-            <span class="left-label">No estoy dispuesto(a) a pagar</span>
+            <span class="left-label me-2" style="min-width:11rem;">
+              No estoy dispuesto(a) a pagar
+            </span>
 
             <div class="range-wrap flex-grow-1">
+              <!-- arrow 0 → X -->
+              <div class="z-range" id="zRange_{{ field.name }}"></div>
+
+              <!-- slider -->
               <input type="range"
-                     name="{{ field.name }}"
-                     id="id_{{ field.name }}"
-                     min="0" max="20" step="1"
-                     value="{{ field.data or 0 }}"
-                     class="form-range"
-                     oninput="updateBubble(this)"
-                     required>
+                    name="{{ field.name }}"
+                    id="id_{{ field.name }}"
+                    min="0" max="20" step="1"
+                    value="{{ field.data or 10 }}" 
+                    class="styled"
+                    oninput="updateIncPay(this)"
+                    required>
+
+              <!-- bubble -->
               <span class="range-value"
-                    id="bubble_{{ field.name }}">{{ field.data or 0 }}</span>
+                    id="bubble_{{ field.name }}">{{ field.data or 10 }}</span>
             </div>
 
-            <span class="right-label">Estoy dispuesto(a) a pagar 20 pesos</span>
+            <span class="right-label ms-2">
+              Estoy dispuesto(a) a pagar&nbsp;20&nbsp;pesos
+            </span>
           </div>
+
           {{ formfield_errors field.name }}
+
+
 
         {# ─── Slider threshold_prob 0–100 ──────────────────────────── #}
         {% elif "threshold_prob" in field.name %}
           <label for="id_{{ field.name }}">{{ field.label }}</label>
 
           <div class="d-flex align-items-center slider-row">
-            <span class="left-label">Expresaría la opinión alterna aunque nadie pague</span>
+            <span class="left-label me-2" style="min-width:12rem;">
+              Expresaría la opinión alterna&nbsp;aunque nadie pague
+            </span>
 
             <div class="range-wrap flex-grow-1">
+              <!-- arrow P ≥ Y -->
+              <div class="y-range" id="yRange_{{ field.name }}"></div>
+
+              <!-- slider Y -->
               <input type="range"
-                     name="{{ field.name }}"
-                     id="id_{{ field.name }}"
-                     min="0" max="100" step="1"
-                     value="{{ field.data or 0 }}"
-                     class="form-range"
-                     oninput="updateBubble(this)"
-                     required>
+                    name="{{ field.name }}"
+                    id="id_{{ field.name }}"
+                    min="0" max="100" step="1"
+                    value="{{ field.data or 50 }}"
+                    class="styled-red"
+                    oninput="updateThresholdProb(this)"
+                    required>
+
+              <!-- bubble -->
               <span class="range-value"
-                    id="bubble_{{ field.name }}">{{ field.data or 0 }}</span>
+                    id="bubble_{{ field.name }}">{{ field.data or 50 }}</span>
             </div>
 
-            <span class="right-label">Sólo expresaría la opinión alterna si todos están dispuestos a pagar</span>
+            <span class="right-label ms-2">
+              Sólo expresaría la opinión alterna&nbsp;si todos pagan
+            </span>
           </div>
+
           {{ formfield_errors field.name }}
+
 
         {# ─── Cualquier otro campo ─────────────────────────────────── #}
         {% else %}
@@ -115,38 +215,87 @@
   {% next_button "Continuar" %}
 
   <script>
-    /* Mantiene el globo sincronizado y posicionado */
     function updateBubble(range) {
-        const bubble = document.getElementById('bubble_' + range.name);
-        const val    = range.value;
-        const min    = Number(range.min || 0);
-        const max    = Number(range.max || 100);
-        const pct    = (val - min) * 100 / (max - min);
+        const bubble   = document.getElementById('bubble_'   + range.name);
+        const sentence = document.getElementById('sentence_' + range.name);   // ← nuevo
+    
+        const val  = range.value;
+        const min  = Number(range.min || 0);
+        const max  = Number(range.max || 100);
+        const pct  = (val - min) * 100 / (max - min);
+    
+        /* burbuja numérica */
         bubble.textContent = val;
-
-        /* 8 px ≈ mitad del ancho del thumb; ajusta si usas un estilo distinto */
-        bubble.style.left = `calc(${pct}% + (${8 - pct * 0.15}px))`;
+        bubble.style.left  = `calc(${pct}% + (${8 - pct * 0.15}px))`;
+    
+        /* frase textual */
+        const veces = (val == 1) ? 'vez' : 'veces';                            // pluralización
+        sentence.textContent =
+            `${val} de 10 ${veces} respondería que prefiero mi respuesta ` +
+            `a la primera pregunta`;
     }
-
-    /* Inicializa todos los sliders al cargar la página */
+    
+    /* Mantén la auto‑inicialización que ya tenías */
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('input[type=range]').forEach(updateBubble);
     });
   </script>
+  <script>
+    function updateIncPay(range){
+        const bubble = document.getElementById('bubble_' + range.name);
+        const zRange = document.getElementById('zRange_' + range.name);
+    
+        const X   = Number(range.value);
+        const pct = X * 100 / 20;                 // 0–20 → 0–100 %
+    
+        /* paint track up to the knob */
+        range.style.background =
+            `linear-gradient(to right,#0d6efd 0%,#0d6efd ${pct}%,#dee2e6 ${pct}%)`;
+    
+        /* bubble */
+        bubble.textContent = X;
+        bubble.style.left  = `calc(${pct}% + (${8 - pct*0.15}px))`;
+    
+        /* arrow */
+        zRange.style.left  = "0";
+        zRange.style.width = `${pct}%`;
+    }
+    
+    /* fire once on page load (handles Back button & bots) */
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('input[name^="inc_pay"]').forEach(updateIncPay);
+    });
+    </script>
+  <script>
+    function updateThresholdProb(range){
+        const bubble = document.getElementById('bubble_' + range.name);
+        const yRange = document.getElementById('yRange_' + range.name);
+    
+        const Y   = Number(range.value);
+        const pct = Y;                         // 0‑100 → same %
+    
+        /* colour from Y → 100 % in pink */
+        range.style.background =
+            `linear-gradient(to right,#dee2e6 0%,#dee2e6 ${pct}%,
+                             #fad9dc ${pct}%,#fad9dc 100%)`;
+    
+        /* bubble */
+        bubble.textContent = Y + '%';
+        bubble.style.left  = `calc(${pct}% + (${8 - pct*0.15}px))`;
+    
+        /* arrow */
+        yRange.style.left  = `${pct}%`;
+        yRange.style.width = `calc(${100 - pct}% )`;
+    }
+    
+    /* initialise on page load */
+    document.addEventListener('DOMContentLoaded', () => {
+        document
+          .querySelectorAll('input[name^="threshold_prob"]')
+          .forEach(updateThresholdProb);
+    });
+    </script>
+    
+    
+    
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

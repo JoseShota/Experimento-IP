@@ -740,10 +740,10 @@ class Topic(Page):
 # 7.  Final page sequence
 # ────────────────────────────────────────────────────────────────────
 page_sequence = [
-    ConsentForm,
+    #ConsentForm,
     Intro,
-    Comprehension, ComprehensionFeedback,
-    PersonalInfo,
+    #Comprehension, ComprehensionFeedback,
+    #PersonalInfo,
     Topic,        # 37 pages, one per topic
 ]
 
