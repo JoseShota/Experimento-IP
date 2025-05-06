@@ -10,6 +10,16 @@
   <hr>
   <p>{{ info.text|safe }}</p>
 
+  <!-- ▼ NUEVO indicador correcto/incorrecto -->
+  <p>
+    Tu respuesta fue
+    {% if info.ok %}
+        <span class="text-success fw-bold">CORRECTA</span>
+    {% else %}
+        <span class="text-danger fw-bold">INCORRECTA</span>
+    {% endif %}
+  </p>
+
   <ul class="mb-2">
     {% for val,label in info.options %}
       <li class="
@@ -25,6 +35,7 @@
 
   <p><em>Explicación:</em> {{ info.explanation }}</p>
 {% endfor %}
+
 
 {{ next_button }}
 {% endblock %}

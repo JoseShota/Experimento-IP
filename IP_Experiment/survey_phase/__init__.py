@@ -540,8 +540,8 @@ for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
         models.IntegerField(
             min=0,
             max=10,
-            initial=5,
-            blank=False, label=Markup( f'Supón que te volviéramos a preguntar diez veces más sobre cuál de las posturas se acerca más a tu opinión sobre el tema <strong>{topic}</strong>. Imagínate que te volviéramos a preguntar esto tiempo después, y en diferentes estados físicos y emocionales (por ejemplo, más o menos cansado(a), más o menos hambriento(a), más o menos contento(a), etc). ¿En cuántas de las diez veces que preguntamos nos darías la misma respuesta?' )
+            blank=True, 
+            label=Markup( f'Supón que te volviéramos a preguntar diez veces más sobre cuál de las posturas se acerca más a tu opinión sobre el tema <strong>{topic}</strong>. Imagínate que te volviéramos a preguntar esto tiempo después, y en diferentes estados físicos y emocionales (por ejemplo, más o menos cansado(a), más o menos hambriento(a), más o menos contento(a), etc). ¿En cuántas de las diez veces que preguntamos nos darías la misma respuesta?' )
         ),
     )
 
@@ -553,8 +553,7 @@ for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
         models.IntegerField(          # usa CurrencyField si conviertes a puntos
             min=0,
             max=20,
-            initial=10,
-            blank=False,
+            blank=True,
             label=Markup(
                 f'Para el tema <strong>{topic}</strong>: Tú tienes que pagar un costo para poder decidir si darle o quitarle 20 pesos a tu pareja dependiendo de la opinión que exprese. Este costo puede ser desde 0 pesos (en este caso sería gratis para ti tomar la decisión)'
                 ' hasta 20 pesos. ¿Cuánto dinero estás dispuesto(a) a pagar para que puedas tomar esa decisión?'
@@ -585,7 +584,7 @@ for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
         models.IntegerField(
             min=0,
             max=100,
-            initial=50,
+            blank=True,
             label=Markup(
                 f'Para el tema <strong>{topic}</strong>: Supón que tu opinión privada es la opinión minoritaria entre los participantes en esta sesión y al menos Y por ciento de los participantes en esta sesión pagaron el costo para decidir si le dan o le quitan 20 pesos a su pareja, ¿Cuál es el valor de Y mínimo con el que estás dispuesto a expresar la opinión alterna a tu opinión privada?'
             ),
@@ -740,10 +739,10 @@ class Topic(Page):
 # 7.  Final page sequence
 # ────────────────────────────────────────────────────────────────────
 page_sequence = [
-    #ConsentForm,
+    ConsentForm,
     Intro,
-    #Comprehension, ComprehensionFeedback,
-    #PersonalInfo,
+    Comprehension, ComprehensionFeedback,
+    PersonalInfo,
     Topic,        # 37 pages, one per topic
 ]
 
