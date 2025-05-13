@@ -1,5 +1,6 @@
 {% extends "global/Page.html" %}
 {% load otree %}
+{% load static %}
 
 {% block title %}
 Encuesta sobre una variedad de temas
@@ -46,114 +47,82 @@ Encuesta sobre una variedad de temas
 
 
 <ol start="2">
-  <li>Lo segundo que se te va a preguntar es: "Supón que te volviéramos a preguntar diez veces más sobre cuál de las posturas se acerca más a tu opinión. Imagínate que te volviéramos a preguntar esto tiempo después, y en diferentes estados físicos y emocionales (por ejemplo, más o menos cansado(a), más o menos hambriento(a), más o menos contento(a), etc). ¿En cuántas de las diez veces que preguntamos nos darías la misma respuesta?"</li>
+  <li>
+    Lo segundo que se te va a preguntar es:
+    "Supón que te volviéramos a preguntar diez veces más sobre cuál de las posturas
+    se acerca más a tu opinión. Imagínate que te volviéramos a preguntar esto tiempo
+    después, y en diferentes estados físicos y emocionales (por ejemplo, más o menos
+    cansado(a), más o menos hambriento(a), más o menos contento(a), etc). ¿En cuántas
+    de las diez veces que preguntamos nos darías la misma respuesta?"
+  </li>
 </ol>
 
-<div style="max-width: 800px; margin: auto;">
-
-  <style>
-    /* ── Misma estética que usas en las páginas de preguntas ───────── */
-    .range-wrap   { position: relative; width: 100%; }
-    .range-value  {
-        position: absolute;
-        top: -1.8rem;
-        background: #f8f9fa3b;
-        padding: .1rem .5rem;
-        border: 1px solid #ced4da;
-        border-radius: .25rem;
-        font-size: .8rem;
-        transform: translateX(-50%);
-        pointer-events: none;
-        white-space: nowrap;
-    }
-    .slider-row   { margin-top: 1.2rem; }
-  </style>
-
-<div style="max-width: 800px; margin: auto;">
-
-  <style>
-    /* ——— misma estética de tus sliders en páginas de preguntas ——— */
-    .range-wrap   { position: relative; width: 100%; }
-    .range-value  {
-        position: absolute;
-        top: -1.8rem;
-        background: #f8f9fa3b;
-        padding: .1rem .5rem;
-        border: 1px solid #ced4da;
-        border-radius: .25rem;
-        font-size: .8rem;
-        transform: translateX(-50%);
-        pointer-events: none;
-        white-space: nowrap;
-    }
-    .slider-row   { margin-top: .8rem; }
-  </style>
-
-  <div style="
-      margin-left: 1em;
-      margin-right: 1em;
-      padding: 1em;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #f9f9f9;">
-
+<div style="max-width:800px; margin:auto;">
+  <div style="margin:1em; padding:1em; border:1px solid #ccc; border-radius:8px; background:#f9f9f9;">
     <strong>Ejemplo (continuado):</strong>
 
-    <!-- ——— MARÍA ——— -->
-    <ul class="mb-1">
-      <li>María indica que 9 de 10 veces respondería que prefiere el azul.</li>
-    </ul>
-
-    <div class="slider-row d-flex align-items-center">
-      <span class="left-label me-2" style="min-width:10rem;">Nunca daría la misma respuesta</span>
-
-      <div class="range-wrap flex-grow-1">
-        <input type="range"
-               min="0" max="10" step="1"
-               value="9" disabled
-               class="form-range"
-               oninput="updateBubble(this)">
-        <span class="range-value">9</span>
+    <!-- MARÍA -->
+    <p id="p2_mariaText">
+      María indica que <strong>0</strong> de 10 veces respondería que prefiere el azul.
+    </p>
+    <div class="d-flex align-items-center mb-3">
+      <span class="me-2" style="min-width:10rem;">Si respondiera en este extremo, María estaría indicando que nunca daría la misma respuesta</span>
+      <div class="btn-group flex-grow-1" role="group" aria-label="María">
+        <!-- Radios 0–10 -->
+        {% for i in range(0,11) %}
+          <input type="radio"
+                 class="btn-check"
+                 name="reaction_pay_example_maria"
+                 id="p2_radioMaria_{{i}}"
+                 value="{{i}}"
+                 autocomplete="off"
+                 {% if i == 0 %}checked{% endif %}>
+          <label class="btn btn-outline-primary"
+                 for="p2_radioMaria_{{i}}">{{i}}</label>
+        {% endfor %}
       </div>
-
-      <span class="right-label ms-2">Siempre daría la misma respuesta</span>
+      <span class="ms-2">Si respondiera en este extremo, María estaría indicando que siempre daría la misma respuesta</span>
     </div>
 
-    <!-- ——— JUAN ——— -->
-    <ul class="mb-1 mt-3">
-      <li>Juan indica que 7 de 10 veces respondería que prefiere el rojo.</li>
-    </ul>
-
-    <div class="slider-row d-flex align-items-center">
-      <span class="left-label me-2" style="min-width:10rem;">Nunca daría la misma respuesta</span>
-
-      <div class="range-wrap flex-grow-1">
-        <input type="range"
-               min="0" max="10" step="1"
-               value="7" disabled
-               class="form-range"
-               oninput="updateBubble(this)">
-        <span class="range-value">7</span>
+    <!-- JUAN -->
+    <p id="p2_juanText">
+      Juan indica que <strong>0</strong> de 10 veces respondería que prefiere el rojo.
+    </p>
+    <div class="d-flex align-items-center">
+      <span class="me-2" style="min-width:10rem;">Si respondiera en este extremo, Juan estaría indicando que nunca daría la misma respuesta</span>
+      <div class="btn-group flex-grow-1" role="group" aria-label="Juan">
+        {% for i in range(0,11) %}
+          <input type="radio"
+                 class="btn-check"
+                 name="reaction_pay_example_juan"
+                 id="p2_radioJuan_{{i}}"
+                 value="{{i}}"
+                 autocomplete="off"
+                 {% if i == 0 %}checked{% endif %}>
+          <label class="btn btn-outline-primary"
+                 for="p2_radioJuan_{{i}}">{{i}}</label>
+        {% endfor %}
       </div>
-
-      <span class="right-label ms-2">Siempre daría la misma respuesta</span>
+      <span class="ms-2">Si respondiera en este extremo, Juan estaría indicando que siempre daría la misma respuesta</span>
     </div>
-
   </div>
 </div>
 
 <script>
-  /* Re‑usa la misma lógica de tus sliders de respuesta */
-  function updateBubble(range) {
-      const bubble = range.nextElementSibling;
-      const min    = Number(range.min);
-      const max    = Number(range.max);
-      const pct    = (range.value - min) * 100 / (max - min);
-      bubble.textContent = range.value;
-      bubble.style.left  = `calc(${pct}% + (${8 - pct * 0.15}px))`;
-  }
-  document.addEventListener('DOMContentLoaded', () =>
-      document.querySelectorAll('input[type=range]').forEach(updateBubble));
+  document.addEventListener('DOMContentLoaded', () => {
+    function bind(person, color) {
+      document.querySelectorAll(`input[name="reaction_pay_example_${person}"]`)
+        .forEach(radio => {
+          radio.addEventListener('change', () => {
+            const v = radio.value;
+            const p = document.getElementById(`p2_${person}Text`);
+            p.innerHTML = `${person.charAt(0).toUpperCase() + person.slice(1)} indica que <strong>${v}</strong> de 10 veces respondería que prefiere ${color}.`;
+          });
+        });
+    }
+    bind('maria', 'el azul');
+    bind('juan', 'el rojo');
+  });
 </script>
 
 
@@ -193,96 +162,175 @@ Encuesta sobre una variedad de temas
 <ol start="3">
   <li> Tú tienes que pagar un costo para poder decidir si darle o quitarle 20 pesos a tu pareja dependiendo de la opinión que exprese. Este costo puede ser desde 0 pesos (en este caso sería gratis para ti tomar la decisión)
     hasta 20 pesos. La tercera pregunta de cinco es que nos digas cuánto dinero estás dispuesto(a) a pagar para que puedas tomar esa decisión.
-    Tu respuesta tiene que ser de la forma "estoy dispuesto(a) a pagar X pesos o menos para decidir si le doy o le quito 20 pesos a mi pareja después de ver qué opinión me expresa". Queremos que nos des el valor X que aplique en tu caso.
+    Tu respuesta tiene que ser de la forma "estoy dispuesto(a) a pagar cualquier valor entre 0 y X pesos para decidir si le doy o le quito 20 pesos a mi pareja después de ver qué opinión me expresa". Queremos que nos des el valor X que aplique en tu caso.
   </li>
 </ol>
 
-<div style="max-width: 800px; margin: auto;">
+<div style="max-width:800px; margin:auto;">
 
   <style>
-    /* ——— estilos idénticos a los sliders reales ——— */
-    .range-wrap   { position: relative; width: 100%; }
-    .range-value  {
-        position: absolute;
-        top: -1.8rem;
-        background: #f8f9fa3b;
-        padding: .1rem .5rem;
-        border: 1px solid #ced4da;
-        border-radius: .25rem;
-        font-size: .8rem;
-        transform: translateX(-50%);
-        pointer-events: none;
-        white-space: nowrap;
+    /* ====== carril y knob (idénticos al ejemplo original) ====== */
+    input[type=range].styled {
+      -webkit-appearance:none; width:100%; height:.4rem;
+      background:#dee2e6; border-radius:.2rem; outline:none;
     }
-    .slider-row   { margin-top: .8rem; }
+    input[type=range].styled::-webkit-slider-thumb {
+      -webkit-appearance:none; width:1rem; height:1rem;
+      border-radius:50%; background:#0d6efd; border:none; cursor:pointer;
+    }
+    input[type=range].styled::-moz-range-thumb {
+      width:1rem; height:1rem; border-radius:50%;
+      background:#0d6efd; border:none; cursor:pointer;
+    }
+
+    /* ====== burbujas de valor ====== */
+    .range-wrap { position:relative; width:100%; }
+    .range-value {
+      position:absolute; top:-1.8rem;
+      font-size:.8rem; transform:translateX(-50%);
+      background:#f8f9fa3b; padding:.1rem .5rem;
+      border:1px solid #ced4da; border-radius:.25rem;
+      white-space:nowrap; pointer-events:none;
+    }
+
+    /* flecha del rango Z ≤ X */
+    .z-range {
+      position:absolute; top:.05rem; /* alineada al carril */
+      height:.35rem; background:#b6d4fe;
+      pointer-events:none;
+    }
+    .z-range::after {
+      content:""; position:absolute; right:0; top:-.25rem;
+      border-left:.65rem solid #b6d4fe;
+      border-top:.35rem solid transparent;
+      border-bottom:.35rem solid transparent;
+    }
+
+    /* márgenes para los sliders */
+    .slider-row { margin-top:.8rem; }
+    .slider-row.pay-row { margin-top:4rem; }
   </style>
 
   <div style="
-      margin-left: 1em;
-      margin-right: 1em;
-      padding: 1em;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #f9f9f9;">
-
+      margin:1em; padding:1em;
+      border:1px solid #ccc; border-radius:8px;
+      background-color:#f9f9f9;">
     <strong>Ejemplo (continuado):</strong>
 
-    <!-- ——— MARÍA ——— -->
-    <ul class="mb-1">
-      <li>María indica que está dispuesta a pagar 16&nbsp;pesos o menos para decidir si le da o le quita 20 pesos a Juan dependiendo de la opinión que exprese respecto al tema.</li>
-    </ul>
+    <p>
+      A María y Juan se les pregunta en privado lo siguiente: 
+      "Para el tema <em>¿Qué es mejor, el azul o el rojo?</em>: 
+      Tú tienes que pagar un costo para poder decidir si darle o quitarle 20&nbsp;pesos
+      a tu pareja dependiendo de la opinión que exprese. 
+      Este costo puede ser desde 0&nbsp;pesos (en este caso sería gratis para ti tomar la decisión) 
+      hasta 20&nbsp;pesos. 
+      ¿Cuánto dinero estás dispuesto(a) a pagar para que puedas tomar esa decisión?"
+    </p>
 
-    <div class="slider-row d-flex align-items-center">
-      <span class="left-label me-2" style="min-width:10rem;">No estoy dispuesto(a) a pagar</span>
-
+    <!-- María -->
+    <p id="mariaText">
+      María indica que está dispuesta a pagar hasta <strong>16</strong>
+      pesos para decidir si le da o le quita 20&nbsp;pesos a Juan dependiendo de la opinión
+      que exprese sobre el tema.
+    </p>
+    <div class="slider-row pay-row d-flex align-items-center">
+      <span class="left-label me-2" style="min-width:11rem;">
+        Si respondiera en este extremo, María estaría indicando que no está dispuesta a pagar
+      </span>
       <div class="range-wrap flex-grow-1">
-        <input type="range"
-               min="0" max="20" step="1"
-               value="16" disabled
-               class="form-range"
-               oninput="updateBubble(this)">
-        <span class="range-value">16</span>
+        <!-- flecha rango-Z para María -->
+        <div class="z-range" id="zMaria"></div>
+        <input type="range" id="sliderMaria" class="styled"
+               min="0" max="20" step="1" value="16">
+        <span class="range-value" id="bubbleMaria">16</span>
       </div>
-
-      <span class="right-label ms-2">Estoy dispuesto(a) a pagar 20&nbsp;pesos</span>
+      <span class="right-label ms-2">
+        Si respondiera en este extremo, María estaría indicando que está dispuesta a pagar hasta 20&nbsp;pesos
+      </span>
     </div>
 
-    <!-- ——— JUAN ——— -->
-    <ul class="mb-1 mt-3">
-      <li>Juan indica que está dispuesto a pagar 10&nbsp;pesos o menos para decidir si le da o le quita 20 pesos a María dependiendo de la opinión que exprese respecto al tema.</li>
-    </ul>
-
-    <div class="slider-row d-flex align-items-center">
-      <span class="left-label me-2" style="min-width:10rem;">No estoy dispuesto(a) a pagar</span>
-
+    <!-- Juan -->
+    <p id="juanText" class="mt-3">
+      Juan indica que está dispuesto a pagar hasta <strong>10</strong>
+      pesos para decidir si le da o le quita 20&nbsp;pesos a María dependiendo de la opinión
+      que exprese sobre el tema.
+    </p>
+    <div class="slider-row pay-row d-flex align-items-center">
+      <span class="left-label me-2" style="min-width:11rem;">
+        Si respondiera en este extremo, Juan estaría indicando que no está dispuesto a pagar
+      </span>
       <div class="range-wrap flex-grow-1">
-        <input type="range"
-               min="0" max="20" step="1"
-               value="10" disabled
-               class="form-range"
-               oninput="updateBubble(this)">
-        <span class="range-value">10</span>
+        <!-- flecha rango-Z para Juan -->
+        <div class="z-range" id="zJuan"></div>
+        <input type="range" id="sliderJuan" class="styled"
+               min="0" max="20" step="1" value="10">
+        <span class="range-value" id="bubbleJuan">10</span>
       </div>
-
-      <span class="right-label ms-2">Estoy dispuesto(a) a pagar 20&nbsp;pesos</span>
+      <span class="right-label ms-2">
+        Si respondiera en este extremo, Juan estaría indicando que está dispuesto a pagar hasta 20&nbsp;pesos
+      </span>
     </div>
+
+    <!-- Nota discreta al pie -->
+    <p style="font-size:.8rem; color:#6c757d; text-align:center; margin-top:2rem;">
+      <em>Nota: mantén presionado y arrastra el control para ajustar el valor. El color azul indica el rango en el que los participantes están dispuestos a pagar.</em>
+    </p>
 
   </div>
 </div>
 
 <script>
-  /* Posiciona los globos una vez que el DOM está listo */
-  function updateBubble(range) {
-      const bubble = range.nextElementSibling;
-      const pct    = (range.value - range.min) * 100 / (range.max - range.min);
-      bubble.textContent = range.value;
-      bubble.style.left  = `calc(${pct}% + (${8 - pct * 0.15}px))`;
+  function styleSliderPay(slider, bubble, zRange) {
+    const val = Number(slider.value);
+    const pct = val * 100 / Number(slider.max);
+
+    // pinta el degradado hasta val
+    slider.style.background =
+      `linear-gradient(to right, #0d6efd 0%, #0d6efd ${pct}%, #dee2e6 ${pct}%)`;
+
+    // posiciona la burbuja
+    bubble.textContent = val;
+    bubble.style.left = `calc(${pct}% + (${8 - pct*0.15}px))`;
+
+    // ajusta la flecha desde 0 hasta el knob
+    zRange.style.left  = "0";
+    zRange.style.width = `${pct}%`;
+
+    return val;
   }
-  document.addEventListener('DOMContentLoaded', () =>
-      document.querySelectorAll('input[type=range]').forEach(updateBubble));
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const sM = document.getElementById('sliderMaria');
+    const bM = document.getElementById('bubbleMaria');
+    const zM = document.getElementById('zMaria');
+    const tM = document.getElementById('mariaText');
+
+    const sJ = document.getElementById('sliderJuan');
+    const bJ = document.getElementById('bubbleJuan');
+    const zJ = document.getElementById('zJuan');
+    const tJ = document.getElementById('juanText');
+
+    function updateMaria() {
+      const v = styleSliderPay(sM, bM, zM);
+      tM.innerHTML =
+        `María indica que está dispuesta a pagar hasta ` +
+        `<strong>${v}</strong> pesos para decidir si le da o le quita 20&nbsp;pesos ` +
+        `a Juan dependiendo de la opinión que exprese sobre el tema.`;
+    }
+    function updateJuan() {
+      const v = styleSliderPay(sJ, bJ, zJ);
+      tJ.innerHTML =
+        `Juan indica que está dispuesto a pagar hasta ` +
+        `<strong>${v}</strong> pesos para decidir si le da o le quita 20&nbsp;pesos ` +
+        `a María dependiendo de la opinión que exprese sobre el tema.`;
+    }
+
+    sM.addEventListener('input', updateMaria);
+    sJ.addEventListener('input', updateJuan);
+    updateMaria();
+    updateJuan();
+  });
 </script>
-
-
 
 <ol start="4">
   <li>La cuarta pregunta que te vamos a hacer es: "¿Para cuál opinión que te exprese tu pareja le darías 20 pesos y para cuál opinión le quitarías 20 pesos?".</li>
@@ -299,474 +347,248 @@ Encuesta sobre una variedad de temas
       background-color: #f9f9f9;">
     <strong>Ejemplo (continuado):</strong>
     <ul>
-    <li>María decide que, si Juan le expresa la primera postura (el rojo), le quitaría 20 pesos; y si le expresa la segunda postura (el azul), le daría 20 pesos.</li>
-    <li>Juan decide que, si María le expresa la primera postura (el rojo), le daría 20 pesos; y si le expresa la segunda postura (el azul), le quitaría 20 pesos.</li>
+      <li>María decide que, si Juan le expresa la primera postura (el rojo), le quitaría 20 pesos; y si le expresa la segunda postura (el azul), le daría 20 pesos.</li>
+      <li>Juan decide que, si María le expresa la primera postura (el rojo), le daría 20 pesos; y si le expresa la segunda postura (el azul), le quitaría 20 pesos.</li>
     </ul>
   </div>
 </div>
 
 
 <ol start="5">
-  <li>La quinta pregunta que te vamos a hacer es sobre qué opinión expresarle a tu pareja. Lo que nos tienes que decir es cuándo estarías dispuesto a expresar la opinión alterna a tu opinión privada. Tu opinión privada puede ser la opinión mayoritaria
-    o minoritaria entre los participantes en esta sesión, y qué opinión expreses puede depender de eso. La pregunta que te haremos es: "Supón que tu opinión privada es la opinión minoritaria entre los participantes en esta sesión y al menos Y por ciento de los participantes en esta sesión pagaron el costo para decidir si le dan o le quitan 20 pesos a su pareja, ¿Cuál es el valor de Y mínimo con el que estás dispuesto a expresar la opinión alterna a tu opinión privada?". 
-    Queremos que nos des el valor de Y que aplique en tu caso.
+  <li>
+    <p>
+      La quinta pregunta que te vamos a hacer es sobre qué opinión expresarle a tu pareja. 
+      Lo que nos tienes que decir es cuándo estarías dispuesto a expresar la opinión alterna 
+      a tu opinión privada. Tu opinión privada puede ser la opinión mayoritaria o minoritaria 
+      entre los participantes en esta sesión, y qué opinión expreses puede depender de eso.
+    </p>
+
+    <p>La pregunta que te haremos es:</p>
+
+    <p>
+      "Supón que tu opinión privada es:
+    </p>
+    <ul>
+      <li>la opinión minoritaria entre los participantes en esta sesión</li>
+      <li>y al menos Y por ciento de los participantes en esta sesión pagaron el costo para decidir si le dan o le quitan 20 pesos a su pareja,</li>
+    </ul>
+    <p>
+      ¿Cuál es el valor de <strong>Y</strong> mínimo con el que estás dispuesto a expresar la opinión alterna a tu opinión privada?
+    </p>
+
+    <p>Queremos que nos des el valor de Y que aplique en tu caso."</p>
   </li>
 </ol>
 
-<div style="max-width: 800px; margin: auto;">
+
+<!-- ────────────  Ejemplo continuado con 2 sliders de umbral (rojo)  ──────────── -->
+<div style="max-width:800px; margin:auto;">
 
   <style>
-    /* ——— mismos estilos de los sliders interactivos ——— */
-    .range-wrap   { position: relative; width: 100%; }
-    .range-value  {
-        position: absolute;
-        top: -1.8rem;
-        background: #f8f9fa3b;
-        padding: .1rem .5rem;
-        border: 1px solid #ced4da;
-        border-radius: .25rem;
-        font-size: .8rem;
-        transform: translateX(-50%);
-        pointer-events: none;
-        white-space: nowrap;
+    /* — carril y knob — */
+    input[type=range].styled{
+      -webkit-appearance:none; width:100%; height:.4rem;
+      background:#dee2e6; border-radius:.2rem; outline:none;
     }
-    .slider-row   { margin-top: .8rem; }
+    input[type=range].styled::-webkit-slider-thumb{
+      -webkit-appearance:none; width:1rem; height:1rem;
+      border-radius:50%; background:#dc3545; border:none; cursor:pointer;
+    }
+    input[type=range].styled::-moz-range-thumb{
+      width:1rem; height:1rem; border-radius:50%;
+      background:#dc3545; border:none; cursor:pointer;
+    }
+
+    /* — burbuja sobre el knob — */
+    .range-wrap{ position:relative; width:100%; }
+    .range-value{
+      position:absolute; top:-1.8rem;
+      background:#f8d7da66; padding:.1rem .5rem;
+      border:1px solid #f5c2c7; border-radius:.25rem;
+      font-size:.8rem; transform:translateX(-50%);
+      pointer-events:none; white-space:nowrap;
+    }
+
+    /* — flecha que marca el rango P ≥ Y — */
+    .y-range{
+      position:absolute; top:.05rem; height:.35rem;
+      background:#f5c2c7; pointer-events:none;
+    }
+    .y-range::after{
+      content:""; position:absolute; right:0; top:-.25rem;
+      border-left:.65rem solid #f5c2c7;
+      border-top:.35rem solid transparent;
+      border-bottom:.35rem solid transparent;
+    }
+
+    .slider-row{ margin-top:1rem; }
+    .feedback{ font-size:.9rem; color:#495057; margin-top:.5rem; }
   </style>
 
   <div style="
-      margin-left: 1em;
-      margin-right: 1em;
-      padding: 1em;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #f9f9f9;">
+      margin:1em; padding:1em;
+      border:1px solid #ccc; border-radius:8px;
+      background-color:#f9f9f9;">
 
     <strong>Ejemplo (continuado):</strong>
 
-    <!-- ——— MARÍA ——— -->
+    <p>
+      A María y Juan se les pregunta en privado lo siguiente: 
+      "Para el tema <em>¿Qué es mejor, el azul o el rojo?</em>: 
+    </p>
+    <p>
+      Supón que tu opinión privada es:
+    </p>
+    <ul>
+      <li>la opinión minoritaria entre los participantes en esta sesión</li>
+      <li>y al menos Y por ciento de los participantes en esta sesión pagaron el costo para decidir si le dan o le quitan 20 pesos a su pareja,</li>
+    </ul>
+    <p>
+      ¿Cuál es el valor de <strong>Y</strong> mínimo con el que estás dispuesto a expresar la opinión alterna a tu opinión privada?
+    </p>
+
+    <!-- María -->
     <ul class="mb-1">
       <li>María indica que expresaría la opinión alterna a su opinión privada sólo si:
         <ul>
           <li>su opinión privada es la minoritaria entre los participantes de la sesión</li>
-          <li>y al menos el <strong>70 %</strong> de los participantes pagaron para poder decidir dar o quitar 20 pesos a su pareja después de observar la opinión que expresó.</li>
+          <li>y al menos el <strong id="mLabel">70 %</strong> de los participantes pagaron para poder decidir dar o quitar 20 pesos a su pareja después de observar la opinión que expresó.</li>
         </ul>
       </li>
     </ul>
 
     <div class="slider-row d-flex align-items-center">
-      <span class="left-label me-2" style="min-width:12rem;">Expresaría la opinión alterna aunque nadie pague</span>
-
+      <span class="left-label me-2" style="min-width:12rem;">
+        Si respondiera en este extremo, María estaría indicando que expresaría la opinión alterna aunque nadie pague
+      </span>
       <div class="range-wrap flex-grow-1">
-        <input type="range"
-               min="0" max="100" step="1"
-               value="70" disabled
-               class="form-range"
-               oninput="updateBubble(this)">
-        <span class="range-value">70</span>
+        <div class="y-range" id="rangeM"></div>
+        <input type="range" id="sliderM" class="styled"
+               min="0" max="100" step="1" value="70"
+               oninput="updateM();">
+        <span class="range-value" id="bubbleM">70</span>
       </div>
-
-      <span class="right-label ms-2">Sólo expresaría la opinión alterna si todos están dispuestos a pagar</span>
+      <span class="right-label ms-2">
+        Si respondiera en este extremo, María estaría indicando que sólo expresaría la opinión alterna si todos pagan
+      </span>
     </div>
+    <p class="feedback" id="feedbackM"></p>
 
-    <!-- ——— JUAN ——— -->
+    <!-- Juan -->
     <ul class="mb-1 mt-3">
       <li>Juan indica que expresaría la opinión alterna a su opinión privada sólo si:
         <ul>
           <li>su opinión privada es la minoritaria entre los participantes de la sesión</li>
-          <li>y al menos el <strong>45 %</strong> de los participantes pagaron para poder decidir dar o quitar 20 pesos a su pareja después de observar la opinión que expresó.</li>
+          <li>y al menos el <strong id="jLabel">45 %</strong> de los participantes pagaron para poder decidir dar o quitar 20 pesos a su pareja después de observar la opinión que expresó.</li>
         </ul>
       </li>
     </ul>
 
     <div class="slider-row d-flex align-items-center">
-      <span class="left-label me-2" style="min-width:12rem;">Expresaría la opinión alterna aunque nadie pague</span>
-
+      <span class="left-label me-2" style="min-width:12rem;">
+        Si respondiera en este extremo, Juan estaría indicando que expresaría la opinión alterna aunque nadie pague
+      </span>
       <div class="range-wrap flex-grow-1">
-        <input type="range"
-               min="0" max="100" step="1"
-               value="45" disabled
-               class="form-range"
-               oninput="updateBubble(this)">
-        <span class="range-value">45</span>
+        <div class="y-range" id="rangeJ"></div>
+        <input type="range" id="sliderJ" class="styled"
+               min="0" max="100" step="1" value="45"
+               oninput="updateJ();">
+        <span class="range-value" id="bubbleJ">45</span>
       </div>
-
-      <span class="right-label ms-2">Sólo expresaría la opinión alterna si todos están dispuestos a pagar</span>
+      <span class="right-label ms-2">
+        Si respondiera en este extremo, Juan estaría indicando que sólo expresaría la opinión alterna si todos pagan
+      </span>
     </div>
+    <p class="feedback" id="feedbackJ"></p>
+
+    <!-- Nota discreta al pie -->
+    <p style="font-size:.8rem; color:#6c757d; text-align:center; margin-top:2rem;">
+      <em>Nota: mantén presionado y arrastra el control para ajustar el valor. El color rosa indica el rango en el que los participantes están dispuestos a expresar la opinión alterna a su pareja.</em>
+    </p>
 
   </div>
 </div>
 
 <script>
-  function updateBubble(range) {
-      const bubble = range.nextElementSibling;
-      const pct    = (range.value - range.min) * 100 / (range.max - range.min);
-      bubble.textContent = range.value;
-      bubble.style.left  = `calc(${pct}% + (${8 - pct * 0.15}px))`;
+  const sliders = {
+    M: {
+      slider: document.getElementById('sliderM'),
+      bubble: document.getElementById('bubbleM'),
+      range:  document.getElementById('rangeM'),
+      label:  document.getElementById('mLabel'),
+      feedback: document.getElementById('feedbackM')
+    },
+    J: {
+      slider: document.getElementById('sliderJ'),
+      bubble: document.getElementById('bubbleJ'),
+      range:  document.getElementById('rangeJ'),
+      label:  document.getElementById('jLabel'),
+      feedback: document.getElementById('feedbackJ')
+    }
+  };
+
+  function updateGeneric(key) {
+    const { slider, bubble, range, label, feedback } = sliders[key];
+    const Y = Number(slider.value);
+    // gradiente: gris hasta Y, rosa desde Y a 100%
+    slider.style.background =
+      `linear-gradient(to right,
+         #dee2e6 0%, #dee2e6 ${Y}%,
+         #fad9dc ${Y}%, #fad9dc 100%)`;
+    bubble.textContent = Y + "%";
+    bubble.style.left = `calc(${Y}% + (${8 - Y*0.15}px))`;
+    // flecha desde Y hasta final
+    range.style.left  = `${Y}%`;
+    range.style.width = `calc(${100 - Y}% )`;
+    // texto dinámico
+    label.textContent = Y + " %";
   }
-  document.addEventListener('DOMContentLoaded', () =>
-      document.querySelectorAll('input[type=range]').forEach(updateBubble));
+
+  function updateM(){ updateGeneric('M'); }
+  function updateJ(){ updateGeneric('J'); }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updateM();
+    updateJ();
+  });
 </script>
 
 
 <p>A continuación te presentamos un diagrama de flujo a modo de resumen de las cinco preguntas que te haremos para cada tema.</p>
 {% include "global/timeline.html" %}
 
-<p>
-  Después de que todos nos den sus respuestas en un tema, vamos a seleccionar con igual probabilidad un costo Z entre 0 y 20 pesos para ese tema. Este número va a determinar cómo se desenvuelve el juego para ese tema.
-</p>
-<p>
-  Para ese tema, el costo Z que seleccionamos va a determinar quiénes van a poder decidir si les dan o les quitan 20 pesos a su pareja.  En particular, quienes van a poder tomar esa decisión son quienes hayan dicho que el rango de costos que están dispuestos a pagar incluye el costo Z que hayamos seleccionado. Por ejemplo, si seleccionamos el costo Z de 3 pesos, quienes van a poder tomar esa decisión son todos los que dijeron que el máximo costo que estarían dispuestos a pagar es un número mayor o igual a tres. Los que dijeron que el máximo costo que estarían dispuestos a pagar es 0, 1 o 2 no podrán tomar esa decisión.
-</p>
-<p>
-  A continuación se muestra una ilustración didáctica de cómo se relacion tu decisión X y el Z que escogemos:
-</p>
 
+<p>Una vez que hayas contestado las 5 preguntas para cada uno de los temas, habrás completado la encuesta. Ahora queda por responder:</p>
 
-<!-- ───────────────  VISUAL X (azul)  y rango‑Z  ─────────────── -->
-<div style="max-width:800px; margin:auto;">
+<h2>¿Cuál será tu pago final?</h2>
 
-  <style>
-    /* ——— carril y knob del slider ——— */
-    input[type=range].styled{
-        -webkit-appearance:none; width:100%; height:.4rem;
-        background:#dee2e6; border-radius:.2rem; outline:none;
-    }
-    input[type=range].styled::-webkit-slider-thumb{
-        -webkit-appearance:none; width:1rem; height:1rem;
-        border-radius:50%; background:#0d6efd; border:none; cursor:pointer;
-    }
-    input[type=range].styled::-moz-range-thumb{
-        width:1rem; height:1rem; border-radius:50%;
-        background:#0d6efd; border:none; cursor:pointer;
-    }
+<p>Hasta ahora te presentamos toda la información que verás durante la encuesta. En esta parte final, te explicamos cómo se definirán tus pagos y el de los demás participantes. Para ello, usaremos las respuestas de todas las perasonas que participaron.</p>
 
-    /* burbuja sobre el knob */
-    .range-wrap{ position:relative; width:100%; }
-    .range-value{
-        position:absolute; top:-1.8rem;
-        background:#f8f9fa3b; padding:.1rem .5rem;
-        border:1px solid #ced4da; border-radius:.25rem;
-        font-size:.8rem; transform:translateX(-50%);
-        pointer-events:none; white-space:nowrap;
-    }
+<p>Primero, elegiremos al azar uno de los temas de la encuesta. Ese tema determinará los pagos de todos los participantes. Usaremos tus respuestas y las de tu compañero(a) en ese tema para calcular tu pago final.</p>
 
-    /* flecha del rango Z ≤ X */
-    .z-range{
-        position:absolute; top:.05rem;          /* alineada al carril */
-        height:.35rem;
-        background:#b6d4fe; pointer-events:none;
-    }
-    .z-range::after{                            /* punta en extremo derecho */
-        content:""; position:absolute; right:0; top:-.25rem;
-        border-left:.65rem solid #b6d4fe;
-        border-top:.35rem solid transparent;
-        border-bottom:.35rem solid transparent;
-    }
+<p>Una vez elegido el tema, seleccionaremos con igual probabilidad un costo <strong>Z</strong> entre 0 y 20 pesos. Este valor representará el costo real asociado a tomar la decisión de dar o quitar 20 pesos a tu pareja, dependiendo de la opinión que exprese sobre el tema seleccionado.</p>
 
-    .slider-row{ margin-top:1rem; }
-  </style>
+<p>Para explicarte cómo se calcula tu pago final, considera el siguiente ejemplo gráfico:</p>
 
-  <div class="slider-row d-flex align-items-center">
-    <span class="left-label me-2" style="min-width:11rem;">
-      No estoy dispuesto(a) a pagar
-    </span>
-
-    <div class="range-wrap flex-grow-1">
-      <!-- flecha rango‑Z -->
-      <div class="z-range" id="zRange"></div>
-
-      <!-- deslizador X -->
-      <input type="range" id="sliderX"
-             class="styled"
-             min="0" max="20" step="1" value="10"
-             oninput="updateViz();">
-
-      <span class="range-value" id="bubbleX">10</span>
-    </div>
-
-    <span class="right-label ms-2">
-      Estoy dispuesto(a) a pagar&nbsp;20&nbsp;pesos
-    </span>
+<div style="max-width:800px; margin:2em auto; text-align:center;">
+  <h3>¿Cómo toman las decisiones los participantes?</h3>
+  <div style="margin-bottom:1em;">
+    <img
+      src="{% static 'experiment/Ejemplo_Dinamica.png' %}"
+      alt="Ejemplo Dinámica"
+      style="width:125%; height:auto; border:1px solid #ccc; border-radius:4px; box-shadow:0 0 5px rgba(0,0,0,0.2);"
+    >
   </div>
-
-  <p class="mt-2" id="xzFeedback"></p>
-</div>
-
-<script>
-  const sliderX  = document.getElementById('sliderX');
-  const bubbleX  = document.getElementById('bubbleX');
-  const zRange   = document.getElementById('zRange');
-  const feedback = document.getElementById('xzFeedback');
-
-  function updateViz(){
-      const X   = Number(sliderX.value);
-      const pct = X * 100 / 20;                 // 0–20  →  0–100 %
-
-      /* pinta cuerpo del carril hasta X: gradiente */
-      sliderX.style.background =
-          `linear-gradient(to right,#0d6efd 0%,#0d6efd ${pct}%,#dee2e6 ${pct}%)`;
-
-      /* re‑posiciona burbuja y muestra X */
-      bubbleX.textContent = X;
-      bubbleX.style.left  = `calc(${pct}% + (${8 - pct*0.15}px))`;
-
-      /* ajusta la longitud de la flecha azul */
-      zRange.style.left  = "0";                   // arranca en 0 %
-      zRange.style.width = `${pct}%`;             // llega hasta el knob
-
-
-      /* explicación dinámica */
-      feedback.innerHTML =
-          `La recta es dinámica, puedes esocger cualquier valor de X de la recta. Nota que, para cualquier valor <strong>Z ≤ X (${X})</strong>, <u>pagas Z</u> `+
-          `y decides dar/quitar 20 pesos. &nbsp;Si <strong>Z &gt; ${X}</strong>, `+
-          `no pagas y no tomas la decisión.`;
-  }
-
-  document.addEventListener('DOMContentLoaded', updateViz);
-</script>
-
-
-
-<div style="max-width: 800px; margin: auto;">
-
-  <div style="
-      margin-left: 1em;
-      margin-right: 1em;
-      padding: 1em;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #f9f9f9;">
-    <strong>Ejemplo (continuado):</strong>
-    Para el tema "¿Cuál es mejor, el azul o el rojo?", supongamos que el costo Z que seleccionamos es de 12 pesos. Esto implica que:
-    <ul>
-    <li>María, quien había indicado que está dispuesta a pagar 16 pesos o menos para decidir si dar o quitar 20 pesos a Juan dependiendo de la opinión que exprese, sí podrá tomar la decisión. Esto se sigue porque el costo Z de 12 pesos está dentro del rango de la respuesta de María. En este caso, María pagaría 12 pesos en vez de los 16 pesos que estaba dispuesta a pagar para la decisión.</li>
-    <li>Juan, quien había indicado que está dispuesto a pagar 10 pesos o menos para decidir si dar o quitar 20 pesos a María dependiendo de la opinión que exprese, no podrá tomar la decisión. Esto se sigue porque el costo Z de 12 pesos está fuera del rango de la respuesta de Juan.</li>
-    </ul>
+  <div>
+    <img
+      src="{% static 'experiment/Ejemplo_Pagos.png' %}"
+      alt="Ejemplo Pagos"
+      style="width:100%; height:auto; border:1px solid #ccc; border-radius:4px; box-shadow:0 0 5px rgba(0,0,0,0.2);"
+    >
   </div>
 </div>
 
-<p>
-  Noten que, dada la regla para determinar quién toma esa decisión, lo que más te conviene es decirnos el costo X que justo es lo más que estarías dispuesto a pagar para poder tomar esa decisión. Si das un costo X más grande, puede que tengas que pagar un costo mayor al que estarías dispuesto a pagar. Si das un costo X más chico, va a haber algunos costos que estarías dispuesto a pagar para tomar la decisión pero en los que no vas a poder tomar la decisión.
-</p>
 
-<div style="max-width: 800px; margin: auto;">
-  <div style="
-      margin-top: 1em;
-      margin-left: 1em;
-      margin-right: 1em;
-      padding: 1em;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #eef9f9;">
-    <strong>También recuerda:</strong><br>
-    Tu respuesta sobre tu opinión privada no afecta tus pagos en la encuesta. Es decir, no hay ventaja en tus pagos por tener una opinión privada a favor de una postura o de la otra. 
-  </div>
-</div>
-
-Dado que el costo Z que seleccionamos aleatoriamente determina quiénes deciden dar o quitar 20 pesos a su pareja dependiendo de la opinión que expresen, ese número también determina cuántos toman esa decisión. Por ejemplo:
-
-<div style="max-width: 800px; margin: auto;">
-
-  <div style="
-      margin-left: 1em;
-      margin-right: 1em;
-      padding: 1em;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #f9f9f9;">
-    <strong>Ejemplo (continuado):</strong>
-    Recordemos que para el tema "¿Cuál es mejor, el azul o el rojo?" habíamos seleccionado un costo Z de 12 pesos. Ahora supongamos que el 60% de los participantes en la sesión están dispuestos a pagar un cantidad X igual a 16 pesos para decidir si dar o quitar 20 pesos a su pareja y 40% escogieron un X igual a 10 pesos. Entonces, hay 60% de participantes que van a tomar la decisión de dar o quitar 20 pesos a su pareja, porque 60% de los participantes escogieron un X (16 pesos) por arriba del costo Z (12 pesos) que seleccionamos aleatoriamente.
-  </div>
-</div>
-
-<p>
-  Cuánta gente toma la decisión de dar o quitar 20 pesos a su pareja determina a su vez si vas a reportar tu opinión privada o no. Recuerda que en tu quinta decisión nos dijiste que reportarías la opinión alterna a tu opinión privada si estás en la opinión minoritaria de la sesión y si por lo menos Y por ciento de la gente en la sesión pagaron el costo para decidir si les dan o quitan 20 pesos a su pareja dependiendo de la opinión que les expresen. Entonces, como tenemos el número de gente que toma esa decisión, vamos a poder determinar si le expresas tu opinión privada o no a tu pareja. 
-</p>
-
-<div style="max-width: 800px; margin: auto;">
-
-  <div style="
-      margin-left: 1em;
-      margin-right: 1em;
-      padding: 1em;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #f9f9f9;">
-    <strong>Ejemplo (continuado):</strong>
-    <p>Anteriormente dijimos que, para el tema "¿Cuál es mejor, el azul o el rojo?":</p>
-    <ol style="list-style-type: lower-alpha;">
-      <li>Seleccionamos aleatoriamente un costo Z de 12 pesos.</li>
-      <li>60% de los participantes en la sesión están dispuestos a pagar un valor X igual a 16 pesos para decidir si dar o quitar 20 pesos a su pareja y 45% escogieron un X igual a 10 pesos.</li>
-    </ol>
-    <p>Ahora agreguemos que:</p> 
-    <ol style="list-style-type: lower-alpha;" start="3">
-      <li> La mayoría en la sesión tienen una opinión privada diferente a la de Juan.</li>
-    </ol>
-    <p>También recordemos que:</p>
-    <ol style="list-style-type: lower-alpha;" start="4">
-      <li>Juan indicó que expresaría la opinión alterna a su opinión privada si al menos el 45% de los participantes pagaron para poder decidir dar o quitar 20 pesos a su pareja después de observar la opinión que expresó. Es decir, Juan escogió un Y igual a 45 por ciento.</li>  
-    </ol>
-    <p>Ya establecimos que hay 60% que van a tomar la decisión de dar o quitar 20 pesos a su pareja. Como Juan escogió un Y igual a 45 por ciento y el porcentaje de gente que van a tomar la decisión es mayor (60%), entonces qué opinión Juan le expresa a María depende de si su opinión es mayoritaria o minoritaria. Como su opinión privada está en la minoría y el porcentaje supera su Y, Juan expresa a María la opinión alterna a su opinión privada. Si su opinión privada en vez estuviera en la mayoría, o si Juan hubiera dado un número Y mayor a 60 por ciento, Juan le hubiera expresado su opinión privada a María. </p>
-  </div>
-</div>
-
-  <p>
-  ¿En qué debes pensar para decidir el porcentaje mínimo Y de personas que deben decidir si dar o quitar 20 pesos para que tú expreses la opinión alterna a tu opinión privada, en caso de estar en la minoría? 
-  </p>
-  <p>  
-  Por una parte, toma en cuenta los pagos monetarios: puedes ganar o perder 20 pesos si tu pareja puede tomar esa decisión. Por otra parte, considera si es importante para ti expresar tu opinión privada sobre el tema independientemente de los pagos. Otras consideraciones personales que no mencionamos aquí también pueden ser válidas.
-  </p>
-  <p>  
-  Nota que, como tú estás determinando el porcentaje mínimo Y de personas que deciden dar o quitar 20 pesos a su pareja después de expresar su opinión sobre el tema, no necesitas preocuparte por adivinar cuál será el porcentaje real en la sesión. Concéntrate en si el porcentaje mínimo que tú das realmente captura el punto a partir del cual dejarías de querer expresar tu opinión privada si pertenecieras a la minoría. Así como te convenía ser honesto sobre el costo máximo X que estarías dispuesto a pagar, también te conviene ser honesto al establecer tu porcentaje mínimo Y.
-  </p>
-  <p>  
-    A continuación se ilustra cómo se relaciona tu decisión Y con la opinión que expresas a tu compañero(a).
-    </p>
-
-  <!-- ───────────  VISUAL Y (rojo) y condición P ≥ Y  ──────────── -->
-<div style="max-width:800px; margin:auto;">
-
-  <style>
-    /* — carril y knob — */
-    input[type=range].styled{
-        -webkit-appearance:none; width:100%; height:.4rem;
-        background:#dee2e6; border-radius:.2rem; outline:none;
-    }
-    input[type=range].styled::-webkit-slider-thumb{
-        -webkit-appearance:none; width:1rem; height:1rem;
-        border-radius:50%; background:#dc3545; border:none; cursor:pointer;
-    }
-    input[type=range].styled::-moz-range-thumb{
-        width:1rem; height:1rem; border-radius:50%;
-        background:#dc3545; border:none; cursor:pointer;
-    }
-
-    /* burbuja sobre el knob */
-    .range-wrap{ position:relative; width:100%; }
-    .range-value{
-        position:absolute; top:-1.8rem;
-        background:#f8d7da66; padding:.1rem .5rem;
-        border:1px solid #f5c2c7; border-radius:.25rem;
-        font-size:.8rem; transform:translateX(-50%);
-        pointer-events:none; white-space:nowrap;
-    }
-
-    /* flecha que marca el rango P ≥ Y */
-    .y-range{
-        position:absolute; top:.05rem;          /* algo más centrada vertical */
-        height:.35rem;
-        background:#f5c2c7; pointer-events:none;
-    }
-    .y-range::after{            /* punta → extremo derecho */
-        content:""; position:absolute; right:0; top:-.25rem;
-        border-left:.65rem solid #f5c2c7;
-        border-top:.35rem solid transparent;
-        border-bottom:.35rem solid transparent;
-    }
-
-    .slider-row{ margin-top:1rem; }
-  </style>
-
-  <div class="slider-row d-flex align-items-center">
-    <span class="left-label me-2" style="min-width:12rem;">
-      Expresaría la opinión alterna&nbsp;aunque nadie pague
-    </span>
-
-    <div class="range-wrap flex-grow-1">
-      <!-- flecha rango P ≥ Y -->
-      <div class="y-range" id="yRange"></div>
-
-      <!-- deslizador Y -->
-      <input type="range" id="sliderY"
-             class="styled"
-             min="0" max="100" step="1" value="50"
-             oninput="updateYviz();">
-
-      <span class="range-value" id="bubbleY">50</span>
-    </div>
-
-    <span class="right-label ms-2">
-      Sólo expresaría la opinión alterna&nbsp;si todos pagan
-    </span>
-  </div>
-
-  <p class="mt-2" id="yFeedback"></p>
-</div>
-
-<script>
-  const sliderY  = document.getElementById('sliderY');
-  const bubbleY  = document.getElementById('bubbleY');
-  const yRange   = document.getElementById('yRange');
-  const yFeedback= document.getElementById('yFeedback');
-
-  function updateYviz(){
-      const Y   = Number(sliderY.value);
-      const pct = Y;                       // 0–100 → mismo %
-
-      /* colorea de Y a 100 % en rosa (condición P ≥ Y) */
-      sliderY.style.background =
-          `linear-gradient(to right,#dee2e6 0%,#dee2e6 ${pct}%,
-                           #fad9dc ${pct}%,#fad9dc 100%)`;
-
-      /* burbuja */
-      bubbleY.textContent = Y + "%";
-      bubbleY.style.left  = `calc(${pct}% + (${8 - pct*0.15}px))`;
-
-      /* flecha desde Y hasta 100 % */
-      yRange.style.left  = `${pct}%`;                   // sin +1rem
-      yRange.style.width = `calc(${100 - pct}% )`;      // ancho hasta el final
-
-
-      /* explicación */
-      yFeedback.innerHTML =
-          `La ilustración es dinámica, puedes escoger el valor Y que gustes en la recta. Supón que tu opinión privada está en la minoría. Si el porcentaje real de gente que paga es mayor a <strong>(${Y} %)</strong>, `+
-          `expresarás la <u>opinión alterna</u>. &nbsp;Si el porcentaje real de gente que paga es menor a <strong>${Y}%</strong>, `+
-          `expresarás tu opinión privada.`;
-  }
-
-  document.addEventListener('DOMContentLoaded', updateYviz);
-</script>
-
-  
-  <div style="max-width: 800px; margin: auto;">
-
-    <div style="
-        margin-left: 1em;
-        margin-right: 1em;
-        padding: 1em;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        background-color: #f9f9f9;">
-  
-      <strong>Ejemplo (continuado):</strong>
-      <p>
-        Concluimos el ejemplo de María y Juan presentando sus pagos para el tema "¿Cuál es mejor, el azul o el rojo?". Para ello, recuerda que:
-      </p>
-      <ul>
-        <li>María indicó que su opinión privada es el azul</li>
-        <li>Juan indicó que su opinión privada es el rojo</li>
-        <li>El costo Z que escogimos aleatoriamente fue de 12 pesos.</li>
-        <li>María, que había indicado que estaba dispuesta a pagar 16 pesos o menos para decidir si da o quita 20 pesos, sí puede tomar la decisión porque su máximo X (16) es mayor al costo Z (12). María paga el costo Z de 12 pesos para poder tomar esa decisión.</li>
-        <li>Juan, que había indicado que estaba dispuesto a pagar 10 pesos o menos, no puede tomar la decisión porque su máximo X (10) es menor al costo Z (12).</li>
-        <li>La opinión privada de Juan está en la minoría. Como el 60% de los participantes pagaron para poder decidir y Juan había escogido un porcentaje mínimo Y igual a 45%, y 60% es mayor que 45%, entonces Juan expresa la opinión alterna a su opinión privada a María (es decir, expresa la segunda postura: el azul).</li>
-        <li>Como la opinión privada de Juan está en la minoría, necesariamente la opinión privada de María está en la mayoría. Entonces, María le expresa su opinión privada a Juan (es decir, expresa la segunda postura: el azul).</li>
-        <li>María había dicho que, si su pareja expresaba la preferencia azul, le daría 20 pesos. Como Juan expresa la preferencia azul, María le da 20 pesos.</li>
-        <li>Juan había dicho que, si su pareja expresaba la preferencia azul, le quitaría 20 pesos. Como María expresa la preferencia azul, Juan le quita 20 pesos.</li>
-        <li><strong>Compensación base:</strong> Cada participante recibe 50 pesos sólo por participar.</li>
-        <li><strong>¿Qué sabe María de Juan y Juan de María?:</strong> María no sabe que está emparejada con Juan, y Juan tampoco sabe que está emparejado con María. Ninguno de los dos conoce las respuestas a las cinco preguntas del otro. En general, no se revelará la identidad ni las decisiones de los participantes entre sí.</li>
-        <li><strong>¿María y Juan sabrán el valor Z para cada tema de la sesión?</strong> No, el valor Z lo calcularemos una vez terminada la encuesta. María y Juan tendrán que guardar su número identificador para que podamos contactarlos después de que hayamos calculado los pagos finales de todos los participantes.</li>
-      </ul>
-  
-      <p style="margin-top:0.8em;">
-        <em>Resultados finales de este tema:</em>
-      </p>
-      <ul>
-        <li>María: 50 pesos (base) - 12 pesos (costo para poder dar o quitar 20 pesos a tu pareja) = 38 pesos.</li>
-        <li>Juan: 50 pesos (base) + 20 pesos (20 pesos que María le da a Juan) = 70 pesos.</li>
-      </ul>
-  
-    </div>
-  </div>
 
   <p>A continuación, te presentamos una tabla que resume cómo se calculan los pagos en la encuesta.</p>
 

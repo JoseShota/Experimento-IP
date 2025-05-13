@@ -534,14 +534,24 @@ class Player(BasePlayer):
     )
 
 
-for idx, topic in enumerate(C.TOPIC_LABELS, start=1): 
-    setattr( 
-        Player, f'reaction_pay_{idx}',
+for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
+    # 1) Generamos la lista de tuplas (valor, etiqueta)
+    scale_choices = [(i, str(i)) for i in range(11)]  # 0,1,2,…,10
+
+    # 2) Asignamos al campo:
+    setattr(
+        Player,
+        f'reaction_pay_{idx}',
         models.IntegerField(
-            min=0,
-            max=10,
-            blank=True, 
-            label=Markup( f'Supón que te volviéramos a preguntar diez veces más sobre cuál de las posturas se acerca más a tu opinión sobre el tema <strong>{topic}</strong>. Imagínate que te volviéramos a preguntar esto tiempo después, y en diferentes estados físicos y emocionales (por ejemplo, más o menos cansado(a), más o menos hambriento(a), más o menos contento(a), etc). ¿En cuántas de las diez veces que preguntamos nos darías la misma respuesta?' )
+            choices=scale_choices,              # le damos las opciones
+            blank=True,                         # según tu necesidad
+            label=Markup(                       # tu etiqueta con HTML
+                f'Supón que te volviéramos a preguntar diez veces más '
+                f'sobre cuál de las posturas se acerca más a tu opinión '
+                f'sobre el tema <strong>{topic}</strong>. Imagínate que te volviéramos a preguntar esto tiempo después, y en diferentes estados físicos y emocionales (por ejemplo, más o menos cansado(a), más o menos hambriento(a), más o menos contento(a), etc).'
+                '¿En cuántas de las diez veces que preguntamos nos darías la misma respuesta?'
+            ),
+            widget=widgets.RadioSelectHorizontal,  # o widgets.RadioSelect
         ),
     )
 
@@ -739,12 +749,13 @@ class Topic(Page):
 # 7.  Final page sequence
 # ────────────────────────────────────────────────────────────────────
 page_sequence = [
-    ConsentForm,
+    #ConsentForm,
     Intro,
-    Comprehension, ComprehensionFeedback,
-    PersonalInfo,
+    #Comprehension, ComprehensionFeedback,
+    #PersonalInfo,
     Topic,        # 37 pages, one per topic
 ]
 
 
 
+   
