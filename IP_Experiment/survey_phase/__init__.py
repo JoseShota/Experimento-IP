@@ -2,6 +2,46 @@ import random
 from otree.api import *
 from markupsafe import Markup 
 
+BINARY_TEXTS = [
+    ("A favor", "En contra"),
+    ("Sí, la quesadilla lleva queso", "No, la quesadilla no lleva queso"),
+    ("Más medidas de control", "Derecho a poseer armas"),
+    ("De acuerdo", "En desacuerdo"),
+    ("Bueno", "Malo"),
+    ("De acuerdo", "En desacuerdo"),
+    ("De acuerdo", "En desacuerdo"),
+    ("Sí lo pueden ser", "No pueden llegar a serlo"),
+    ("De acuerdo", "En desacuerdo"),
+    ("De acuerdo", "En desacuerdo"),
+    ("Sí", "No"),
+    ("Sí debería", "No debería"),
+    ("Sí deberían", "No deberían"),
+    ("El América", "Las Chivas"),
+    ("De acuerdo", "En desacuerdo"),
+    ("Verdadero", "Falso"),
+    ("Sí", "No"),
+    ("Quesillo", "Queso Oaxaca"),
+    ("Sí", "No"),
+    ("Luis Miguel", "Juan Gabriel"),
+    ("De acuerdo", "En desacuerdo"),
+    ("A mi compañero", "Al niño"),
+    ("Sí lo es", "No lo es"),
+    ("De acuerdo", "En desacuerdo"),
+    ("De acuerdo", "En desacuerdo"),
+    ("Sí", "No"),
+    ("Afrontar la crisis climática", "Terminar la pobreza extrema en el mundo"),
+    ("A favor", "En contra"),
+    ("Sí, debería devolvérselo", "No, no debería devolvérselo"),
+    ("El Norte", "El Sur"),
+    ("Bañarse en la mañana", "Bañarse en la noche"),
+    ("Sí lo desvío", "Dejo que siga su trayecto"),
+    ("Harry Potter", "El Señor de los Anillos"),
+    ("La Condesa", "Coyoacán"),
+    ("En 10 años", "En 25 años"),
+    ("Sí", "No"),
+    ("De acuerdo", "En desacuerdo"),
+]
+
 class C(BaseConstants):
     NAME_IN_URL        = 'survey'
     PLAYERS_PER_GROUP  = None
@@ -161,6 +201,9 @@ class C(BaseConstants):
         "Tienes la opción de salvar la vida de un niño que está en peligro pero para hacerlo, debes poner en riesgo tu propia vida, con un 10 por ciento de probabilidad de perderla. ¿Lo harías?",
         "¿Estás de acuerdo en que enseñar a los alumnos a utilizar adecuadamente los métodos anticonceptivos sea obligatorio en las escuelas mexicanas?"
     ]
+    
+
+
 
     NUM_ROUNDS      = len(TOPIC_LABELS)   # 37
 
@@ -194,8 +237,57 @@ class Subsession(BaseSubsession):
 class Group(BaseGroup):
     pass
 
-
 class Player(BasePlayer):
+      # 1) ¿Cuál es mejor, rojo o azul?
+    color_choice = models.StringField(
+        choices=[('rojo', 'Rojo'), ('azul', 'Azul')],
+        label='¿Cuál es mejor, el rojo o el azul?',
+        blank=False,
+    )
+
+    # 2) Reacción en 10 repeticiones (radio horizontal)
+    reaction_color = models.IntegerField(
+        choices=[(i, str(i)) for i in range(11)],
+        blank=True,
+        label=Markup(                       # tu etiqueta con HTML
+                f'Supón que te volviéramos a preguntar diez veces más '
+                f'sobre cuál de las posturas se acerca más a tu opinión '
+                f'sobre el tema <strong>¿Cuál es mejor, el rojo o el azul?</strong>. Imagínate que te volviéramos a preguntar esto tiempo después, y en diferentes estados físicos y emocionales (por ejemplo, más o menos cansado(a), más o menos hambriento(a), más o menos contento(a), etc).'
+                '¿En cuántas de las diez veces que preguntamos nos darías la misma respuesta?'
+            ),
+        widget=widgets.RadioSelectHorizontal,
+    )
+
+    # 3) ¿Cuánto pagarías? (slider 0–20)
+    inc_color = models.IntegerField(
+        min=0,
+        max=20,
+        blank=True,
+        label=Markup(
+                f'Para el tema <strong>¿Cuál es mejor, el rojo o el azul?</strong>: Tú tienes que pagar un costo para poder decidir si darle o quitarle 20 pesos a tu pareja dependiendo de la opinión que exprese. Este costo puede ser desde 0 pesos (en este caso sería gratis para ti tomar la decisión)'
+                ' hasta 20 pesos. ¿Cuánto dinero estás dispuesto(a) a pagar para que puedas tomar esa decisión?'
+            ),
+    )
+
+    # 4) ¿Para cuál darías 20 pesos?
+    truth_color = models.StringField(
+        choices=[('T', 'Le daría 20 pesos si expresa la primera postura y le quitaría 20 pesos si expresa la segunda postura'), ('M', 'Le quitaría 20 pesos si expresa la primera postura y le daría 20 pesos si expresa la segunda postura')],
+        blank=False,
+        label=(
+                f'Para el tema <strong>¿Cuál es mejor, el rojo o el azul?</strong>: ¿Para cuál opinión que te exprese tu pareja le darías 20 pesos y para cuál opinión le quitarías 20 pesos?'
+            ),
+    )
+
+    # 5) Umbral Y% (slider 0–100)
+    threshold_color = models.IntegerField(
+        min=0,
+        max=100,
+        blank=True,
+        label=Markup(
+                f'Para el tema <strong>¿Cuál es mejor, el rojo o el azul?</strong>: Supón que tu opinión privada es la opinión minoritaria entre los participantes en esta sesión y al menos Y por ciento de los participantes en esta sesión pagaron el costo para decidir si le dan o le quitan 20 pesos a su pareja, ¿Cuál es el valor de Y mínimo con el que estás dispuesto a expresar la opinión alterna a tu opinión privada?'
+            ),
+    )
+
     consent = models.BooleanField(
         label='He leído y doy mi consentimiento para participar en el estudio.',
         widget=widgets.CheckboxInput,   # <- fuerza checkbox
@@ -574,17 +666,27 @@ for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
 
 # ─── 2) ¿Decir la verdad o mentir? (prob. juzgado = 50 %) ───────────
 for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
+    first, second = BINARY_TEXTS[idx - 1]
+
     setattr(
         Player,
-        f'truth50_{idx}',
+        f"truth50_{idx}",
         models.StringField(
-            choices=[('T', 'Le daría 20 pesos si expresa la primera postura y le quitaría 20 pesos si expresa la segunda postura'), ('M', 'Le quitaría 20 pesos si expresa la primera postura y le daría 20 pesos si expresa la segunda postura')],
+            choices=[
+                ("T", f'Le daría 20 $ si expresa "{first}" y le quitaría 20 $ si expresa "{second}"'),
+                ("M", f'Le quitaría 20 $ si expresa "{first}" y le daría 20 $ si expresa "{second}"'),
+            ],
             blank=False,
-            label=(
-                f'Para el tema <strong>{topic}</strong>: ¿Para cuál opinión que te exprese tu pareja le darías 20 pesos y para cuál opinión le quitarías 20 pesos?'
-            )
+            label=Markup(
+                f"Para el tema <strong>{topic}</strong>:<br>"
+                f"La <strong>primera postura</strong> es: «{first}».<br>"
+                f"La <strong>segunda postura</strong> es: «{second}».<br>"
+                "¿Para cuál opinión que te exprese tu pareja le darías 20 pesos "
+                "y para cuál le quitarías 20 pesos?"
+            ),
         ),
     )
+
 
 # ─── 3) Probabilidad‑umbral para mentir ─────────────────────────────
 for idx, topic in enumerate(C.TOPIC_LABELS, start=1):
@@ -709,6 +811,23 @@ class PersonalInfo(Page):
             'debug_vars': player.participant.vars
         }
 
+# … después de tus otras clases Page …
+
+class ColorChoice(Page):
+    form_model = 'player'
+    form_fields = [
+        'color_choice',
+        'reaction_color',
+        'inc_color',
+        'truth_color',
+        'threshold_color',
+    ]
+
+    @staticmethod
+    def is_displayed(player):
+        # Solo en la ronda 1, justo tras Intro
+        return player.round_number == 1
+
 
 # ────────────────────────────────────────────────────────────────────
 # 6.  Factory that generates 37 per‑topic pages on the fly
@@ -749,10 +868,11 @@ class Topic(Page):
 # 7.  Final page sequence
 # ────────────────────────────────────────────────────────────────────
 page_sequence = [
-    #ConsentForm,
-    Intro,
-    #Comprehension, ComprehensionFeedback,
-    #PersonalInfo,
+    ConsentForm,
+    #Intro,
+    #ColorChoice,
+    Comprehension, ComprehensionFeedback,
+    PersonalInfo,
     Topic,        # 37 pages, one per topic
 ]
 

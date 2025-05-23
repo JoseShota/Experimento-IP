@@ -1,0 +1,271 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}¿Cuál es mejor, el rojo o el azul?{% endblock %}
+
+{% block content %}
+  <style>
+    /* ——— red track & knob for Y ——— */
+    input[type=range].styled-red{
+        -webkit-appearance:none; width:100%; height:.4rem;
+        background:#dee2e6; border-radius:.2rem; outline:none;
+    }
+    input[type=range].styled-red::-webkit-slider-thumb{
+        -webkit-appearance:none; width:1rem; height:1rem;
+        border-radius:50%; background:#dc3545; border:none; cursor:pointer;
+    }
+    input[type=range].styled-red::-moz-range-thumb{
+        width:1rem; height:1rem; border-radius:50%;
+        background:#dc3545; border:none; cursor:pointer;
+    }
+
+    /* arrow P ≥ Y (pink) */
+    .y-range{
+        position:absolute; top:.05rem; height:.35rem;
+        background:#f5c2c7; pointer-events:none;
+    }
+    .y-range::after{
+        content:""; position:absolute; right:0; top:-.25rem;
+        border-left:.65rem solid #f5c2c7;
+        border-top:.35rem solid transparent;
+        border-bottom:.35rem solid transparent;
+    }
+
+    /* ——— track & knob ——— */
+    input[type=range].styled{
+        -webkit-appearance:none; width:100%; height:.4rem;
+        background:#dee2e6; border-radius:.2rem; outline:none;
+    }
+    input[type=range].styled::-webkit-slider-thumb{
+        -webkit-appearance:none; width:1rem; height:1rem;
+        border-radius:50%; background:#0d6efd; border:none; cursor:pointer;
+    }
+    input[type=range].styled::-moz-range-thumb{
+        width:1rem; height:1rem; border-radius:50%;
+        background:#0d6efd; border:none; cursor:pointer;
+    }
+
+    /* bubble */
+    .range-wrap{ position:relative; width:100%; }
+    .range-value{
+        position:absolute; top:-1.8rem;
+        background:#f8f9fa3b; padding:.1rem .5rem;
+        border:1px solid #ced4da; border-radius:.25rem;
+        font-size:.8rem; transform:translateX(-50%);
+        pointer-events:none; white-space:nowrap;
+    }
+
+    /* arrow 0 → X */
+    .z-range{
+        position:absolute; top:.05rem; height:.35rem;
+        background:#b6d4fe; pointer-events:none;
+    }
+    .z-range::after{
+        content:""; position:absolute; right:0; top:-.25rem;
+        border-left:.65rem solid #b6d4fe;
+        border-top:.35rem solid transparent;
+        border-bottom:.35rem solid transparent;
+    }
+
+    /* ---- Espacio extra entre la pregunta y el slider ---- */
+    .slider-row { margin-top: 2rem; }
+    .reaction-sentence {
+      font-size: 1.1rem;
+      line-height: 1.4;
+      margin-top: 1.2rem;
+      margin-bottom: .5rem;
+    }
+
+    .resaltar-valor {
+      font-weight: bold;
+      font-size: 1.5em;
+      color: inherit;
+    }
+    .reaction-sentence + .d-flex.align-items-center {
+      margin-top: 1.5rem;
+    }
+  </style>
+
+  <div class="alert alert-primary mb-4">
+    Te presentamos un ejemplo de las 5 preguntas de la encuesta para el tema, ¿Cuál es mejor, el rojo o el azul?
+  </div>
+
+  <ol class="list-group list-group-numbered">
+    {% for field in form %}
+      <li class="list-group-item py-3">
+        {% if 'reaction_color' in field.name %}
+          <!-- Bloque reaction_pay adaptado a reaction_color -->
+          <label for="id_{{ field.name }}">{{ field.label }}</label>
+          <p id="sentence_{{ field.name }}" class="reaction-sentence text-muted mb-2 d-none">
+            Tu respuesta indica que {{ field.data or 0 }} de 10 veces responderías que prefieres tu respuesta a la primera pregunta
+          </p>
+          <div class="d-flex align-items-center mb-2">
+            <span class="me-2">Si respondieras en este extremo, estarías indicando que nunca darías la misma respuesta</span>
+            <div class="btn-group flex-grow-1" role="group" aria-label="{{ field.name }}">
+              {% for i in range(0, 11) %}
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="{{ field.name }}"
+                    id="id_{{ field.name }}_{{ i }}"
+                    value="{{ i }}"
+                    autocomplete="off"
+                    {# — Si ya hay dato guardado… — #}
+                    {% if field.data != None %}
+                        {% if field.data == i %}checked{% endif %}
+                    {# — Si no hay dato, marcamos i==0 — #}
+                    {% else %}
+                        {% if i == 0 %}checked{% endif %}
+                    {% endif %}>
+                <label class="btn btn-outline-secondary"
+                        for="id_{{ field.name }}_{{ i }}">{{ i }}</label>
+               {% endfor %}
+
+            </div>
+            <span class="ms-2">Si respondieras en este extremo, estarías indicando que siempre darías la misma respuesta</span>
+          </div>
+          {{ formfield_errors field.name }}
+
+        {% elif 'inc_color' in field.name %}
+          <!-- Bloque inc_pay adaptado a inc_color -->
+          <label for="id_{{ field.name }}">{{ field.label }}</label>
+          <p id="sentence_{{ field.name }}" class="reaction-sentence text-muted mb-2 d-none">
+            Tu respuesta indica que estás dispuesto(a) a dar hasta {{ field.data or 0 }} pesos por tomar la decisión
+          </p>
+          <div class="d-flex align-items-center slider-row">
+            <span class="left-label me-2" style="min-width:11rem;">
+              Si respondieras en este extremo, estarías indicando que no estás dispuesto(a) a pagar
+            </span>
+            <div class="range-wrap flex-grow-1">
+              <div class="z-range" id="zRange_{{ field.name }}"></div>
+              <input type="range"
+                     name="{{ field.name }}"
+                     id="id_{{ field.name }}"
+                     min="0" max="20" step="1"
+                     value="{{ field.data or 0 }}"
+                     class="styled"
+                     oninput="updateIncColor(this)"
+                     required>
+              <span class="range-value" id="bubble_{{ field.name }}">
+                {{ field.data or 0 }}
+              </span>
+            </div>
+            <span class="right-label ms-2">
+              Si respondieras en este extremo, estarías indicando que estarías dispuesto(a) a pagar hasta &nbsp;20&nbsp;pesos
+            </span>
+          </div>
+          {{ formfield_errors field.name }}
+
+        {% elif 'threshold_color' in field.name %}
+          <!-- Bloque threshold_prob adaptado a threshold_color -->
+          <label for="id_{{ field.name }}">{{ field.label }}</label>
+          <ul id="sentence_{{ field.name }}" class="reaction-sentence text-muted mb-2 d-none">
+            <li>Tu respuesta indica expresarías la opinión alterna a tu opinión privada sólo si:
+            <ul>
+              <li>tu opinión privada es la minoritaria entre los participantes de la sesión</li>
+              <li>y al menos el {{ field.data or 50 }}% de los participantes pagaron para poder decidir dar o quitar 20 pesos a tu pareja después de observar la opinión que expresó.</li>
+            </ul>
+          </li>
+          </ul>
+          <div class="d-flex align-items-center slider-row">
+            <span class="left-label me-2" style="min-width:12rem;">
+              Si respondieras en este extremo, estarías indicando que expresarías la opinión alterna&nbsp;aunque nadie pague
+            </span>
+            <div class="range-wrap flex-grow-1">
+              <div class="y-range" id="yRange_{{ field.name }}"></div>
+              <input type="range"
+                     name="{{ field.name }}"
+                     id="id_{{ field.name }}"
+                     min="0" max="100" step="1"
+                     value="{{ field.data or 100 }}"
+                     class="styled-red"
+                     oninput="updateThresholdColor(this)"
+                     required>
+              <span class="range-value" id="bubble_{{ field.name }}">
+                {{ field.data or 100 }}%
+              </span>
+            </div>
+            <span class="right-label ms-2">
+              Si respondieras en este extremo, estarías indicando que sólo expresarías la opinión alterna&nbsp;si todos pagan
+            </span>
+          </div>
+          {{ formfield_errors field.name }}
+
+        {% else %}
+          <!-- color_choice y truth_color usan formfield estándar -->
+          {{ formfield field }}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ol>
+
+  {% next_button "Continuar" %}
+
+  <script>
+    let initialLoad = true;
+    document.addEventListener('DOMContentLoaded', () => {
+      // Radios reaction_color
+      document.querySelectorAll('input[type=radio][name="reaction_color"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          const name = radio.name;
+          const v = radio.value;
+          const sentence = document.getElementById(`sentence_${name}`);
+          sentence.classList.remove('d-none');
+          sentence.innerHTML = 
+            `Tu respuesta indica que <span class="resaltar-valor">${v}</span> de 10 veces responderías que prefieres tu respuesta a la primera pregunta.`;
+        });
+      });
+      // Sliders inc_color
+      document.querySelectorAll('input[name="inc_color"]')
+              .forEach(inp => inp.addEventListener('input', () => updateIncColor(inp)));
+      // Sliders threshold_color
+      document.querySelectorAll('input[name="threshold_color"]')
+              .forEach(inp => inp.addEventListener('input', () => updateThresholdColor(inp)));
+      initialLoad = false;
+    });
+
+    function updateIncColor(range) {
+      const bubble = document.getElementById('bubble_' + range.name);
+      const zRange = document.getElementById('zRange_' + range.name);
+      const sentence = document.getElementById('sentence_' + range.name);
+      const X = Number(range.value);
+      const pct = X * 100 / 20;
+      range.style.background = `linear-gradient(to right, #0d6efd 0%, #0d6efd ${pct}%, #dee2e6 ${pct}%)`;
+      bubble.textContent = X;
+      bubble.style.left = `calc(${pct}% + (${8 - pct*0.15}px))`;
+      zRange.style.left = '0';
+      zRange.style.width = `${pct}%`;
+      if (!initialLoad) {
+        sentence.classList.remove('d-none');
+        sentence.innerHTML =
+          `Tu respuesta indica que estás dispuesto(a) a pagar hasta ` +
+          `<span class="resaltar-valor">${X}</span> pesos para tomar la decisión.`;
+      }
+    }
+
+    function updateThresholdColor(range) {
+      const bubble = document.getElementById('bubble_' + range.name);
+      const yRange = document.getElementById('yRange_' + range.name);
+      const sentence = document.getElementById('sentence_' + range.name);
+      const Y = Number(range.value);
+      const pct = Y;
+      range.style.background = `linear-gradient(to right, #dee2e6 0%, #dee2e6 ${pct}%, #fad9dc ${pct}%, #fad9dc 100%)`;
+      bubble.textContent = Y + '%';
+      bubble.style.left = `calc(${pct}% + (${8 - pct*0.15}px))`;
+      yRange.style.left = `${pct}%`;
+      yRange.style.width = `calc(${100 - pct}%)`;
+      if (!initialLoad) {
+        sentence.classList.remove('d-none');
+        sentence.innerHTML =
+          `
+        <li>Tu respuesta indica que expresarías la opinión alterna a tu opinión privada sólo si:
+          <ul>
+            <li>tu opinión privada es la minoritaria entre los participantes de la sesión</li>
+            <li>y al menos el <span class="resaltar-valor">${Y}%</span> de los participantes pagaron para poder decidir dar o quitar 20 pesos a su pareja después de observar la opinión que expresó.</li>
+          </ul>
+        </li>`;
+      }
+    }
+  </script>
+{% endblock %}
+
