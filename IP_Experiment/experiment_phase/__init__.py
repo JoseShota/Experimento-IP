@@ -68,33 +68,50 @@ SURVEY_OPTIONS = [
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+# --------------------------------------------------------------------
+# Utilidad: sortear el tratamiento según las probabilidades pedidas
+# --------------------------------------------------------------------
+def draw_treatment() -> Tuple[float, str]:
+    u = random.random()
+    if u < 0.5:
+        return 0.5, '0.5_H'
+    elif u < 0.75:
+        return 0.7, '0.7_H'
+    else:
+        return 0.3, '0.7_L'
+
+
+
 # -----------------------------------------------------------------------------
 # Constants and Helper Functions
 # -----------------------------------------------------------------------------
 class C(BaseConstants):
     NAME_IN_URL = 'experiment_phase'
-    PLAYERS_PER_GROUP = 2
+    PLAYERS_PER_GROUP = 3
     NUM_BINARY_QUESTIONS = 10  # updated to 10 questions
     NUM_ROUNDS = 13  # now 13 rounds total
 
-def set_partner(player: Player, partner: Player) -> None:
-    """Store the partner's id_in_subsession in player's partner_id field."""
-    player.partner_id = partner.id_in_subsession
 
-def get_partner(player: Player) -> Player:
-    """Retrieve the player's partner using the stored partner_id."""
-    for p in player.subsession.get_players():
-        if p.id_in_subsession == player.partner_id:
-            return p
-    return None
+def get_partners(player: Player) -> List[Player]:
+    ids = json.loads(player.partner_ids or "[]")
+    return [p for p in player.subsession.get_players() if p.id_in_subsession in ids]
+
 
 # -----------------------------------------------------------------------------
 # Models
 # -----------------------------------------------------------------------------
 class Subsession(BaseSubsession):
-    def creating_session(self) -> None:
-        # Nothing special in round 1; stage-1 responses are collected on survey pages.
-        pass
+    def creating_session(self):
+        # Si no existe, créalo y GUAŔDALO inmediatamente
+        if 'HL_map' not in self.session.vars:
+            hl_map = [random.choice([True, False])
+                      for _ in range(C.NUM_BINARY_QUESTIONS)]
+            self.session.vars['HL_map'] = hl_map
+            # use warning en lugar de debug para que siempre se vea en consola
+            logger.warning(f"HL_map creado en creating_session: {hl_map}")
+
+
+
 
 class Group(BaseGroup):
     pass
@@ -228,180 +245,158 @@ class Player(BasePlayer):
 
     treatment = models.LongStringField(blank=False)
     second_choice = models.StringField(choices=['H', 'L'], blank=False)
-    juicio = models.StringField(choices=['Dar 20 pesos a mi pareja', 'Quitar 20 pesos a mi pareja'], blank=False, label= "Por favor, decide si dar o quitar 20 pesos a tu pareja.")
-    Mentira = models.StringField(choices=['Sí', 'No'], blank=False, label="¿Consideras que la opinión que tu pareja te expresó es la misma que nos expresó en privado?")
-    partner_id = models.IntegerField(blank=True, null=True)
+    juicio_1 = models.StringField(
+        choices=[
+            ('GIVE',  'Dar 20 pesos a este compañero'),
+            ('TAKE',  'Quitar 20 pesos a este compañero')
+        ],
+        blank=False,
+        label='Decide para tu primer compañero'
+    )
+    juicio_2 = models.StringField(
+        choices=[
+            ('GIVE',  'Dar 20 pesos a este compañero'),
+            ('TAKE',  'Quitar 20 pesos a este compañero')
+        ],
+        blank=False,
+        label='Decide para tu segundo compañero'
+    )
+    mentira_1 = models.StringField(choices=['Sí','No'], label='¿Consideras que la opinión que tu primer compañero te expresó es la misma que nos expresó en privado?')
+    mentira_2 = models.StringField(choices=['Sí','No'], label='¿Consideras que la opinión que tu segundo compañero te expresó es la misma que nos expresó en privado?')
+    partner_ids = models.LongStringField(
+        blank=True,
+        doc="JSON list of the other two id_in_subsession in my group"
+    )
     
     # New field: Tag to capture the binary question used for grouping in each round (Stage 2)
     current_question_tag = models.StringField(blank=True)
 
-# -----------------------------------------------------------------------------
-# Practice Pairing Function for Practice Group Interaction Round (Stage 1)
-# -----------------------------------------------------------------------------
-
+# -------------------------------------------------------------
+# 1.  Emparejamiento en la RONDA DE PRÁCTICA
+# -------------------------------------------------------------
 def practice_pair_players(subsession: Subsession) -> None:
-    current_round = subsession.round_number
-    # For practice, we expect current_round == 2.
     players = subsession.get_players()
-    # Build pools based on the practice response saved in Round 1.
-    H_pool: List[Player] = [
-        p for p in players
-        if p.participant.vars.get('practice_binary_choice') == 'H'
-    ]
-    L_pool: List[Player] = [
-        p for p in players
-        if p.participant.vars.get('practice_binary_choice') == 'L'
-    ]
-    logger.debug(f"Practice Round {current_round}: H_pool: {[p.id_in_subsession for p in H_pool]}, L_pool: {[p.id_in_subsession for p in L_pool]}")
-    paired_groups: List[Tuple[Player, Player]] = []
+    H_pool  = [p for p in players if p.participant.vars.get('practice_binary_choice') == 'H']
+    L_pool  = [p for p in players if p.participant.vars.get('practice_binary_choice') == 'L']
+    groups: list[list[Player]] = []
+    GROUP_SIZE = 3
 
-    # Pairing logic (mirroring original function)
-    while H_pool and L_pool:
-        prob_H = random.choice([0.5, 0.7])
-        logger.debug(f"Practice Round {current_round}: Chosen treatment probability: {prob_H}")
-        candidate_H = H_pool.pop()
-        candidate_L = L_pool.pop()
-        if random.random() < prob_H:
-            first_member = candidate_H
-            L_pool.append(candidate_L)  # delay pairing candidate_L
-            logger.debug(f"Practice Round {current_round}: Member 1 from H: {first_member.id_in_subsession}; returned L candidate {candidate_L.id_in_subsession}")
-        else:
-            first_member = candidate_L
-            H_pool.append(candidate_H)  # delay pairing candidate_H
-            logger.debug(f"Practice Round {current_round}: Member 1 from L: {first_member.id_in_subsession}; returned H candidate {candidate_H.id_in_subsession}")
+    while H_pool and L_pool and len(H_pool) + len(L_pool) >= GROUP_SIZE:
 
-        if H_pool and L_pool:
-            candidate_H2 = H_pool.pop()
-            candidate_L2 = L_pool.pop()
-            if random.random() < prob_H:
-                second_member = candidate_H2
-                L_pool.append(candidate_L2)
-                logger.debug(f"Practice Round {current_round}: Member 2 from H: {second_member.id_in_subsession}; returned L candidate {candidate_L2.id_in_subsession}")
+        prob_H, tlabel = draw_treatment()
+        inform        = random.choice([True, False])
+        failed_attempts = 0
+
+        while failed_attempts < 5:            # ≤ 5 intentos con este tratamiento
+            tentative: list[tuple[Player, str]] = []
+
+            for _ in range(GROUP_SIZE):
+                pick_H = (random.random() < prob_H and H_pool) or not L_pool
+                if pick_H:
+                    tentative.append((H_pool.pop(), 'H'))
+                else:
+                    tentative.append((L_pool.pop(), 'L'))
+
+                if not H_pool or not L_pool:   # pool agotado → revertir
+                    for p, pool in tentative:
+                        (H_pool if pool == 'H' else L_pool).append(p)
+                    failed_attempts += 1
+                    break
             else:
-                second_member = candidate_L2
-                H_pool.append(candidate_H2)
-                logger.debug(f"Practice Round {current_round}: Member 2 from L: {second_member.id_in_subsession}; returned H candidate {candidate_H2.id_in_subsession}")
+                # éxito: formamos el trío definitivo
+                trio = [tpl[0] for tpl in tentative]
+                treatment = {'prob_H': prob_H,
+                             'label' : tlabel,
+                             'inform': inform,
+                             'practice': True}
+                for p in trio:
+                    p.treatment   = json.dumps(treatment)
+                    p.partner_ids = json.dumps([q.id_in_subsession for q in trio if q != p])
+                groups.append(trio)
+                break        # sale del while failed_attempts
 
-            # For practice, add a flag in the treatment dictionary.
-            inform = random.choice([True, False])
-            treatment = {'prob_H': prob_H, 'inform': inform, 'practice': True}
-            for p in [first_member, second_member]:
-                p.treatment = json.dumps(treatment)
-            set_partner(first_member, second_member)
-            set_partner(second_member, first_member)
-            paired_groups.append((first_member, second_member))
-            logger.debug(f"Practice Round {current_round}: Paired players: {first_member.id_in_subsession} and {second_member.id_in_subsession}")
-        else:
-            # If pairing fails, return first_member to correct pool.
-            if first_member.participant.vars.get('practice_binary_choice') == 'H':
-                H_pool.append(first_member)
-            else:
-                L_pool.append(first_member)
+        # si fallamos 5 veces, no volvemos a intentar con este tratamiento
+        if failed_attempts >= 5:
             break
 
-    remaining_players = H_pool + L_pool
-    random.shuffle(remaining_players)
-    while len(remaining_players) >= 2:
-        member1 = remaining_players.pop()
-        member2 = remaining_players.pop()
-        inform = random.choice([True, False])
-        treatment = {'prob_H': 'Control', 'inform': inform, 'practice': True}
-        for p in [member1, member2]:
-            p.treatment = json.dumps(treatment)
-        set_partner(member1, member2)
-        set_partner(member2, member1)
-        paired_groups.append((member1, member2))
-        logger.debug(f"Practice Round {current_round}: Control paired players: {member1.id_in_subsession} and {member2.id_in_subsession}")
+    # ---------- remanentes = grupos Control ----------
+    rem = H_pool + L_pool
+    random.shuffle(rem)
+    while len(rem) >= GROUP_SIZE:
+        trio = [rem.pop() for _ in range(GROUP_SIZE)]
+        treatment = {'label': 'Control', 'inform': random.choice([True, False]), 'practice': True}
+        for p in trio:
+            p.treatment   = json.dumps(treatment)
+            p.partner_ids = json.dumps([q.id_in_subsession for q in trio if q != p])
+        groups.append(trio)
 
-    subsession.set_group_matrix(paired_groups)
-    logger.debug(f"Practice Round {current_round}: Set new group matrix: {[[p.id_in_subsession for p in pair] for pair in paired_groups]}")
+    subsession.set_group_matrix(groups)
 
 
-# -----------------------------------------------------------------------------
-# Pairing Function for Group Interaction Rounds (Stage 2)
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------
+# 2.  Emparejamiento en RONDAS 4-13
+# -------------------------------------------------------------
 def pair_players(subsession: Subsession) -> None:
-    current_round = subsession.round_number
-    if current_round == 1:
-        # Do nothing in the survey round.
+    if subsession.round_number <= 3:
         return
 
+    order = subsession.session.vars['question_order']
+    qi    = order[subsession.round_number - 4]
+
     players = subsession.get_players()
-    # Retrieve the common random ordering of question indices generated in round 1.
-    question_order = subsession.session.vars.get('question_order', list(range(C.NUM_BINARY_QUESTIONS)))
-    # For stage-2 round r (r>=2), the corresponding survey question index is:
-    question_index = question_order[current_round - 4]
+    H_pool  = [p for p in players if p.participant.vars['binary_choices'][qi] == 'H']
+    L_pool  = [p for p in players if p.participant.vars['binary_choices'][qi] == 'L']
+    groups: list[list[Player]] = []
+    GROUP_SIZE = 3
 
-    # Build pools based on each player's answer for the current survey question.
-    H_pool: List[Player] = [
-        p for p in players
-        if p.participant.vars['binary_choices'][question_index] == 'H'
-    ]
-    L_pool: List[Player] = [
-        p for p in players
-        if p.participant.vars['binary_choices'][question_index] == 'L'
-    ]
-    logger.debug(f"Round {current_round}: H_pool: {[p.id_in_subsession for p in H_pool]}, L_pool: {[p.id_in_subsession for p in L_pool]}")
-    paired_groups: List[Tuple[Player, Player]] = []
+    while H_pool and L_pool and len(H_pool) + len(L_pool) >= GROUP_SIZE:
 
-    while H_pool and L_pool:
-        prob_H = random.choice([0.5, 0.7])
-        logger.debug(f"Round {current_round}: Chosen treatment probability: {prob_H}")
-        candidate_H = H_pool.pop()
-        candidate_L = L_pool.pop()
-        if random.random() < prob_H:
-            first_member = candidate_H
-            L_pool.append(candidate_L)  # delay pairing candidate_L
-            logger.debug(f"Round {current_round}: Member 1 from H: {first_member.id_in_subsession}; returned L candidate {candidate_L.id_in_subsession}")
-        else:
-            first_member = candidate_L
-            H_pool.append(candidate_H)  # delay pairing candidate_H
-            logger.debug(f"Round {current_round}: Member 1 from L: {first_member.id_in_subsession}; returned H candidate {candidate_H.id_in_subsession}")
+        prob_H, tlabel = draw_treatment()
+        inform        = random.choice([True, False])
+        failed_attempts = 0
 
-        if H_pool and L_pool:
-            candidate_H2 = H_pool.pop()
-            candidate_L2 = L_pool.pop()
-            if random.random() < prob_H:
-                second_member = candidate_H2
-                L_pool.append(candidate_L2)
-                logger.debug(f"Round {current_round}: Member 2 from H: {second_member.id_in_subsession}; returned L candidate {candidate_L2.id_in_subsession}")
+        while failed_attempts < 5:
+            tentative: list[tuple[Player, str]] = []
+
+            for _ in range(GROUP_SIZE):
+                pick_H = (random.random() < prob_H and H_pool) or not L_pool
+                if pick_H:
+                    tentative.append((H_pool.pop(), 'H'))
+                else:
+                    tentative.append((L_pool.pop(), 'L'))
+
+                if not H_pool or not L_pool:
+                    for p, pool in tentative:
+                        (H_pool if pool == 'H' else L_pool).append(p)
+                    failed_attempts += 1
+                    break
             else:
-                second_member = candidate_L2
-                H_pool.append(candidate_H2)
-                logger.debug(f"Round {current_round}: Member 2 from L: {second_member.id_in_subsession}; returned H candidate {candidate_H2.id_in_subsession}")
+                trio = [tpl[0] for tpl in tentative]
+                treatment = {'prob_H': prob_H, 'label': tlabel, 'inform': inform}
+                for p in trio:
+                    p.treatment   = json.dumps(treatment)
+                    p.partner_ids = json.dumps([q.id_in_subsession for q in trio if q != p])
+                groups.append(trio)
+                break
 
-            inform = random.choice([True, False])
-            treatment = {'prob_H': prob_H, 'inform': inform}
-            for p in [first_member, second_member]:
-                p.treatment = json.dumps(treatment)
-            set_partner(first_member, second_member)
-            set_partner(second_member, first_member)
-            paired_groups.append((first_member, second_member))
-            logger.debug(f"Round {current_round}: Paired players: {first_member.id_in_subsession} and {second_member.id_in_subsession}")
-        else:
-            # Not enough candidates for pairing.
-            if first_member.participant.vars['binary_choices'][question_index] == 'H':
-                H_pool.append(first_member)
-            else:
-                L_pool.append(first_member)
+        if failed_attempts >= 5:
             break
 
-    remaining_players = H_pool + L_pool
-    random.shuffle(remaining_players)
-    while len(remaining_players) >= 2:
-        member1 = remaining_players.pop()
-        member2 = remaining_players.pop()
-        inform = random.choice([True, False])
-        treatment = {'prob_H': 'Control', 'inform': inform}
-        for p in [member1, member2]:
-            p.treatment = json.dumps(treatment)
-        set_partner(member1, member2)
-        set_partner(member2, member1)
-        paired_groups.append((member1, member2))
-        logger.debug(f"Round {current_round}: Control paired players: {member1.id_in_subsession} and {member2.id_in_subsession}")
+    # ---------- remanentes = grupos Control ----------
+    rem = H_pool + L_pool
+    random.shuffle(rem)
+    while len(rem) >= GROUP_SIZE:
+        trio = [rem.pop() for _ in range(GROUP_SIZE)]
+        treatment = {'label': 'Control', 'inform': random.choice([True, False])}
+        for p in trio:
+            p.treatment   = json.dumps(treatment)
+            p.partner_ids = json.dumps([q.id_in_subsession for q in trio if q != p])
+        groups.append(trio)
 
-    subsession.set_group_matrix(paired_groups)
-    logger.debug(f"Round {current_round}: Set new group matrix: {[[p.id_in_subsession for p in pair] for pair in paired_groups]}")
+    subsession.set_group_matrix(groups)
+
+
+
 
 # -----------------------------------------------------------------------------
 # Page Definitions
@@ -524,32 +519,45 @@ class PracticeTreatmentInformation(Page):
             if p.participant.vars.get('practice_pay_to_judge')
         )
         judge_percent = (judge_yes / len(players)) * 100 if players else 0
-
+        logger.debug(f"[PAGE] P{player.id_in_subsession} treatment crudo: {player.treatment}")
         try:
             treatment = json.loads(player.treatment)
         except (TypeError, json.JSONDecodeError):
-            treatment = {'prob_H': 'Control', 'inform': False, 'practice': True}
+            treatment = {'label': 'Control', 'inform': False, 'practice': True}
 
         # Selección según tratamiento
-        if treatment['prob_H'] == "Control":
+        if treatment.get('label') == '0.5_H':
+            selection_text = (
+                f"Para determinar cada individuo del trío, tomamos un grupo de diez candidatos. "
+                f"Hay <strong>cinco</strong> a favor de '{first_option}' y "
+                f"<strong>cinco</strong> a favor de '{second_option}'. Escogemos uno al azar."
+            )
+        elif treatment.get('label') == '0.7_H':
+            selection_text = (
+                f"Para determinar cada individuo del trío, tomamos un grupo de diez candidatos. "
+                f"Hay <strong>siete</strong> a favor de '{first_option}' y "
+                f"<strong>tres</strong> a favor de '{second_option}'. Escogemos uno al azar."
+            )
+        elif treatment.get('label') == '0.7_L':
+            selection_text = (
+                f"Para determinar cada individuo del trío, tomamos un grupo de diez candidatos. "
+                f"Hay <strong>siete</strong> a favor de '{second_option}' y "
+                f"<strong>tres</strong> a favor de '{first_option}'. Escogemos uno al azar."
+            )
+        else:  # Control u otro
             selection_text = "Escogimos el grupo sin tomar en cuenta las posturas de las diez personas."
-        elif treatment['prob_H'] == 0.5:
-            selection_text = f"Para determinar cada individuo de la pareja, tomamos un grupo de diez candidatos. Hay <strong> cinco </strong> personas a favor de '{first_option}', y <strong> cinco </strong> a favor de '{second_option}'. Escogemos una de ellas al azar."
-        elif treatment['prob_H'] == 0.7:
-            selection_text = f"Para determinar cada individuo de la pareja, tomamos un grupo de diez candidatos. Hay <strong> siete </strong> personas a favor de '{first_option}', y <strong> tres </strong> a favor de '{second_option}'. Escogemos una de ellas al azar."
-        else:
-            selection_text = "Método de agrupación desconocido."
+
 
         # Texto principal
         treatment_text = (
-            f"Para esta “conversación” de práctica, te hemos agrupado con otro compañero usando la pregunta de práctica: '{current_question}'. "
+            f"Para esta “conversación”, te hemos agrupado con otros dos compañeros usando la pregunta: '{current_question}'. "
             f"{selection_text}"
         )
 
         # Información adicional (si aplica)
         inform_text = ""
         if treatment.get('inform'):
-            inform_text = f"Te informamos que el {judge_percent:.0f}% de los participantes están dispuestos a pagar 5 pesos para darle o quitarle 20 pesos a su pareja después de observar la opinión que le expresó."
+            inform_text = f"Te informamos que el {judge_percent:.0f}% de los participantes están dispuestos a pagar 5 pesos para darle o quitarle 20 pesos a cada uno de sus compañeros después de observar la opinión que le expresó."
 
         # ⬅️ Se devuelven ambos textos juntos
         return {
@@ -597,37 +605,38 @@ class PracticePublicDisplayPage(Page):
         return player.round_number == 2
 
     @staticmethod
-    def get_form_fields(player: Player):
-        if player.participant.vars.get('practice_pay_to_judge'):
-            return ['juicio']
-        else:
-            return []
+    def get_form_fields(player):
+        pay_choices = player.participant.vars.get('pay_to_judge_choices',
+                                                [False]*C.NUM_BINARY_QUESTIONS)
+        qi = player.session.vars['question_order'][player.round_number - 4]
+        return ['juicio_1', 'juicio_2'] if pay_choices[qi] else []
+
 
     @staticmethod
     def vars_for_template(player: Player) -> dict:
-        partner = get_partner(player)
+        partners = get_partners(player)
         current_question = PRACTICE_QUESTION
         options = PRACTICE_OPTIONS
 
-        if partner:
-            if partner.second_choice == 'H':
-                partner_choice_text = options[0]
-            elif partner.second_choice == 'L':
-                partner_choice_text = options[1]
+        # Collect each partner's choice text
+        partner_choices = []
+        for comp in partners:
+            if comp.second_choice == 'H':
+                partner_choices.append(options[0])
+            elif comp.second_choice == 'L':
+                partner_choices.append(options[1])
             else:
-                partner_choice_text = "No ha respondido"
-        else:
-            partner_choice_text = "No se asignó compañero"
+                partner_choices.append("No ha respondido")
 
         return {
-            'partner_choice': partner_choice_text,
+            'partner_choices': partner_choices,
             'current_question': current_question,
             'show_judge_form': player.participant.vars.get('practice_pay_to_judge') is True,
         }
     
 class PracticeLieQuestionPage(Page):
     form_model = 'player'
-    form_fields = ['Mentira']
+    form_fields = ['mentira_1', 'mentira_2']
 
     @staticmethod
     def is_displayed(player: Player) -> bool:
@@ -635,19 +644,23 @@ class PracticeLieQuestionPage(Page):
 
     @staticmethod
     def vars_for_template(player: Player) -> dict:
-        partner = get_partner(player)
+        partners = get_partners(player)
         current_question = PRACTICE_QUESTION
         options = PRACTICE_OPTIONS
-        if partner:
-            if partner.second_choice == 'H':
-                partner_choice_text = options[0]
-            elif partner.second_choice == 'L':
-                partner_choice_text = options[1]
+
+        partner_choices = []
+        for comp in partners:
+            if comp.second_choice == 'H':
+                partner_choices.append(options[0])
+            elif comp.second_choice == 'L':
+                partner_choices.append(options[1])
             else:
-                partner_choice_text = "No ha respondido"
-        else:
-            partner_choice_text = "No se asignó compañero"
-        return {'partner_choice': partner_choice_text, 'current_question': current_question}
+                partner_choices.append("No ha respondido")
+
+        return {
+            'partner_choices': partner_choices,
+            'current_question': current_question
+        }
 
 
 class ExperimentInstructions2(Page):
@@ -680,22 +693,42 @@ class BinaryQuestions(Page):
     def is_displayed(player: Player) -> bool:
         return player.round_number == 3
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        form = kwargs.get('form')
-        field_names = [f"binary_choice_{i}" for i in range(1, C.NUM_BINARY_QUESTIONS + 1)]
-        context['rendered_fields'] = [form[field_name] for field_name in field_names]
-        context['question_list'] = list(range(1, C.NUM_BINARY_QUESTIONS + 1))
-        return context
-
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        binary_choices = []
-        for i in range(1, C.NUM_BINARY_QUESTIONS + 1):
-            field_name = f"binary_choice_{i}"
-            binary_choices.append(getattr(player, field_name))
-        player.participant.vars['binary_choices'] = binary_choices
-        logger.debug(f"Stored binary_choices: {binary_choices}")
+        player.participant.vars['binary_choices'] = [
+            getattr(player, f"binary_choice_{i}") for i in range(1, C.NUM_BINARY_QUESTIONS + 1)
+        ]
+        logger.debug(f"Stored binary_choices: {player.participant.vars['binary_choices']}")
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        session = self.player.session
+        hl_map = session.vars.get('HL_map')
+        if hl_map is None:
+            # Generarlo on the fly y guardarlo para próximas páginas
+            hl_map = [random.choice([True, False])
+                    for _ in range(C.NUM_BINARY_QUESTIONS)]
+            session.vars['HL_map'] = hl_map
+            logger.warning(f"HL_map no encontrado: creado sobre la marcha: {hl_map}")
+
+
+        rendered_fields = []
+        for i in range(C.NUM_BINARY_QUESTIONS):
+            field = form[f"binary_choice_{i+1}"]
+
+            if hl_map[i]:
+                field.choices = [('H', FIRST_OPTIONS[i]), ('L', SECOND_OPTIONS[i])]
+            else:
+                field.choices = [('H', SECOND_OPTIONS[i]), ('L', FIRST_OPTIONS[i])]
+
+            field.label = SURVEY_QUESTIONS[i]
+            rendered_fields.append(field)
+
+        context['rendered_fields'] = rendered_fields
+        context['question_list']    = list(range(1, C.NUM_BINARY_QUESTIONS + 1))
+        return context
+
 
 class WillingnessToPayCost(Page):
     form_model = 'player'
@@ -758,43 +791,49 @@ class TreatmentInformation(Page):
         return player.round_number > 3
 
     @staticmethod
-    def vars_for_template(player: Player) -> dict:
-        # Get the index for the current survey question used for grouping.
-        question_order = player.session.vars['question_order']
-        question_index = question_order[player.round_number - 4]
-        
-        # Get the current question text from SURVEY_QUESTIONS.
-        current_question = SURVEY_QUESTIONS[question_index]
-        # Update the player's tag (no need to call player.save())
+    def vars_for_template(player: Player):
+        qi      = player.session.vars['question_order'][player.round_number - 4]
+        hl_map  = player.session.vars['HL_map']
+
+        first_option  = FIRST_OPTIONS[qi]
+        second_option = SECOND_OPTIONS[qi]
+        if not hl_map[qi]:                      # invertimos si H es la 2.ª
+            first_option, second_option = second_option, first_option
+
+        # ---- resto del código idéntico, solo usando las nuevas vars ----
+        current_question = SURVEY_QUESTIONS[qi]
         player.current_question_tag = current_question
-        
-        # Retrieve the first option text for the current question.
-        first_option = FIRST_OPTIONS[question_index]
-        second_option = SECOND_OPTIONS[question_index]
-        
-        # Calculate the percentage of players willing to pay.
+
+        # porcentaje dispuestos a juzgar
         players = player.subsession.get_players()
-        judge_yes = sum(
-            1 for p in players
-            if p.participant.vars['pay_to_judge_choices'][question_index]
-        )
+        judge_yes = sum(1 for p in players
+                        if p.participant.vars['pay_to_judge_choices'][qi])
         judge_percent = (judge_yes / len(players)) * 100 if players else 0
-        
-        # Load the treatment stored in player.treatment.
-        try:
-            treatment = json.loads(player.treatment)
-        except (TypeError, json.JSONDecodeError):
-            treatment = {'prob_H': 'Control', 'inform': False}
-        
+
+        treatment = json.loads(player.treatment or '{"label":"Control","inform":false}')
+        label = treatment.get('label', 'Control')
         # Build the partner selection text.
-        if treatment['prob_H'] == "Control":
+        if label == '0.5_H':
+            selection_text = (
+                f"Para determinar cada individuo del trío, tomamos un grupo de diez candidatos. "
+                f"Hay <strong>cinco</strong> a favor de '{first_option}' y "
+                f"<strong>cinco</strong> a favor de '{second_option}'. Escogemos uno al azar."
+            )
+        elif label == '0.7_H':
+            selection_text = (
+                f"Para determinar cada individuo del trío, tomamos un grupo de diez candidatos. "
+                f"Hay <strong>siete</strong> a favor de '{first_option}' y "
+                f"<strong>tres</strong> a favor de '{second_option}'. Escogemos uno al azar."
+            )
+        elif label == '0.7_L':
+            selection_text = (
+                f"Para determinar cada individuo del trío, tomamos un grupo de diez candidatos. "
+                f"Hay <strong>siete</strong> a favor de '{second_option}' y "
+                f"<strong>tres</strong> a favor de '{first_option}'. Escogemos uno al azar."
+            )
+        else:  # Control u otro
             selection_text = "Escogimos el grupo sin tomar en cuenta las posturas de las diez personas."
-        elif treatment['prob_H'] == 0.5:
-            selection_text = f"Para determinar cada individuo de la pareja, tomamos un grupo de diez candidatos. Hay <strong> cinco </strong> personas a favor de '{first_option}', y <strong> cinco </strong> a favor de '{second_option}'. Escogemos una de ellas al azar."
-        elif treatment['prob_H'] == 0.7:
-            selection_text = f"Para determinar cada individuo de la pareja, tomamos un grupo de diez candidatos. Hay <strong> siete </strong> personas a favor de '{first_option}', y <strong> tres </strong> a favor de '{second_option}'. Escogemos una de ellas al azar."
-        else:
-            selection_text = "Método de agrupación desconocido."
+
         
         # Texto principal
         treatment_text = (
@@ -825,20 +864,21 @@ class PublicDecision(Page):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        question_order = self.player.session.vars['question_order']
-        question_index = question_order[self.player.round_number - 4]
-        current_question = SURVEY_QUESTIONS[question_index]
-        options = SURVEY_OPTIONS[question_index]
-        
-        form = kwargs.get('form')
-        if form:
-            form.second_choice.choices = [('H', options[0]), ('L', options[1])]
-            form.second_choice.label = current_question
-        
-        context.update({
-            'current_question': current_question,
-            'options': options,
-        })
+        qi      = self.player.session.vars['question_order'][self.player.round_number - 4]
+        hl_map  = self.player.session.vars['HL_map']
+
+        current_question = SURVEY_QUESTIONS[qi]
+        if hl_map[qi]:
+            options = (FIRST_OPTIONS[qi], SECOND_OPTIONS[qi])
+        else:
+            options = (SECOND_OPTIONS[qi], FIRST_OPTIONS[qi])
+
+        form = kwargs['form']
+        form.second_choice.choices = [('H', options[0]), ('L', options[1])]
+        form.second_choice.label   = current_question
+
+        context.update(current_question=current_question,
+                       options=options)
         return context
 
 class SecondDecisionWaitPageForGroup(WaitPage):
@@ -857,72 +897,64 @@ class PublicDisplayPage(Page):
         return player.round_number > 3
 
     @staticmethod
-    def get_form_fields(player: Player):
-        question_order = player.session.vars.get('question_order')
-        if not question_order:
-            return []
+    def get_form_fields(player):
+        qi = player.session.vars['question_order'][player.round_number - 4]
+        pay_choices = player.participant.vars.get('pay_to_judge_choices',
+                                                  [False]*C.NUM_BINARY_QUESTIONS)
+        return ['juicio_1', 'juicio_2'] if pay_choices[qi] else []
 
-        question_index = question_order[player.round_number - 4]
-        pay_choices = player.participant.vars.get('pay_to_judge_choices', [False] * C.NUM_BINARY_QUESTIONS)
-
-        if pay_choices[question_index]:
-            return ['juicio']
-        else:
-            return []
 
     @staticmethod
-    def vars_for_template(player: Player) -> dict:
-        partner = get_partner(player)
-        question_order = player.session.vars['question_order']
-        question_index = question_order[player.round_number - 4]
-        current_question = SURVEY_QUESTIONS[question_index]
-        options = SURVEY_OPTIONS[question_index]
+    def vars_for_template(player: Player):
+        qi      = player.session.vars['question_order'][player.round_number - 4]
+        hl_map  = player.session.vars['HL_map']
+        partners = get_partners(player)
 
-        if partner:
-            if partner.second_choice == 'H':
-                partner_choice_text = options[0]
-            elif partner.second_choice == 'L':
-                partner_choice_text = options[1]
-            else:
-                partner_choice_text = "No ha respondido"
+        if hl_map[qi]:
+            options = (FIRST_OPTIONS[qi], SECOND_OPTIONS[qi])
         else:
-            partner_choice_text = "No se asignó compañero"
+            options = (SECOND_OPTIONS[qi], FIRST_OPTIONS[qi])
 
-        pay_choices = player.participant.vars.get('pay_to_judge_choices', [False] * C.NUM_BINARY_QUESTIONS)
-        show_judge_form = pay_choices[question_index]
+        partner_choices = [
+            options[0] if p.second_choice == 'H'
+            else options[1] if p.second_choice == 'L'
+            else "No ha respondido"
+            for p in partners
+        ]
 
-        return {
-            'partner_choice': partner_choice_text,
-            'current_question': current_question,
-            'show_judge_form': show_judge_form
-        }
+        show_judge_form = player.participant.vars['pay_to_judge_choices'][qi]
+        return dict(partner_choices=partner_choices,
+                    current_question=SURVEY_QUESTIONS[qi],
+                    show_judge_form=show_judge_form)
 
 class LieQuestionPage(Page):
     form_model = 'player'
-    form_fields = ['Mentira']
+    form_fields = ['mentira_1', 'mentira_2']
 
     @staticmethod
     def is_displayed(player: Player) -> bool:
         return player.round_number > 3
 
     @staticmethod
-    def vars_for_template(player: Player) -> dict:
-        partner = get_partner(player)
-        question_order = player.session.vars['question_order']
-        question_index = question_order[player.round_number - 4]
-        current_question = SURVEY_QUESTIONS[question_index]
-        options = SURVEY_OPTIONS[question_index]
-        
-        if partner:
-            if partner.second_choice == 'H':
-                partner_choice_text = options[0]
-            elif partner.second_choice == 'L':
-                partner_choice_text = options[1]
-            else:
-                partner_choice_text = "No ha respondido"
+    def vars_for_template(player: Player):
+        qi      = player.session.vars['question_order'][player.round_number - 4]
+        hl_map  = player.session.vars['HL_map']
+        partners = get_partners(player)
+
+        if hl_map[qi]:
+            options = (FIRST_OPTIONS[qi], SECOND_OPTIONS[qi])
         else:
-            partner_choice_text = "No se asignó compañero"
-        return {'partner_choice': partner_choice_text, 'current_question': current_question}
+            options = (SECOND_OPTIONS[qi], FIRST_OPTIONS[qi])
+
+        partner_choices = [
+            options[0] if p.second_choice == 'H'
+            else options[1] if p.second_choice == 'L'
+            else "No ha respondido"
+            for p in partners
+        ]
+
+        return dict(partner_choices=partner_choices,
+                    current_question=SURVEY_QUESTIONS[qi])
 
 class ThankYouPage(Page):
     @staticmethod
@@ -938,33 +970,33 @@ class ThankYouPage(Page):
 # -----------------------------------------------------------------------------
 page_sequence = [
     # --- Round 1: Pre-Practice Survey Stage ---
-    ConsentFormPage,              # Only in round 1
+    #ConsentFormPage,              # Only in round 1
     ExperimentInstructions,       # Only in round 1
-    PersonalInfoPage,            # Only in round 1
-    PracticeBinaryQuestion,       # Only in round 1 (practice survey)
-    PracticeWillingnessToPayCost, # Only in round 1 (practice survey)
-    PracticeSurveyWaitPage,       # Only in round 1 (practice survey wait)
+    #PersonalInfoPage,            # Only in round 1
+    #PracticeBinaryQuestion,       # Only in round 1 (practice survey)
+    #PracticeWillingnessToPayCost, # Only in round 1 (practice survey)
+    #PracticeSurveyWaitPage,       # Only in round 1 (practice survey wait)
 
     # --- Round 2: Practice Group Interaction Stage ---
-    PracticeGroupingWaitPage,             # Only in round 2
-    PracticeTreatmentInformation,         # Only in round 2
-    PracticePublicDecision,               # Only in round 2
-    PracticeSecondDecisionWaitPageForGroup,  # Only in round 2
-    PracticePublicDisplayPage,            # Only in round 2
-    PracticeLieQuestionPage,              # Only in round 2
-    ExperimentInstructions2,
+    #PracticeGroupingWaitPage,             # Only in round 2
+    #PracticeTreatmentInformation,         # Only in round 2
+    #PracticePublicDecision,               # Only in round 2
+    #PracticeSecondDecisionWaitPageForGroup,  # Only in round 2
+    #PracticePublicDisplayPage,            # Only in round 2
+    #PracticeLieQuestionPage,              # Only in round 2
+    #ExperimentInstructions2,
 
     # --- Round 3: Actual Survey Stage ---
-    BinaryQuestions,             # Only in round 3
-    WillingnessToPayCost,        # Only in round 3
-    SurveyWaitPage,              # Only in round 3
+    #BinaryQuestions,             # Only in round 3
+    #WillingnessToPayCost,        # Only in round 3
+    #SurveyWaitPage,              # Only in round 3
 
     # --- Rounds 4 - 13: Actual Group Interaction Stage ---
-    GroupingWaitPage,            # Only in rounds >=4
-    TreatmentInformation,        # Only in rounds >=4
-    PublicDecision,              # Only in rounds >=4
-    SecondDecisionWaitPageForGroup,  # Only in rounds >=4
-    PublicDisplayPage,           # Only in rounds >=4
-    LieQuestionPage,             # Only in rounds >=4
-    ThankYouPage                 # Only in round 13
+    #GroupingWaitPage,            # Only in rounds >=4
+    #TreatmentInformation,        # Only in rounds >=4
+    #PublicDecision,              # Only in rounds >=4
+    #SecondDecisionWaitPageForGroup,  # Only in rounds >=4
+    #PublicDisplayPage,           # Only in rounds >=4
+    #LieQuestionPage,             # Only in rounds >=4
+    #ThankYouPage                 # Only in round 13
 ]

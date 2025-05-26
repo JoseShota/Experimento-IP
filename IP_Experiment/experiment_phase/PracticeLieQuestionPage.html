@@ -1,18 +1,15 @@
 {% extends "global/Page.html" %}
 {% block content %}
-  <h1>"Conversación" de Práctica</h1>
-  <p><h2>Adivinar si la opinión que tu pareja te expresó es la misma que expresó en privado. </h2></p>
-  <p>Con esta pregunta cerramos la “conversación” de este tema. </p>
-  <p>Te vamos a preguntar si consideras que la opinión que tu pareja te expresó es la misma que nos expresó en privado. Si tu respuesta es correcta, te pagaremos diez pesos.  </p>
-  <p>
-    <strong>Pregunta:</strong> {{ current_question }}
-  </p>
-  <p>
-    La respuesta que tu pareja te expresó fue: <strong>{{ partner_choice }}</strong>
-  </p>
-  <p>
-    {{ formfield 'Mentira' }}
-  </p>
+  <h1>“Conversación” de Práctica</h1>
+  <h2>Adivinar si las opiniones expresadas coinciden con las privadas.</h2>
+  <p><strong>Pregunta:</strong> {{ current_question }}</p>
+
+  {% for choice in partner_choices %}
+    <p>La respuesta que tu compañero {{ forloop.counter }} expresó fue: <strong>{{ choice }}</strong></p>
+  {% endfor %}
+
+  {{ formfield "mentira_1" }}
+  {{ formfield "mentira_2" }}
   {{ next_button }}
 {% endblock %}
 

@@ -1,19 +1,22 @@
 {% extends "global/Page.html" %}
 {% block content %}
   <h1>“Conversación”</h1>
+  <h2>Observa lo que expresaron tus compañeros.</h2>
 
-  <h2>Ambos miembros de la pareja observan lo que su pareja le expresó.</h2>
   <p><strong>Pregunta:</strong> {{ current_question }}</p>
-  <p>La respuesta que tu pareja te expresó fue: <strong>{{ partner_choice }}</strong></p>
+  {% for choice in partner_choices %}
+    <p>Respuesta del compañero {{ forloop.counter }}: <strong>{{ choice }}</strong></p>
+  {% endfor %}
 
   {% if show_judge_form %}
     <hr>
-    <h2>Decide si darle o quitar dinero a tu pareja</h2>
-    <p>
-      Esta pantalla se muestra solo a quienes decidieron pagar cinco pesos por dar o quitar veinte pesos a su pareja
-      después de ver qué opinión le expresó.
-    </p>
-    {{ formfield "juicio" }}
+    <h2>Decide si dar o quitar 20&nbsp;pesos</h2>
+    <!-- 🔄 -->
+    <p>Compañero 1:</p>
+    {{ formfield "juicio_1" }}
+
+    <p>Compañero 2:</p>
+    {{ formfield "juicio_2" }}
   {% endif %}
 
   {{ next_button }}

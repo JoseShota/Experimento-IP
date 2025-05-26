@@ -5,10 +5,113 @@
 A lo largo de este documento encontrarás las instrucciones detalladas que deberás seguir con atención durante el estudio.
 </p>
 <p>
+  Durante la sesión experimental no se puede usar el celular. A menos que no sea posible, por favor apaguen su celular. 
+</p>
+<p>
   El experimento se compone de <strong>cuatro partes</strong>, descritas en la línea de tiempo. A continuación, se describe brevemente lo que ocurrirá en cada una de las partes:
 </p>
-<h2>Línea de Tiempo</h2>
-<embed src="{% static 'experiment/Timeline_IP_1.pdf' %}" type="application/pdf" width="100%" height="400px" />
+    <h2>Línea de Tiempo</h2>
+
+
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Línea de tiempo del experimento (tarjetas)</title>
+  <style>
+    /* ---- CONTENEDOR ---- */
+    .timeline-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr); /* 5 columnas iguales */
+      gap: 1rem;
+      margin: 2rem 0 3rem;
+    }
+
+    /* ---- TARJETA ---- */
+    .card {
+      background: #f9fafb;
+      border-radius: 4px;
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,.05);
+      display: flex;
+      flex-direction: column;
+      min-width: 160px;     /* evita que se achiquen de más en pantallas intermedias */
+    }
+
+    .card-header {
+      background: #5f6771;
+      color: #fff;
+      padding: 0.35rem 0;
+      border-radius: 4px 4px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      margin: 0.75rem 0 0.75rem;
+      padding: 0 0.75rem;
+      color: #4b5563;
+      line-height: 1.35;
+    }
+
+    .card ul {
+      list-style: disc;
+      padding: 0 1.5rem 1rem;
+      margin: 0;
+      text-align: left;
+      font-size: 0.9rem;
+      color: #4b5563;
+      line-height: 1.35;
+    }
+
+    /* ---- RESPONSIVO ---- */
+    @media (max-width: 768px) {
+      .timeline-cards {
+        grid-template-columns: 1fr; /* una por fila en móviles */
+      }
+    }
+  </style>
+</head>
+<body>
+  <section>
+
+    <div class="timeline-cards">
+      <!-- Parte I -->
+      <div class="card">
+        <div class="card-header">Parte 1</div>
+        <p class="card-desc">Cuestionario Inicial</p>
+      </div>
+
+      <!-- Parte II -->
+      <div class="card">
+        <div class="card-header">Parte 2</div>
+        <p class="card-desc">“Conversación” de Práctica</p>
+      </div>
+
+      <!-- Parte III -->
+      <div class="card">
+        <div class="card-header">Parte 3</div>
+        <p class="card-desc">Para cada tema:</p>
+        <ul>
+          <li>Opiniones privadas</li>
+          <li>Disponibilidad a darle o quitarle dinero a los demás en tu "conversación" después de ver la opinión que te expresaron</li>
+<li> Preguntas hipotéticas sobre cuándo los demás dan o quitan 20 pesos </li>
+        </ul>
+      </div>
+
+      <!-- Parte IV -->
+      <div class="card">
+        <div class="card-header">Parte 4</div>
+        <p class="card-desc">Múltiples “Conversaciones”</p>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
+
+
+
+
 
 <h2>Parte 1</h2>
 <p>
@@ -16,21 +119,22 @@ A lo largo de este documento encontrarás las instrucciones detalladas que deber
 </p>
   <h2>Parte 2</h2>
 <p>
-  <strong>“Conversación” de Práctica:</strong> En el experimento vas a tener una “conversación” sobre diez temas diferentes, cada una con una pareja diferente. “Conversación” está en comillas porque no es una conversación libre---vas a seguir un protocolo muy específico en la “conversación”. En esta segunda parte, llevarás a cabo una ronda de práctica en donde podrás ver todas las decisiones que tomarás como parte de la “conversación”. 
+  <strong>“Conversación” de Práctica:</strong> En el experimento vas a tener una “conversación” sobre múltiples temas, y posiblemente más de una "conversación" sobre el mismo tema. Cada "conversación" que tengas va a ser con un trío diferente. “Conversación” está en comillas porque no es una conversación libre---vas a seguir un protocolo muy específico en la “conversación”. En esta segunda parte, llevarás a cabo una ronda de práctica en donde podrás ver todas las decisiones que tomarás como parte de la “conversación”. 
 </p>
 <h2>Parte 3</h2>
 <p>
-    <strong>Para cada tema, opiniones privadas y disponibilidad a  darle o quitarle dinero a tu pareja después de ver la opinión que te expresó. </strong> En esta parte se te presentarán los diez temas sobre los que vas a tener una “conversación”. Para cada tema, te vamos a presentar dos posturas diferentes. Para escoger los temas, encuestamos a un grupo de personas que sacamos de la misma población de donde sacamos a las personas que hoy están tomando parte del experimento. Esto es, las personas que ya encuestamos son muy similares en muchos sentidos a las personas que están en el experimento el día de hoy. Escogimos los temas que dividían a los encuestados más o menos a la mitad---esto es, más o menos la mitad favorecía una de las posturas, y más o menos la mitad favorecía la otra. 
+    <strong>Para cada tema: opiniones privadas, disponibilidad a  darle o quitarle dinero a los demás en la "conversación" después de ver la opinión que te expresaron, y preguntas hipotéticas sobre cuándo los demás dan o quitan 20 pesos. </strong> En esta parte se te presentarán los temas que pueden surgir en una “conversación”. Para cada tema, te vamos a presentar dos posturas diferentes. Para escoger los temas, encuestamos a un grupo de personas que sacamos de la misma población de doAnde sacamos a las personas que hoy están tomando parte del experimento. Esto es, las personas que ya encuestamos son muy similares en muchos sentidos a las personas que están en el experimento el día de hoy. Escogimos los temas en los que había diversidad de opiniones entre los encuestados---esto es, los temas en los que ninguna de las posturas era favorecida por todos. 
 </p>
 <p>
-Te vamos a pedir que nos indiques la postura que mejor represente tu opinión. Esta opinión que nos expreses no la verá ninguna persona en la sesión de hoy (y nadie fuera de la sesión de hoy podrá saber qué opinión expresaste tú, porque no tenemos información con la que podamos identificar qué persona expresó qué opinión). Ésta es tu <strong>opinión privada</strong>.
+Te vamos a pedir que nos indiques la postura que mejor represente tu opinión---como explicamos abajo, no hay ninguna ventaja en términos de tus pagos de no reportar la postura que mejor represente tu opinión. Esta opinión que nos expreses no la verá ninguna persona en la sesión de hoy (y nadie fuera de la sesión de hoy podrá saber qué opinión expresaste tú, porque no tenemos información con la que podamos identificar qué persona expresó qué opinión). Ésta es tu <strong>opinión privada</strong>. 
 </p>
 <p>
- Cuando tengas la “conversación”, tu pareja va a tener una oportunidad de expresarte su opinión (la opinión que te expresa puede o no ser la misma que nos anunció en privado).  Además de la opinión que le quieres expresar a tu pareja, te vamos a preguntar si estarías dispuesto a darle o quitarle dinero a tu pareja después de ver la opinión que te expresó. En particular, si gastas 5 pesos de los que te dimos por participar en el experimento, vas a tener que decidir si le quitas 20 pesos o le das 20 pesos a tu pareja por la opinión que haya expresado en la “conversación” (de nuevo, no observas su opinión privada). Los 20 pesos que le das o quitas a tu pareja no afectan tus pagos---tus pagos son afectados únicamente por los 5 pesos que tendrías que perder para poder quitarle o darle dinero a tu pareja.
+ Cuando tengas la “conversación”, los demás en el grupo van a tener una oportunidad de expresarte su opinión (la opinión que te expresen puede o no ser la misma que nos anunciaron en privado).  Además de preguntarte la opinión que le quieres expresar a los demás en el grupo, te vamos a preguntar si estarías dispuesto a darle o quitarle dinero a los demás en el grupo después de ver la opinión que te expresen. En particular, si gastas 5 pesos de los que te dimos por participar en el experimento, vas a tener que decidir si le quitas 20 pesos o le das 20 pesos a cada persona en el grupo por la opinión que hayan expresado en la “conversación” (de nuevo, no observas su opinión privada). Los 20 pesos que le das o quitas a los demás en el grupo no afectan tus pagos---tus pagos son afectados únicamente por los 5 pesos que tendrías que perder para poder quitarle o darle dinero a los demás en el grupo.
 </p>
+<p> En esta parte también te vamos a preguntar algunas preguntas hipotéticas sobre cómo tú decidirías dar quitar 20 pesos en un tema en el que pagaste el costo para poder tomar esa decisión. También te preguntaremos cómo tú crees que otros tomarían esa decisión.
 <h2>Parte 4</h2>
 <p>
-  <strong>(10 “Conversaciones”):</strong> la cuarta parte se te asignará a una pareja en cada “conversación”, esto es, para cada uno de los 10 temas. El orden en el que se presentan los temas es aleatorio. 
+  <strong>(Múltiples “Conversaciones”):</strong> la cuarta parte se te asignará a dos personas en cada “conversación”. Se te va a asignar a un nuevo grupo cada tema de “conversación”, y también para cada “conversación” que tengas sobre un mismo tema. El orden en el que se presentan los temas es aleatorio. 
 </p>
 <p>
 La “conversación” sucede en el siguiente orden. 
@@ -39,7 +143,7 @@ La “conversación” sucede en el siguiente orden.
 <li> 
 <strong> Se anuncia el tema de la “conversación”. </strong>
 <li>
-    <strong>Aprendes cómo se escogieron los dos que están en la pareja:</strong> Te vamos a anunciar cuál de tres procedimientos utilizamos para escoger a las personas en la pareja. Para construir la pareja que va a tener la “conversación”, hicimos un procedimiento estadístico que es equivalente a lo que ahora vamos a describir. Tomamos a diez personas para escoger a una persona de la pareja (o sea, a ti), y a diez personas más para escoger a la otra persona de la pareja (o sea, a tu pareja). Las diez personas que tomamos para escoger un individuo en la pareja tienen diferentes opiniones sobre el tema de la “conversación”. Hay tres opciones sobre cómo son las opiniones de esas diez personas, y una de las tres opciones será escogida aleatoriamente.
+    <strong>Aprendes cómo se escogieron los tres miembros del grupo:</strong> Te vamos a anunciar cuál de tres procedimientos utilizamos para escoger a las personas en el grupo de tres. Para construir al grupo que va a tener la “conversación”, hicimos un procedimiento estadístico que es equivalente a lo que ahora vamos a describir. Tomamos a diez personas para escoger a una persona del grupo (o sea, a ti), a diez personas más para escoger a la segunda persona del grupo, y a diez personas más para escoger a la tercera persona del grupo. Las diez personas que tomamos para escoger a un individuo en el grupo tienen diferentes opiniones sobre el tema de la “conversación”. Hay tres opciones sobre cómo son las opiniones de esas diez personas, y una de las tres opciones será escogida aleatoriamente.
 <ul>
 <li>
 Hay <strong> cinco </strong> personas a favor de una de las dos posturas del tema, y <strong> cinco </strong> a favor de la otra postura del tema. 
@@ -47,27 +151,27 @@ Hay <strong> cinco </strong> personas a favor de una de las dos posturas del tem
 <li>
 Hay <strong> siete </strong> personas a favor de una de las dos posturas del tema, y <strong> tres </strong> a favor de la otra postura del tema. 
 </li>
-<li>
-Escogimos el grupo sin tomar en cuenta las posturas de las diez personas.
-</li>
 </ul>
 <p>
-Como dijimos, en este paso vamos a anunciar cuál de las tres opciones se siguió para armar la pareja de la que formas parte.
+Estamos asignando los grupos de tal manera que va a ser igual de probable que acabes en un grupo en las que siete están a favor de la primera postura o que acabes en un grupo en las que siete están a favor de la segunda postura. Esto hace que no haya ninguna ventaja monetaria de indicar alguna de las posturas como tu opinión privada. Para poder asignar a grupos con nuestra regla, van a haber participantes a quienes no vamos a poder asignar a un grupo en algunas rondas. Esto tampoco afectará tus pagos, porque sólo vamos a pagar una de las "conversaciones" que tengas, escogida al azar entre las "conversaciones" que tengas. 
 </p>
 <li>
-   <strong>Tal vez aprendes cuánta gente está dispuesta a darle o quitarle dinero a su pareja después de ver la opinión que le expresaron:</strong> En la parte tres del experimento, les preguntamos a todos si, para el tema de la “conversación”, estarían dispuesto a darle o quitarle dinero a su pareja después de ver la opinión que le expresó. Entonces, para cada tema, sabemos el porcentaje de personas en la sesión que están dispuestas a dar o quitar dinero. Escogeremos aleatoriamente a qué parejas les revelaremos ese porcentaje, y esa revelación sucederá en esta parte de la “conversación”. 
+   <strong>Tal vez aprendes cuánta gente está dispuesta a darle o quitarle dinero a su pareja después de ver la opinión que le expresaron:</strong> En la parte tres del experimento, les preguntamos a todos si, para el tema de la “conversación”, estarían dispuesto a darle o quitarle dinero a los demás en el grupo después de ver la opinión que les expresaron. Entonces, para cada tema, sabemos el porcentaje de personas en la sesión que están dispuestas a dar o quitar dinero. Escogeremos aleatoriamente a qué grupos les revelaremos ese porcentaje, y esa revelación sucederá en esta parte de la “conversación”. 
 </li>
 <li>
-<strong> Ambos miembros de la pareja escogen simultáneamente qué opinión expresarle a la otra persona. </strong> En esta parte de la “conversación” tienen que decidir qué opinión expresar a su pareja respecto al tema de la “conversación”. La opinión que le expresan a la pareja puede o no ser la opinión que hayan expresado en la Parte 2 del experimento, donde nos expresaron en privado su opinión. Los sujetos que le expresen a su pareja su opinión privada obtienen un pago extra de 10 pesos. 
+<strong> Los tres miembros del grupo escogen simultáneamente qué opinión expresarle a los demás en el grupo. </strong> En esta parte de la “conversación” tienen que decidir qué opinión expresar a los demás en el grupo respecto al tema de la “conversación”. La opinión que le expresan a los demás en el grupo puede o no ser la opinión que hayan expresado en la Parte 2 del experimento, donde nos expresaron en privado su opinión. Los participantes que le expresen a los demás en el grupo su opinión privada obtienen un pago extra de 10 pesos. 
 </li>
 <li>
-<strong> Ambos miembros de la pareja observan lo que su pareja le expresó. </strong> De nuevo, no observan su opinión privada.
+<strong> Los tres miembros del grupo observan lo que los demás en el grupo le expresaron. </strong> De nuevo, no observan la opinión privada de los demás en el grupo.
 </li>
 <li>
-<strong>Entre quienes pagaron cinco pesos por hacerlo, tienen que decidir si dar o quitar dinero a su pareja.</strong>Nota que esta decisión se toma después de haber visto lo que la otra persona te expresó.
+<strong>Entre quienes pagaron cinco pesos por hacerlo, tienen que decidir si dar o quitar dinero a los demás en el grupo.</strong>Nota que esta decisión se toma después de haber visto lo que los demás en el grupo te expresaron. 
 </li>
 <li>
-<strong>Adivinar si la opinión que tu pareja te expresó es la misma que expresó en privado. </strong> Te vamos a preguntar si consideras que la opinión que tu pareja te expresó es la misma que nos expresó en privado. Si tu respuesta es correcta, te pagaremos diez pesos. 
+<strong>Adivinar si la opinión que los demás en el grupo te expresaron es la misma que expresaron en privado. </strong> Te vamos a preguntar si consideras que la opinión que te expresaron cada uno de los otros miembros del grupo es la misma que nos expresaron en privado. Si ambas respuestas son correctas, te pagaremos diez pesos. 
+</li>
+<li>
+<strong>Considera a los participantes que tuvieron una conversación bajo las mismas circunstancias que tú. Adivina el porcentaje de estas personas que le expresaron a su grupo una opinión que no es su opinión privada.</strong> Otros participante en esta sesión van a tener una "conversación" en el mismo tema, con la misma información (o falta de información) sobre cuántos pagaron el costo para dar o quitarle 20 pesos a los demás en el grupo, y en un grupo cuyos miembros fueron asignados de la misma manera que en tu grupo. Queremos que nos digas, de todos los participantes que estuvieron en una "conversación" bajo esas circunstancias, qué porcentaje crees que expresó una opinión a los demás en el grupo diferente a la opinión privada que nos reportaron. Si tu respuesta está a una diferencia de 10 puntos porcentuales de la respuesta correcta, te pagaremos diez pesos extra. Esto es, te pagaremos diez pesos extra si adivinas X, y la respuesta correcta está en el rango entre X-10 y X+10.  
 </li>
 </ol>
 
@@ -75,50 +179,157 @@ Como dijimos, en este paso vamos a anunciar cuál de las tres opciones se sigui�
 A manera de resumen, en la tabla de abajo ponemos los diferentes pagos y costos que surgen en el experimento. 
 
 <h2>Tabla de Costos y Pagos</h2>
-<embed src="{% static 'experiment/Tabla_IP.pdf' %}" type="application/pdf" width="100%" height="400px" />
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Detalles del experimento</title>
+  <style>
+    /* ====================== Tabla de pagos y costos ====================== */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    .payment-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .payment-table th,
+    .payment-table td {
+      border: 1px solid #000;
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .payment-table th {
+      background: #5f6771;
+      color: #fff;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* sombreado alterno para filas legibilidad */
+    .payment-table tr:nth-child(even) td {
+      background: #f3f4f6;
+    }
+
+    /* -------------------- Responsive tweaks -------------------- */
+    @media (max-width: 768px) {
+      .timeline-cards {
+        flex-direction: column;
+      }
+      .card {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ====================== Tabla de pagos / costos ====================== -->
+  <section>
+
+    <div class="table-responsive">
+      <table class="payment-table">
+        <thead>
+          <tr>
+            <th>Acción o evento</th>
+            <th>Pago o costo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Participación en el experimento</td>
+            <td>Recibes 50 pesos por formar parte del experimento. Este monto puede cambiar con base en tus respuestas, ya sea incrementar o disminuir.</td>
+          </tr>
+          <tr>
+            <td>Para un tema, decidir si le quitas o das dinero a tu pareja después de ver la opinión que te expresó</td>
+            <td>Si pagas 5 pesos, en la “conversación” de ese tema vas a decidir si le das 20 pesos o le quitas 20 pesos a tu pareja después de ver la opinión que te expresó</td>
+          </tr>
+          <tr>
+            <td>Qué opinión le expresas a tu pareja</td>
+            <td>Obtienes 10 pesos extra por expresar tu opinión privada (la que diste en la Parte 3 del experimento)</td>
+          </tr>
+          <tr>
+            <td>Qué adivinaste sobre la opinión que te expresaron los demás miembros del grupo </td>
+            <td>Obtienes 10 pesos extra si, para ambos miembros del grupo, adivinas correctamente si la opinión que te expresaron grupo es igual a su opinión privada (las que dieron en la Parte 3 del experimento)</td>
+          </tr>
+          <tr>
+            <td>Qué adivinaste sobre el porcentaje de participantes que expresó la opinión alterna a su opinión privada en una "conversación" bajo las mismas circunstancias en la que la tuviste tú </td>
+            <td>Obtienes 10 pesos extra si adivinas un porcentaje que esté a 10 puntos porcentuales del verdadero porcentaje de participantes que expresaron la opinión alterna a su opinión privada en todas las "conversaciones" de ese mismo tema bajo las mismas circunstancias que tú</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</body>
+</html>
 
 </p>
 <p>Vamos a escoger una “conversación” al azar y darte la suma de lo que hayas ganado menos lo que hayas perdido en esa “conversación”.</p>
 
-<p> No vas a recibir información extra sobre una “conversación” una vez que ésta finalice. Al final de una “conversación”, no te vamos a mostrar el pago final que recibirías si te pagamos por esa “conversación”. (Recuerda que sólo se te va a pagar por una conversación escogida al azar.) Tampoco te vamos a decir cuál fue la opinión privada de tu pareja, o qué decisiones tomó que no te hayamos ya dicho, o qué adivinó. Aún así, tu pago de la “conversación” depende de lo que decidiste y adivinaste y de las decisiones de tu pareja. A continuación describiremos algunos ejemplos de cómo se te pagaría en diferentes casos. </p>
+<p> No vas a recibir información extra sobre una “conversación” una vez que ésta finalice. Al final de una “conversación”, no te vamos a mostrar el pago final que recibirías si te pagamos por esa “conversación”. (Recuerda que sólo se te va a pagar por una "conversación" escogida al azar.) Tampoco te vamos a decir cuál fue la opinión privada de tu pareja, o qué decisiones tomó que no te hayamos ya dicho, o qué adivinó. Aún así, tu pago de la “conversación” depende de lo que decidiste y adivinaste y de las decisiones de tu pareja. A continuación describiremos algunos ejemplos de cómo se te pagaría en diferentes casos. </p>
 
 <p> <strong>Caso 1:</strong> Para pagarte, escogemos una “conversación” en la que:</p>
 <ul>
-  <li> Expresaste a tu pareja la misma opinión que expresaste en privado </li>
-  <li> Tu pareja no pagó los cinco pesos para decidir si te daba o quitaba 20 pesos después de ver qué opinión le expresaste. </li>
-  <li> Tú sí pagaste esos 5 pesos y decidiste darle 20 pesos. </li>
-  <li> Adivinaste incorrectamente que la opinión que expresó tu pareja era igual a la opinión que expresó en privado. </li>
+  <li> Expresaste a los demás en el grupo la misma opinión que expresaste en privado </li>
+  <li> Los otros en el grupo no pagaron los cinco pesos para decidir si le daban o quitaban 20 pesos a los demás en el grupo después de ver qué opinión expresaron. </li>
+  <li> Tú sí pagaste esos 5 pesos y decidiste si le dabas o quitabas 20 pesos a cada miembro del grupo. </li>
+  <li> Adivinaste incorrectamente si las opiniones que expresaron los demás en tu grupo eran iguales a las opiniones que expresaron en privado. </li>
+  <li> Adivinaste que el 30% de todos los participantes que estaban en una "conversación" sobre el mismo tema y las mismas circunstancias a la tuya  expresaron en su grupo una opinión diferente a la opinión que expresaron en privado. Si el procentaje verdadero está entre 30-10=20% y 30+10=40%, te pagaríamos 10 pesos. En la sesión habían 8 personas además de ti que tuvieron una "conversación" sobre el mismo tema en las mismas circunstancias, y de ellos, 5 expresaron en su grupo una opinión diferente a su opinión privada. Como 5 de 8 es 62.5%, está fuera del rango de donde te hubiéramos dado diez pesos.  </li>
+
 </ul>
 
-<p>En este caso, recibirías los 50 pesos por participar en el experimento más los 10 pesos por expresar a tu pareja la mima opinión que expresaste en privado menos los 5 pesos para poder decidir darle o quitarle 20 pesos a tu pareja después de ver qué opinión te expresó. En total, te llevarías 50+10-5=55 pesos.</p>
+<p>En este caso, recibirías los 50 pesos por participar en el experimento más los 10 pesos por expresar a los demás en el grupo la mima opinión que expresaste en privado menos los 5 pesos para poder decidir darle o quitarle 20 pesos a los demás en el group después de ver qué opinión te expresaron. En total, te llevarías 50+10-5=55 pesos.</p>
+
+<p>
+Supón que en este caso, hubieran habido 2 de los 8 que tuvieron la "conversación" del mismo tema en la misma circunstancia y que expresaron en su grupo una opinión diferente a la opinión que expresaron en privado. Entonces como 2 de 8 es 25%, el porcentaje hubiera caído dentro del rango en el que te hubiéramos pagado 10 pesos extra.  
+</p>
 
 <p> <strong>Caso 2:</strong> Para pagarte, escogemos una “conversación” en la que:</p>
 <ul>
-  <li> Expresaste a tu pareja una opinión diferente a la que expresaste en privado </li>
-  <li> Tu pareja sí pagó los cinco pesos para decidir si te daba o quitaba 20 pesos después de ver qué opinión le expresaste, y decidió quitarte 20 pesos. </li> 
+  <li> Expresaste a los demás en el grupo una opinión diferente a la que expresaste en privado </li>
+  <li> Uno del grupo sí pagó los cinco pesos para decidir si le daban o quitaban 20 pesos después de ver qué opinión le expresaron, y decidió quitarte 20 pesos. El otro no pagó esos cinco pesos. </li> 
   <li> Tú no pagaste esos 5 pesos. </li>
-  <li> Adivinaste correctamente que la opinión que expresó tu pareja era diferente a la opinión que expresó en privado. </li>
+  <li> Adivinaste correctamente si las opiniones que expresaron los miembros de tu grupo eran diferentes a las opiniones que expresaron en privado.</li>
+  <li> Adivinaste que el 70% de todos los participantes que estaban en una "conversación" sobre el mismo tema y las mismas circunstancias a la tuya  expresaron en su grupo una opinión diferente a la opinión que expresaron en privado. Si el procentaje verdadero está entre 70-10=60% y 70+10=80%, te pagaríamos 10 pesos. En la sesión habían 5 personas además de ti que tuvieron una "conversación" sobre el mismo tema en las mismas circunstancias, y de ellos, 1 expresó en su grupo una opinión diferente a su opinión privada. Como 1 de 5 es 20%, está fuera del rango de donde te hubiéramos dado diez pesos.  </li>
+
 </ul>
 
-<p>En este caso, recibirías los 50 pesos por participar en el experimento menos los 20 pesos que te quitó tu pareja más los 10 pesos por adivinar correctamente. En total, te llevarías 50-20+10=40 pesos.</p>
+<p>En este caso, recibirías los 50 pesos por participar en el experimento menos los 20 pesos que te quitó un miembro del grupo más los 10 pesos por adivinar correctamente sobre los miembros de tu "conversación". En total, te llevarías 50-20+10=40 pesos.</p>
+
+<p>
+Supón que en este caso, hubieras adivinado que 10% de todos los participantes que estaban en una "conversación" sobre el mismo tema y las mismas circunstancias a la tuya expresaron en su grupo una opinión diferente a la opinión que expresaron en privado. Entonces el rango para que te pagáramos 10 pesos extra tendría que estar entre 10-10=0 y 10+10=20. Como 1 de 5 es 20%, hubieras recibido 10 pesos extra. 
+
+</p>
 
 <p><strong>Caso 3:</strong> Para pagarte, escogemos una “conversación” en la que:</p>
 <ul>
-  <li> Expresaste a tu pareja la misma opinión que expresaste en privado </li>
-  <li> Tu pareja sí pagó los cinco pesos para decidir si te daba o quitaba 20 pesos después de ver qué opinión le expresaste, y decidió darte 20 pesos.</li>
-  <li> Tú sí pagaste esos 5 pesos y decidiste quitarle 20 pesos. </li>
-  <li> Adivinaste correctamente que la opinión que expresó tu pareja era igual a la opinión que expresó en privado.</li>
+  <li> Expresaste a los miembros de tu grupo la misma opinión que expresaste en privado </li>
+  <li> Ambos miembros de tu grupo pagaron los cinco pesos para decidir si le daban o quitaban 20 pesos a los demás en el grupo después de ver qué opinión le expresaron. Uno decidió darte 20 pesos y el otro decidió quitarte 20 pesos. </li>
+  <li> Tú sí pagaste esos 5 pesos y decidiste si le dabas o quitabas 20 pesos a cada miembro del grupo. </li>
+  <li> Adivinaste correctamente si las opiniones que expresaron los demás en tu grupo eran diferentes a las opiniones que expresaron en privado.</li>
+  <li> Adivinaste que el 40% de todos los participantes que estaban en una "conversación" sobre el mismo tema y las mismas circunstancias a la tuya  expresaron en su grupo una opinión diferente a la opinión que expresaron en privado. Si el porcentaje verdadero está entre 40-10=30% y 40+10=50%, te pagaríamos 10 pesos. En la sesión habían 2 personas además de ti que tuvieron una "conversación" sobre el mismo tema en las mismas circunstancias, y de ellos, 1 expresó en su grupo una opinión diferente a su opinión privada. Como 1 de 2 es 50%, está dentro del rango de donde te hubiéramos dado diez pesos.  </li>
+
 </ul>
 
-<p>En este caso, recibirías los 50 pesos por participar en el experimento más los 10 pesos por expresar a tu pareja la mima opinión que expresaste en privado más los 20 pesos que te dio tu pareja menos los 5 pesos para poder decidir darle o quitarle 20 pesos a tu pareja después de ver qué opinión te expresó más los 10 pesos por adivinar correctamente. En total, te llevarías 50+10+20-5+10=85 pesos.</p>
+<p>En este caso, recibirías los 50 pesos por participar en el experimento más los 10 pesos por expresar a los demás en el grupo la misma opinión que expresaste en privado más los 20 pesos que te dio un miembro del grupo menos los 20 pesos que te quitó el otro miembro del grupo menos los 5 pesos para poder decidir darle o quitarle 20 pesos a tu pareja después de ver qué opinión te expresó más los 10 pesos por adivinar correctamente sobre los miembros de tu grupo más los 10 pesos por adivinar correctamente sobre todos los participantes que estaban en una "conversación" sobre el mismo tema y las mismas circunstancias a la tuya. En total, te llevarías 50+10+20-20-5+10+10=75 pesos.</p>
 
 <p>
-  Al terminar la décima “conversación”, concluirá el experimento. Agradecemos tu participación e interés en este proyecto. Tus respuestas se manejarán de forma anónima y segura, y se utilizarán exclusivamente con fines de investigación.
+<p>
+Supón que en este caso, ambos miembros del grupo hubieran decidido darte 20 pesos. Entonces tu pago sería 50+10+20+20-5+10+10=115 pesos. Pero si ambos miembros del grupo hubieran decidido quitarte 20 pesos, tu pago sería 50+10-20-20-5+10=35 pesos.
+</p>
+  El experimento terminará cuando hayamos llegado al límite de tiempo, y haremos todas las "conversaciones" que podemos en ese tiempo. Agradecemos tu participación e interés en este proyecto. Tus respuestas se manejarán de forma anónima y segura, y se utilizarán exclusivamente con fines de investigación.
 </p>
 <p>
   Por favor, mantente atento(a) a las indicaciones en pantalla y no refresques la página mientras participas, a menos que se te indique lo contrario. Si tienes alguna pregunta, no dudes en levantar la mano o comunicarte con el facilitador.
 </p>
-
+<p>Ahora te daremos unas hojas con la transcripción de las instrucciones que leí, más las tablas. Cuando entres al experimento, habrá una ronda de práctica seguida de un cuestionario de comprensión. Después de contestarlo, aparecerá si acertaste o no en cada pregunta, la respuesta correcta, y una explicación de la respuesta.</p>
 
 {{ next_button }}
 {% endblock %}
+
+
