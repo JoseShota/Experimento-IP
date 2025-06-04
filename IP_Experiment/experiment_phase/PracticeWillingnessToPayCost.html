@@ -1,12 +1,12 @@
 {% extends "global/Page.html" %}
 {% block content %}
 <h1>"Conversación" de Práctica</h1>
-<p><h2>Disponibilidad a darle o quitarle dinero a tu pareja después de ver la opinión que te expresó</h2></p>
+<p><h2>Disponibilidad a darle o quitarle dinero a los demás miembros de tu grupo después de ver la opinión que te expresaron</h2></p>
   <p>
-    Ahora te vamos a pedir que nos digas, para el tema de la “conversación” que estás teniendo, si estás dispuesto/a a pagar 5 pesos para poder darle 20 pesos o quitarle 20 pesos a tu pareja después de observar la opinión que te expresó. Si decides pagar los 5 pesos, en una parte futura de esta “conversación” se te va a pedir tomar la decisión de darle o quitarle esos 20 pesos a tu pareja. Recuerda que los 20 pesos que le das o quitas a tu pareja no afectan tus pagos---tus pagos son afectados únicamente por los 5 pesos que tendrías que perder para poder quitarle o darle dinero a tu pareja. 
+    Ahora te vamos a pedir que nos digas, para el tema de la “conversación” que estás teniendo, si estás dispuesto/a a pagar 5 pesos para poder darle 20 pesos o quitarle 20 pesos a los demás miembros de tu grupo después de observar la opinión que te expresaron. Si decides pagar los 5 pesos, en una parte futura de esta “conversación” se te va a pedir tomar la decisión de darle o quitarle esos 20 pesos a los demás miembros de tu grupo. Recuerda que los 20 pesos que le das o quitas a los demás no afectan tus pagos---tus pagos son afectados únicamente por los 5 pesos que tendrías que perder para poder quitarle o darle dinero a los demás miembros. 
   </p>
   <p>
-      ¿Quieres pagar 5 pesos para poder darle 20 pesos o quitarle 20 pesos a tu pareja después de observar la opinión sobre el tema de esta conversación? Recuerda que el tema es: {{ practice_question }}
+      ¿Quieres pagar 5 pesos para poder darle 20 pesos o quitarle 20 pesos a los demás miembros de tu grupo después de observar la opinión sobre el tema de esta conversación? Recuerda que el tema es: {{ practice_question }}
   </p>
   <form method="post">
     {{ form.practice_pay_to_judge }}

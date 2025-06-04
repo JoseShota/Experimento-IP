@@ -1,0 +1,37 @@
+{% extends "global/Page.html" %}
+{{ block content }}
+
+<h3 class="mt-3">Pronóstico (bloque de CONVERSACIONES)</h3>
+
+<p class="mb-4">{{ label_text }}</p>
+
+{{ formfield_errors 'belief_conv_pct' }}
+
+<div class="d-flex align-items-center">
+    <span class="me-2">0 %<br><small>Nadie cambia</small></span>
+
+    <input type="range"
+           name="belief_conv_pct"
+           id="slider_conv"
+           class="form-range flex-fill"
+           min="0" max="100" step="1"
+           value="{{ initial_val }}"
+           required>
+
+    <span class="ms-2">100 %<br><small>Todos cambian</small></span>
+</div>
+
+<div class="text-center mt-2">
+    <output id="out_conv">{{ initial_val }}</output> %
+</div>
+
+{{ next_button }}
+
+<script>
+  const s = document.getElementById('slider_conv');
+  const o = document.getElementById('out_conv');
+  s.addEventListener('input', () => { o.textContent = s.value; });
+</script>
+
+{{ endblock }}
+

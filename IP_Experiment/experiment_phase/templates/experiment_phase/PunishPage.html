@@ -1,0 +1,30 @@
+{% extends "otree/Page.html" %}
+{% load otree_tags %}
+
+{% block title %}
+    Decisiones hipotéticas sobre dar o quitar 20 pesos
+{% endblock %}
+
+{% block content %}
+<p class="lead">
+    En esta parte leerás situaciones hipotéticas sobre cómo decidirías
+    dar o quitar 20 pesos y cómo crees que otros lo harían.  
+    Para las últimas cuatro preguntas sólo escribe un número entre 0 y 10.
+</p>
+<hr>
+
+{% for campo, texto in items %}
+    <div class="mb-4">
+        <p><strong>{{ texto|linebreaks }}</strong></p>
+        {{ campo }}   {# ← Django renderiza radios o caja numérica automáticamente #}
+    </div>
+{% endfor %}
+{{ next_button }}
+{% endblock %}
+
+
+
+
+
+
+
