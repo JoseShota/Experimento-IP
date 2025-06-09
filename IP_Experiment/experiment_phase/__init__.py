@@ -33,57 +33,57 @@ PRE_CONV_QUESTIONS = [
 # ► Constantes para la página de sanciones
 # ------------------------------------------------------------------
 PUNISH_CHOICES = [
-    ('GIVE',  'Dar 20 pesos'),
-    ('TAKE',  'Quitar 20 pesos'),
+    ('GIVE',  'Le daría los 20 pesos'),
+    ('TAKE',  'Le quitaría los 20 pesos'),
 ]
 
 PUNISH_TEXTS = [
     # 1-4: decisiones propias ↓
     "Supón que una persona expresó una opinión que es:\n"
-    "- diferente a su opinión privada\n"
-    "- diferente a tu opinión privada\n"
+    "- <strong>diferente</strong> a su opinión privada\n"
+    "- <strong>diferente</strong> a tu opinión privada\n"
     "- el tema es uno para el que pagaste el costo para dar o quitar 20 pesos a a los demás miembros de tu grupo\n"
     "¿Le darías o quitarías los 20 pesos?",
 
     "Supón que una persona expresó una opinión que es:\n"
-    "- diferente a su opinión privada\n"
-    "- igual a tu opinión privada\n"
+    "- <strong>diferente</strong> a su opinión privada\n"
+    "- <strong>igual</strong> a tu opinión privada\n"
     "- el tema es uno para el que pagaste el costo para dar o quitar 20 pesos a a los demás miembros de tu grupo\n"
     "¿Le darías o quitarías los 20 pesos?",
 
     "Supón que una persona expresó una opinión que es:\n"
-    "- igual a su opinión privada\n"
-    "- diferente a tu opinión privada\n"
+    "- <strong>igual</strong> a su opinión privada\n"
+    "- <strong>diferente</strong> a tu opinión privada\n"
     "- el tema es uno para el que pagaste el costo para dar o quitar 20 pesos a a los demás miembros de tu grupo\n"
     "¿Le darías o quitarías los 20 pesos?",
 
     "Supón que una persona expresó una opinión que es:\n"
-    "- igual a su opinión privada\n"
-    "- igual a tu opinión privada\n"
+    "- <strong>igual</strong> a su opinión privada\n"
+    "- <strong>igual</strong> a tu opinión privada\n"
     "- el tema es uno para el que pagaste el costo para dar o quitar 20 pesos a a los demás miembros de tu grupo\n"
     "¿Le darías o quitarías los 20 pesos?",
 
     # 5-8: predicciones sobre 10 terceros ↓
     "Supón que hay diez personas en esta sesión (diferentes a ti) que para un tema pagaron el costo para dar o quitar 20 pesos a los integrantes de su grupo dependiendo de la opinión que le expresen. Supón que un integrante de su grupo expresó una opinión que es: \n"
-    "- diferente a la opinión privada de quien expresó la opinión\n"
-    "- diferente a la opinión privada de quien va decidir si dar o quitar 20 pesos\n"
+    "- <strong>diferente</strong> a la opinión privada de quien expresó la opinión\n"
+    "- <strong>diferente</strong> a la opinión privada de quien va decidir si dar o quitar 20 pesos\n"
     "¿Cuántas de las diez personas le daría los 20 pesos? Nota que como los diez pagaron el costo por dar o quitar 20 pesos, los que no den 20 pesos quitarían 20 pesos.",
 
     "Supón que hay diez personas en esta sesión (diferentes a ti) que para un tema pagaron el costo para dar o quitar 20 pesos a los integrantes de su grupo dependiendo de la opinión que le expresen. Supón que un integrante de su grupo expresó una opinión que es: \n"
-    "- diferente a la opinión privada de quien expresó la opinión\n"
-    "- igual a la opinión privada de quien va decidir si dar o quitar 20 pesos\n"
-    "¿Cuántas de las diez personas le daría los 20 pesos? Nota que como los diez pagaron el costo por dar o quitar 20 pesos, los que no den 20 pesos quitarían 20 pesos.",
-
-
-    "Supón que hay diez personas en esta sesión (diferentes a ti) que para un tema pagaron el costo para dar o quitar 20 pesos a los integrantes de su grupo dependiendo de la opinión que le expresen. Supón que un integrante de su grupo expresó una opinión que es: \n"
-    "- igual a la opinión privada de quien expresó la opinión\n"
-    "- diferente a la opinión privada de quien va decidir si dar o quitar 20 pesos\n"
+    "- <strong>diferente</strong> a la opinión privada de quien expresó la opinión\n"
+    "- <strong>igual</strong> a la opinión privada de quien va decidir si dar o quitar 20 pesos\n"
     "¿Cuántas de las diez personas le daría los 20 pesos? Nota que como los diez pagaron el costo por dar o quitar 20 pesos, los que no den 20 pesos quitarían 20 pesos.",
 
 
     "Supón que hay diez personas en esta sesión (diferentes a ti) que para un tema pagaron el costo para dar o quitar 20 pesos a los integrantes de su grupo dependiendo de la opinión que le expresen. Supón que un integrante de su grupo expresó una opinión que es: \n"
-    "- igual a la opinión privada de quien expresó la opinión\n"
-    "- igual a la opinión privada de quien va decidir si dar o quitar 20 pesos\n"
+    "- <strong>igual</strong> a la opinión privada de quien expresó la opinión\n"
+    "- <strong>diferente</strong> a la opinión privada de quien va decidir si dar o quitar 20 pesos\n"
+    "¿Cuántas de las diez personas le daría los 20 pesos? Nota que como los diez pagaron el costo por dar o quitar 20 pesos, los que no den 20 pesos quitarían 20 pesos.",
+
+
+    "Supón que hay diez personas en esta sesión (diferentes a ti) que para un tema pagaron el costo para dar o quitar 20 pesos a los integrantes de su grupo dependiendo de la opinión que le expresen. Supón que un integrante de su grupo expresó una opinión que es: \n"
+    "- <strong>igual</strong> a la opinión privada de quien expresó la opinión\n"
+    "- <strong>igual</strong> a la opinión privada de quien va decidir si dar o quitar 20 pesos\n"
     "¿Cuántas de las diez personas le daría los 20 pesos? Nota que como los diez pagaron el costo por dar o quitar 20 pesos, los que no den 20 pesos quitarían 20 pesos.",
 
 ]
@@ -145,6 +145,7 @@ SECOND_OPTIONS = [
 
 
 
+
 # -----------------------------------------------------------------------------
 # Logging configuration for debugging
 # -----------------------------------------------------------------------------
@@ -173,6 +174,91 @@ class C(BaseConstants):
     PLAYERS_PER_GROUP = 3
     NUM_BINARY_QUESTIONS = 15 
     NUM_ROUNDS = 27
+
+    CORRECT_ANSWERS = dict(
+        comp_q1='c',
+        comp_q2='d',
+        comp_q3='a',        # tu BooleanField usa True/False
+        comp_q4='c',
+        comp_q5='d',
+        comp_q6='c',
+        comp_q7='a',
+    )
+
+    QUESTION_TEXT = dict(
+        comp_q1=('1. ¿Cuál de las siguientes opciones describe correctamente las acciones disponibles para un participante una vez que se formó su grupo en el experimento?'),
+        comp_q2=('2. ¿Qué sucede si un participante decide pagar el costo (5 pesos) para darle o quitarle 20 pesos a los demás miembros de su grupo, y el participante decide quitarle 20 pesos a uno de ellos?'),
+        comp_q3=('3. Calcula la cantidad de dinero con la que termina el siguiente participante: <br>'
+            '  • Paga el costo para decidir dar o quitar 20 pesos a cada miembro del grupo.<br>'
+            '  • Expresa su opinión privada ante el grupo y gana 10 pesos.<br>'
+            '  • Los otros miembros de su grupo deciden quitarle 20 pesos.<br>'
+            '  • Adivina correctamente el porcentaje de personas que expresaron una opinión diferente a su opinión privada en esas "conversaciónes", y recibe 10 pesos extra.<br>'
+            '  • Advinó incorrectamente si la opinión que le expresaron los demás miembros es igual a su opinión privada.<br>'
+                 ),
+        comp_q4=('4. Caclula la cantidad de dinero con la que termina el siguiente participante: <br>'
+            '  • Paga el costo para decidir dar o quitar 20 pesos a cada miembro del grupo.<br>'
+            '  • Expresa la opinión alterna a su opinión privada.<br>'
+            '  • Los otros miembros no pagan el costo para decidir dar o quitar 20 pesos.<br>'
+            '  • Adivina correctamente el porcentaje de personas que expresaron una opinión diferente a su opinión privada en esas "conversaciónes", y recibe 10 pesos extra.<br>'
+            '  • Advina correctamente si la opinión que le expresaron los demás miembros es igual a su opinión privada, y recibe 10 pesos adicionales.<br>'),
+        comp_q5=('¿Cómo se crean los grupos de tres personas en el experimento?'),
+        comp_q6=('6. ¿Qué es lo que cada participantes debe adivinar sobre los miembros de su grupo en este experimento?'),
+        comp_q7=('7. (Verdadero o Falso) Los participantes no sabrán quiénes son los demás miembros de cada grupo en los que estén.'),
+    )
+
+    QUESTION_OPTIONS = dict(
+        comp_q1=[
+            ('a', 'a) Escoger qué opinión expresarle a los demás en el grupo. Decidir si dar o quitar dinero a cada uno de los miembros. Adivinar si la opinión que los demás miembros te expresaron es la misma que expresaron en privado. Adivina el porcentaje de gente que le expresaron a su grupo una opinión que no es su opinón privada.'),
+            ('b', 'b) Escoger qué opinión expresarle a los demás en el grupo. Adivinar si la opinión que los demás mimebros te expresaron es la misma que expresaron en privado. Adivina el porcentaje de gente que le expresaron a su grupo una opinión que no es su opinón privada.'),
+            ('c', 'c) Escoger qué opinión expresarle a los demás en el grupo. Entre quienes pagaron cinco pesos por hacerlo decidir si dar o quitar dinero a cada uno de los demás miembros del grupo. Adivinar si la opinión que los demás miembros te expresaron es la misma que expresaron en privado. Adivina el porcentaje de gente que le expresaron a su grupo una opinión que no es su opinón privada.'),
+            ('d', 'd) Escoger qué opinión expresarle a los demás en el grupo. Entre quienes pagaron cinco pesos por hacerlo decidir si dar o quitar dinero a cada uno de los demás miembros del grupo. Adivina el porcentaje de gente que le expresaron a su grupo una opinión que no es su opinón privada.'),
+        ],
+        comp_q2=[
+            ('a', 'a) El participante gana 20 pesos'),
+            ('b', 'b) El participante recupera los 5 pesos pagados y el otro miembro gana 20 pesos adicionales'),
+            ('c', 'c) Sólo el que paga pierde dinero; el otro miembro no gana ni pierde nada'),
+            ('d', 'd) El participante pierde 5 pesos y el otro miembro pierde 20 pesos'),
+        ],
+        comp_q3=[
+            ('a', 'a) Termina con 25 pesos'),
+            ('b', 'b) Termina con -25 pesos. Es decir, acaba sin dinero.'),
+            ('c', 'c) Termina con 30 pesos'),
+            ('d', 'd) Termina con 45 pesos'),
+        ],
+        comp_q4=[
+            ('a', 'a) Termina con 40 pesos'),
+            ('b', 'b) Termina con 15 pesos'),
+            ('c', 'c) Termina con 65 pesos'),
+            ('d', 'd) Termina con 50 pesos'),
+        ],
+        comp_q5=[
+            ('a', 'a) Según sus características personales (por ejemplo, edad o género)'),
+            ('b', 'b) Los participantes eligen libremente a los mimebros de su grupo'),
+            ('c', 'c) De forma totalmente aleatoria'),
+            ('d', 'd) Basándose en las opiniones privadas de los participantes sobre cada uno de los temas de la Parte 3 del experimento'),
+        ],
+        comp_q6=[
+            ('a', 'a) Si la opinión que los demás miembros le expresaron es la misma que expresaron en privado'),
+            ('b', 'b) La decisión que tomará cada uno de los mimebros sobre dar o quitar 20 pesos a los demás y si la opinión que los demás miembros le expresaron es la misma que expresaron en privado'),
+            ('c', 'c) Si la opinión que los demás miembros te expresaron es la misma que expresaron en privado y el porcentaje de gente que le expresaron a su grupo una opinión que no es su opinón privada.'),
+            ('d', 'd) Si la opinión que los demás miembros le expresaron es diferente a su opinión privada'),
+        ],
+        comp_q7=[
+            ('a', 'a) Verdadero: los participantes no sabrán quiénes son los demás miembros de cada grupo en los que estén.'),
+            ('b', 'b) Falso: los participantes sí sabrán quiénes son los demás miembros de cada grupo en los que estén.'),
+        ],
+    )
+
+
+    CORRECT_EXPLANATIONS = dict(
+        comp_q1='Las acciones disponibles para un participante una vez que se formó su grupo son: (1) escoger qué opinión expresarle a los demás en el grupo, (2) para quienes pagaron el costo por hacerlo decidir si dar o quitar dinero a cada uno de los miembros, (3) adivinar si la opinión que los demás miembros te expresaron es la misma que expresaron en privado, y (4) adivinar el porcentaje de gente que le expresaron a su grupo una opinión que no es su opinón privada.',
+        comp_q2='Los participantes que pagan el costo por decidir dar o quitar 20 pesos a los demás miembros de su grupo se les sustrae 5 pesos de su dinero disponible. Si los participantes deciden quitarle 20 pesos a uno de los miembros, esa decisión se aplicará al miembro; pierde 20 pesos.',
+        comp_q3='El participante recibe 50 pesos por participar, pierde 5, gana 10, pierde 40 y gana 10. Entonces, termina con 50 - 5 + 10 - 40 + 10 = 25 pesos.',
+        comp_q4='El participante recibe 50 pesos por participar, pierde 5, gana 10 y gana 10. Entonces, termina con 50 - 5 + 10 + 10 = 65 pesos.',
+        comp_q5='Los grpos de tres personas se forman a partir de las opiniones privadas de los participantes sobre cada uno de los temas de la Parte 3 del experimento.',
+        comp_q6='Los participantes deben adivinar si la opinión que los demás miembros te expresaron es la misma que expresaron en privado y el porcentaje de gente que le expresaron a su grupo una opinión que no es su opinón privada.',
+        comp_q7='Verdadero: los participantes no sabrán quiénes son los demás miembros de cada grupo en los que estén.',
+    )  
 
 def load_partner_ids(player: Player) -> list[int]:
     """
@@ -431,27 +517,126 @@ class Player(BasePlayer):
     conv_punish_7 = models.IntegerField(min=0, max=10, blank=False)
     conv_punish_8 = models.IntegerField(min=0, max=10, blank=False)
 
+            # ─── Cuestionario de comprensión ────────────────────────────────────
+    comp_q1 = models.StringField(
+        label=(
+            '1. ¿Cuál de las siguientes opciones describe correctamente las acciones disponibles para un participante una vez que se formó su grupo en el experimento?'
+        ),
+        choices=[
+            ('a', 'a) Escoger qué opinión expresarle a los demás en el grupo. Decidir si dar o quitar dinero a cada uno de los miembros. Adivinar si la opinión que los demás miembros te expresaron es la misma que expresaron en privado. Adivina el porcentaje de gente que le expresaron a su grupo una opinión que no es su opinón privada.'),
+            ('b', 'b) Escoger qué opinión expresarle a los demás en el grupo. Adivinar si la opinión que los demás mimebros te expresaron es la misma que expresaron en privado. Adivina el porcentaje de gente que le expresaron a su grupo una opinión que no es su opinón privada.'),
+            ('c', 'c) Escoger qué opinión expresarle a los demás en el grupo. Entre quienes pagaron cinco pesos por hacerlo decidir si dar o quitar dinero a cada uno de los demás miembros del grupo. Adivinar si la opinión que los demás miembros te expresaron es la misma que expresaron en privado. Adivina el porcentaje de gente que le expresaron a su grupo una opinión que no es su opinón privada.'),
+            ('d', 'd) Escoger qué opinión expresarle a los demás en el grupo. Entre quienes pagaron cinco pesos por hacerlo decidir si dar o quitar dinero a cada uno de los demás miembros del grupo. Adivina el porcentaje de gente que le expresaron a su grupo una opinión que no es su opinón privada.')
+        ],
+        blank=False,
+    )
+
+    comp_q2 = models.StringField(
+        label=(
+            '2. ¿Qué sucede si un participante decide pagar el costo (5 pesos) para darle o quitarle 20 pesos a los demás miembros de su grupo, y el participante decide quitarle 20 pesos a uno de ellos?'
+        ),
+        choices=[
+            ('a', 'a) El participante gana 20 pesos'),
+            ('b', 'b) El participante recupera los 5 pesos pagados y el otro miembro gana 20 pesos adicionales'),
+            ('c', 'c) Sólo el que paga pierde dinero; el otro miembro no gana ni pierde nada'),
+            ('d', 'd) El participante pierde 5 pesos y el otro miembro pierde 20 pesos')
+        ],
+        blank=False,
+    )
+
+    comp_q3 = models.StringField(
+        label=(
+            '3. Calcula la cantidad de dinero con la que termina el siguiente participante: <br>'
+            '  • Paga el costo para decidir dar o quitar 20 pesos a cada miembro del grupo.<br>'
+            '  • Expresa su opinión privada ante el grupo y gana 10 pesos.<br>'
+            '  • Los otros miembros de su grupo deciden quitarle 20 pesos.<br>'
+            '  • Adivina correctamente el porcentaje de personas que expresaron una opinión diferente a su opinión privada en esas "conversaciónes", y recibe 10 pesos extra.<br>'
+            '  • Advinó incorrectamente si la opinión que le expresaron los demás miembros es igual a su opinión privada.<br>'
+        ),
+        choices=[
+            ('a', 'a) Termina con 25 pesos'),
+            ('b', 'b) Termina con -25 pesos. Es decir, acaba sin dinero.'),
+            ('c', 'c) Termina con 30 pesos'),
+            ('d', 'd) Termina con 45 pesos')
+        ], 
+    )
+
+    comp_q4 = models.StringField(
+        label=(
+            '4. Caclula la cantidad de dinero con la que termina el siguiente participante: <br>'
+            '  • Paga el costo para decidir dar o quitar 20 pesos a cada miembro del grupo.<br>'
+            '  • Expresa la opinión alterna a su opinión privada.<br>'
+            '  • Los otros miembros no pagan el costo para decidir dar o quitar 20 pesos.<br>'
+            '  • Adivina correctamente el porcentaje de personas que expresaron una opinión diferente a su opinión privada en esas "conversaciónes", y recibe 10 pesos extra.<br>'
+            '  • Advina correctamente si la opinión que le expresaron los demás miembros es igual a su opinión privada, y recibe 10 pesos adicionales.<br>'
+        ),
+        choices=[
+            ('a', 'a) Termina con 40 pesos'),
+            ('b', 'b) Termina con 15 pesos'),
+            ('c', 'c) Termina con 65 pesos'),
+            ('d', 'd) Termina con 50 pesos'),
+        ],
+        blank=False,
+    )
+
+    comp_q5 = models.StringField(
+        label=(
+            '¿Cómo se crean los grupos de tres personas en el experimento?'
+        ),
+        choices=[
+            ('a', 'a) Según sus características personales (por ejemplo, edad o género)'),
+            ('b', 'b) Los participantes eligen libremente a los mimebros de su grupo'),
+            ('c', 'c) De forma totalmente aleatoria'),
+            ('d', 'd) Basándose en las opiniones privadas de los participantes sobre cada uno de los temas de la Parte 3 del experimento'),
+        ],
+        blank=False,
+    )
+
+    comp_q6 = models.StringField(
+        label=(
+            '6. ¿Qué es lo que cada participantes debe adivinar sobre los miembros de su grupo en este experimento?'
+        ),
+        choices=[
+            ('a', 'a) Si la opinión que los demás miembros le expresaron es la misma que expresaron en privado'),
+            ('b', 'b) La decisión que tomará cada uno de los mimebros sobre dar o quitar 20 pesos a los demás y si la opinión que los demás miembros le expresaron es la misma que expresaron en privado'),
+            ('c', 'c) Si la opinión que los demás miembros te expresaron es la misma que expresaron en privado y el porcentaje de gente que le expresaron a su grupo una opinión que no es su opinón privada.'),
+            ('d', 'd) Si la opinión que los demás miembros le expresaron es diferente a su opinión privada')
+        ],
+        blank=False,
+    )
+
+    comp_q7 = models.StringField(
+        label=(
+            '7. (Verdadero o Falso) Los participantes no sabrán quiénes son los demás miembros de cada grupo en los que estén.'
+        ),
+        choices=[
+            ('a', 'a) Verdadero: los participantes no sabrán quiénes son los demás miembros de cada grupo en los que estén.'),
+            ('b', 'b) Falso: los participantes sí sabrán quiénes son los demás miembros de cada grupo en los que estén.'),
+        ],
+        blank=False,
+    )
+
 
     treatment = models.LongStringField(blank=False)
     second_choice = models.StringField(choices=['H', 'L'], blank=False)
     juicio_1 = models.StringField(
         choices=[
-            ('GIVE',  'Dar 20 pesos a este compañero'),
-            ('TAKE',  'Quitar 20 pesos a este compañero')
+            ('GIVE',  'Darle 20 pesos al miembro 1'),
+            ('TAKE',  'Quitarle 20 pesos al miembro 1')
         ],
+        label='¿Qué decides, darle o quitarle 20 pesos al <strong>miembro 1</strong>?',
         blank=False,
-        label='Decide para tu primer compañero'
     )
     juicio_2 = models.StringField(
         choices=[
-            ('GIVE',  'Dar 20 pesos a este compañero'),
-            ('TAKE',  'Quitar 20 pesos a este compañero')
+            ('GIVE',  'Darle 20 pesos al miembro 2'),
+            ('TAKE',  'Quitarle 20 pesos al miembro 2')
         ],
+        label='¿Qué decides, darle o quitarle 20 pesos al <strong>miembro 2</strong>?',
         blank=False,
-        label='Decide para tu segundo compañero'
     )
-    mentira_1 = models.StringField(choices=['Sí','No'], label='¿Consideras que la opinión que tu primer compañero te expresó es la misma que nos expresó en privado?')
-    mentira_2 = models.StringField(choices=['Sí','No'], label='¿Consideras que la opinión que tu segundo compañero te expresó es la misma que nos expresó en privado?')
+    mentira_1 = models.StringField(choices=['Sí','No'], label='¿Consideras que la opinión que el miembro 1 expresó ante el grupo es la misma que nos expresó en privado?')
+    mentira_2 = models.StringField(choices=['Sí','No'], label='¿Consideras que la opinión que el miembro 2 expresó ante el grupo es la misma que nos expresó en privado?')
     partner_ids = models.LongStringField(
         blank=True,
         doc="JSON list of the other two id_in_subsession in my group"
@@ -718,14 +903,14 @@ class _BasePunishPage(Page):
 
     def get_context_data(self, **kwargs):
         ctx  = super().get_context_data(**kwargs)
-        form = kwargs['form']
-
-        # campo  = BoundField   ·   texto = enunciado
+        form = ctx['form']                     # ← aquí
         ctx['items'] = [
-            (form[fname], PUNISH_TEXTS[i])
-            for i, fname in enumerate(self.form_fields)
+            (form[f], PUNISH_TEXTS[i])
+            for i, f in enumerate(self.form_fields)
         ]
         return ctx
+
+
 
 
 
@@ -888,12 +1073,14 @@ class PracticeTreatmentAndDecision(Page):
             )
         else:
             selection_text = (
-                "Escogimos el grupo sin tomar en cuenta las posturas de las diez personas."
+                f"Para determinar cada individuo del trío, tomamos un grupo de diez candidatos. "
+                f"Hay <strong>siete</strong> a favor de '{options[1]}' y "
+                f"<strong>tres</strong> a favor de '{options[0]}'. Escogemos uno al azar."
             )
 
         treatment_text = (
             f"Para esta “conversación” de práctica, te hemos agrupado con otros dos "
-            f"compañeros usando la pregunta: '{current_question}'. {selection_text}"
+            f"participantes usando la pregunta: '{current_question}'. {selection_text}"
         )
 
         inform_text = ""
@@ -1021,6 +1208,58 @@ class BeliefPracticePage(Page):
             label_text=BELIEF_QUESTION        # ← usa la constante
         )
 
+
+class Comprehension(Page):
+    form_model = 'player'
+    form_fields = list(C.CORRECT_ANSWERS.keys())
+
+    @staticmethod
+    def before_next_page(player, timeout_happened):
+        res, score = {}, 0
+        for f in C.CORRECT_ANSWERS:
+            given   = getattr(player, f)
+            correct = C.CORRECT_ANSWERS[f]
+            ok      = given == correct
+            res[f] = dict(
+            text    = C.QUESTION_TEXT[f],  # enunciado completo (HTML)
+            given   = str(given),          # lo que marcó el participante
+            correct = str(correct),        # clave correcta
+            ok      = ok,                  # booleano
+)
+
+            score += ok
+        # SOLO datos primitivos → siempre json-/pickle-safe
+        player.participant.vars.update(comp_results=res, comp_score=score)
+
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number == 3
+
+
+
+
+
+class ComprehensionFeedback(Page):
+    @staticmethod
+    def vars_for_template(player):
+        results = player.participant.vars['comp_results']
+        score   = player.participant.vars['comp_score']
+
+        for fname, info in results.items():
+            info['options']     = C.QUESTION_OPTIONS[fname]
+            info['explanation'] = C.CORRECT_EXPLANATIONS[fname]
+
+        return dict(
+            results=results,
+            score=score,
+            total=len(C.CORRECT_ANSWERS),
+        )
+
+
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number == 3
+
 class PersonalInfoPage(Page):
     form_model = 'player'
     form_fields = ['age', 'gender', 'racial_identification', 'previous_experiment']
@@ -1031,62 +1270,79 @@ class PersonalInfoPage(Page):
 
 class PreConvBinaryQuestions(Page):
     form_model = 'player'
-    form_fields = ['pre_binary_choice_1', 'pre_binary_choice_2']
+    form_fields = (
+        ['pre_binary_choice_1', 'pre_binary_choice_2']
+        + [f'binary_choice_{i}' for i in range(1, C.NUM_BINARY_QUESTIONS + 1)]
+    )
 
     @staticmethod
     def is_displayed(player: Player):
         return player.round_number == 3
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        form = kwargs.get('form')
-        session = self.subsession.session
+        ctx   = super().get_context_data(**kwargs)
+        form  = kwargs['form']
+        sess  = self.subsession.session
 
-        # 1) Recuperar o crear el mapa de rotación para pre-conv
-        hl_pre = session.vars.get('HL_preconv_map')
-        if hl_pre is None:
-            hl_pre = [random.choice([True, False]) for _ in PRE_CONV_QUESTIONS]
-            session.vars['HL_preconv_map'] = hl_pre
+        # Asegura que existan los mapas de rotación
+        hl_pre = sess.vars.setdefault(
+                    'HL_preconv_map',
+                    [random.choice([True, False]) for _ in PRE_CONV_QUESTIONS])
+        hl_map = sess.vars.setdefault(
+                    'HL_map',
+                    [random.choice([True, False]) for _ in range(C.NUM_BINARY_QUESTIONS)])
 
-        # 2) Construir lista de campos rotados
-        rendered_fields = []
-        for i, field_name in enumerate(self.form_fields):
-            field = form[field_name]
-            first_label  = 'H'  # el valor interno
-            second_label = 'L'
-            # Etiquetas de texto
-            opt1, opt2 = ('H', 'L')  # el tag, no se usa aquí
-            text_H = PRE_CONV_QUESTIONS[i].split(':')[1].strip() if ':' in PRE_CONV_QUESTIONS[i] else PRE_CONV_QUESTIONS[i]
-            # Para tu caso: preguntas binarias de sí/no o Condesa/Coyoacán
-            # mejor asigna directamente:
-            if i == 0:
-                text_H, text_L = "La Condesa", "Coyoacán"
-            else:
-                text_H, text_L = "Sí", "No"
+        rendered = []
 
-            if hl_pre[i]:
-                field.choices = [(first_label, text_H), (second_label, text_L)]
-            else:
-                field.choices = [(first_label, text_L), (second_label, text_H)]
-            field.label = PRE_CONV_QUESTIONS[i]
-            rendered_fields.append(field)
+        # --- 2 preguntas pre-conversación ---
+        pre_specs = [
+            ("La Condesa", "Coyoacán"),
+            ("Sí", "No"),
+        ]
+        for idx, fname in enumerate(['pre_binary_choice_1', 'pre_binary_choice_2']):
+            field = form[fname]
+            Htxt, Ltxt = pre_specs[idx]
+            if not hl_pre[idx]:
+                Htxt, Ltxt = Ltxt, Htxt
+            field.choices = [('H', Htxt), ('L', Ltxt)]
+            field.label   = PRE_CONV_QUESTIONS[idx]
+            rendered.append(field)
 
-        context['rendered_fields'] = rendered_fields
-        return context
+        # --- 15 preguntas “generales” ---
+        for j in range(C.NUM_BINARY_QUESTIONS):
+            field = form[f'binary_choice_{j+1}']
+            Htxt, Ltxt = FIRST_OPTIONS[j], SECOND_OPTIONS[j]
+            if not hl_map[j]:
+                Htxt, Ltxt = Ltxt, Htxt
+            field.choices = [('H', Htxt), ('L', Ltxt)]
+            field.label   = SURVEY_QUESTIONS[j]
+            rendered.append(field)
+
+        ctx['rendered_fields'] = rendered
+        return ctx
+
 
     @staticmethod
-    def before_next_page(player: Player, timeout_happened):
+    def before_next_page(player, timeout_happened):
+        # Guarda ambos bloques en participant.vars
         player.participant.vars['pre_binary_choices'] = [
             player.pre_binary_choice_1,
             player.pre_binary_choice_2,
         ]
-        logger.debug(f"Stored pre_binary_choices: {player.participant.vars['pre_binary_choices']}")
+        player.participant.vars['binary_choices'] = [
+            getattr(player, f'binary_choice_{i}')
+            for i in range(1, C.NUM_BINARY_QUESTIONS + 1)
+        ]
+
 
 
 # 2) Página de WTP para ronda 3
 class PreConvWillingnessToPayCost(Page):
     form_model = 'player'
-    form_fields = ['pay_preconv_1', 'pay_preconv_2']
+    form_fields = (
+        ['pay_preconv_1', 'pay_preconv_2']
+        + [f'pay_to_judge_{i}' for i in range(1, C.NUM_BINARY_QUESTIONS + 1)]
+    )
 
     @staticmethod
     def is_displayed(player: Player) -> bool:
@@ -1094,22 +1350,32 @@ class PreConvWillingnessToPayCost(Page):
         return player.round_number == 3
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        form = kwargs.get('form')
-        # Armamos una lista de tuplas (texto pregunta, campo del formulario)
-        context['questions_and_fields'] = [
+        ctx   = super().get_context_data(**kwargs)
+        form  = kwargs['form']
+
+        q_and_f = [
             (PRE_CONV_QUESTIONS[0], form['pay_preconv_1']),
             (PRE_CONV_QUESTIONS[1], form['pay_preconv_2']),
         ]
-        return context
+        for i in range(C.NUM_BINARY_QUESTIONS):
+            q_and_f.append( (SURVEY_QUESTIONS[i],
+                            form[f'pay_to_judge_{i+1}']) )
+
+        ctx['questions_and_fields'] = q_and_f
+        return ctx
+
 
     @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        # Guardamos en participant.vars para usarlo luego en el emparejamiento
+    def before_next_page(player, timeout_happened):
         player.participant.vars['pre_pay_to_judge_choices'] = [
             player.pay_preconv_1,
             player.pay_preconv_2,
         ]
+        player.participant.vars['pay_to_judge_choices'] = [
+            getattr(player, f'pay_to_judge_{i}')
+            for i in range(1, C.NUM_BINARY_QUESTIONS + 1)
+        ]
+
         logger.debug(f"Stored pre_pay_to_judge_choices: {player.participant.vars['pre_pay_to_judge_choices']}")
 
 class PreConvPunishPage(_BasePunishPage):
@@ -1218,15 +1484,15 @@ class PreConvTreatmentAndDecision(Page):
             sel_txt = "Escogimos el grupo sin tomar en cuenta las posturas de las diez personas."
 
         treatment_text = (
-            f"Para esta “conversación”, te hemos agrupado con otros dos compañeros "
+            f"Para esta “conversación”, te hemos agrupado con otros dos participantes "
             f"usando la pregunta: '{current_q}'. {sel_txt} Escogemos uno al azar."
         )
 
         inform_text = ""
         if treatment.get('inform'):
             inform_text = (
-                f"Te informamos que el {pct:.0f}% de los participantes estaba dispuesto "
-                "a pagar 5 pesos para dar o quitar 20 pesos a sus compañeros después de "
+                f"Te informamos que el {pct:.0f}% de los participantes están dispuestos "
+                "a pagar 5 pesos para dar o quitar 20 pesos a los demás miembros de su grupo después de "
                 "observar la opinión que les expresaron."
             )
 
@@ -1570,7 +1836,7 @@ class TreatmentAndDecision(Page):
             selection_text = "Escogimos el grupo sin tomar en cuenta las posturas de las diez personas."
 
         treatment_text = (
-            f"Para esta “conversación”, te hemos agrupado con otro compañero usando la pregunta de práctica: "
+            f"Para esta “conversación”, te hemos agrupado con otros dos participantes usando la pregunta de práctica: "
             f"'{current_question}'. {selection_text}"
         )
 
@@ -1737,9 +2003,9 @@ class ThankYouPage(Page):
 # -----------------------------------------------------------------------------
 page_sequence = [
     # --- Round 1: Pre-Practice Survey Stage ---
-    ConsentFormPage,              # Only in round 1
+    #ConsentFormPage,              # Only in round 1
     #ExperimentInstructions,       # Only in round 1
-    PersonalInfoPage,            # Only in round 1
+    #PersonalInfoPage,            # Only in round 1
     PracticeBinaryQuestion,       # Only in round 1 (practice survey)
     PracticeWillingnessToPayCost, # Only in round 1 (practice survey)
     PracticeSurveyWaitPage,       # Only in round 1 (practice survey wait)
@@ -1751,6 +2017,8 @@ page_sequence = [
     PracticePublicDisplayPage,            # Only in round 2
     PracticeLieQuestionPage,              # Only in round 2
     BeliefPracticePage,
+    Comprehension,
+    ComprehensionFeedback,
 
     PreConvBinaryQuestions,         # Ronda 3
     PreConvWillingnessToPayCost,    # 
@@ -1765,10 +2033,8 @@ page_sequence = [
     BeliefPreConvPage,
     PreConvEndGroupWaitPage,
     
-
-   
-    BinaryQuestions,          # Ronda 12
-    WillingnessToPayCost,        
+    #BinaryQuestions,          # Ronda 12
+    #WillingnessToPayCost,        
     SurveyWaitPage,              
 
     GroupingWaitPage,            # Ronda 13-27

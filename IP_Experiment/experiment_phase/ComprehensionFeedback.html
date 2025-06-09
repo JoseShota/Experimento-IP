@@ -1,0 +1,44 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}Resultados del cuestionario{% endblock %}
+
+{% block content %}
+<p>Acertaste {{ score }} de {{ total }} preguntas.</p>
+
+{% for fname, info in results.items %}
+  <hr>
+  <p>{{ info.text|safe }}</p>
+
+  <!-- ▼ NUEVO indicador correcto/incorrecto -->
+  <p>
+    Tu respuesta fue
+    {% if info.ok %}
+        <span class="text-success fw-bold">CORRECTA</span>
+    {% else %}
+        <span class="text-danger fw-bold">INCORRECTA</span>
+    {% endif %}
+  </p>
+
+  <ul class="mb-2">
+    {% for val,label in info.options %}
+      <li class="
+          {% if val == info.correct %}fw-bold text-primary{% endif %}
+          {% if val == info.given and not info.ok %} text-danger{% endif %}
+      ">
+        {{ label|safe }}
+        {% if val == info.correct %}<span class="badge bg-success ms-1">Correcta</span>{% endif %}
+        {% if val == info.given and not info.ok %}<span class="badge bg-danger ms-1">Tu elección</span>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+
+  <p><em>Explicación:</em> {{ info.explanation }}</p>
+{% endfor %}
+
+
+{{ next_button }}
+{% endblock %}
+
+
+

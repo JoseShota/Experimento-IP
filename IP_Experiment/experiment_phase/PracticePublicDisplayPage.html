@@ -2,22 +2,22 @@
 {% block content %}
   <h1>“Conversación” de Práctica</h1>
 
-  <h2>Ambos miembros del grupo observan lo que sus compañeros expresaron.</h2>
+  <h2>Ambos miembros del grupo observan lo que los demás expresaron.</h2>
   <p><strong>Pregunta:</strong> {{ current_question }}</p>
 
   {% for choice in partner_choices %}
-    <p>La respuesta que tu compañero {{ forloop.counter }} te expresó fue: <strong>{{ choice }}</strong></p>
+    <p>La respuesta que el miembro {{ forloop.counter }} expresó ante el grupo fue: <strong>{{ choice }}</strong></p>
   {% endfor %}
 
   {% if show_judge_form %}
     <hr>
-    <h2>Entre quienes pagaron cinco pesos por hacerlo, decidan si dar o quitar 20 pesos a cada compañero.</h2>
-    <h2>Decide para cada compañero</h2>
+    <h2>Entre quienes pagaron cinco pesos por hacerlo, decidan si dar o quitar 20 pesos a cada miembro del grupo.</h2>
+    <p>Decide para cada miembro del grupo:</p>
 
-    <p>Compañero 1:</p>
+
     {{ formfield "juicio_1" }}
 
-    <p>Compañero 2:</p>
+
     {{ formfield "juicio_2" }}
   {% endif %}
 

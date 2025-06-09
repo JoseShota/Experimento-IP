@@ -4,7 +4,7 @@
   <p><strong>Pregunta:</strong> {{ current_question }}</p>
 
   {% for choice in partner_choices %}
-    <p>Respuesta pública del compañero {{ forloop.counter }}: <strong>{{ choice }}</strong></p>
+    <p>Respuesta pública del miembro {{ forloop.counter }}: <strong>{{ choice }}</strong></p>
   {% endfor %}
 
   {{ formfield "mentira_1" }}

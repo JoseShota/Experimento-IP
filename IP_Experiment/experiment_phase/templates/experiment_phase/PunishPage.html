@@ -14,12 +14,16 @@
 <hr>
 
 {% for campo, texto in items %}
-    <div class="mb-4">
-        <p><strong>{{ texto|linebreaks }}</strong></p>
-        {{ campo }}   {# ← Django renderiza radios o caja numérica automáticamente #}
-    </div>
+  <div class="mb-4">
+      <p class="fw-semibold" style="white-space: pre-line;">
+          {{ texto }}
+      </p>
+      {{ campo }}
+  </div>
 {% endfor %}
 {{ next_button }}
+
+
 {% endblock %}
 
 

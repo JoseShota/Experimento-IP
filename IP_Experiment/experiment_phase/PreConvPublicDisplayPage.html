@@ -1,19 +1,19 @@
 {% extends "global/Page.html" %}
 {% block content %}
   <h1>“Conversación”</h1>
-  <h2>Observa lo que expresaron tus compañeros.</h2>
+  <h2>Observa lo que expresaron los demás miembros del grupo.</h2>
 
   <p><strong>Pregunta:</strong> {{ current_question }}</p>
   {% for choice in partner_choices %}
-    <p>Respuesta del compañero {{ forloop.counter }}: <strong>{{ choice }}</strong></p>
+    <p>Respuesta del miembro {{ forloop.counter }}: <strong>{{ choice }}</strong></p>
   {% endfor %}
 
   {% if show_judge_form %}
     <hr>
     <h2>Decide si dar o quitar 20&nbsp;pesos</h2>
-    <p>Compañero 1:</p>
+    <p>Miembro 1:</p>
     {{ formfield "juicio_1" }}
-    <p>Compañero 2:</p>
+    <p>Miembro 2:</p>
     {{ formfield "juicio_2" }}
   {% endif %}
 
