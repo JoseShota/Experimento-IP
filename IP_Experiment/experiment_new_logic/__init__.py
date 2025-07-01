@@ -213,6 +213,11 @@ def draw_treatment() -> Tuple[float, str]:
     else:
         return 0.3, '0.7_L'
 
+MIN_PER_POOL = 3           # umbral configurable
+
+def enough_players(H_pool, L_pool, min_per_pool=MIN_PER_POOL):
+    """¿Hay al menos `min_per_pool` en cada pool?"""
+    return len(H_pool) >= min_per_pool and len(L_pool) >= min_per_pool
 
 
 # -----------------------------------------------------------------------------
@@ -717,50 +722,39 @@ def practice_pair_players(subsession: Subsession) -> None:
     groups: list[list[Player]] = []
     GROUP_SIZE = 3
 
-    logger.debug(f"INICIO grouping (round {subsession.round_number}): "
-             f"H_pool={len(H_pool)}, L_pool={len(L_pool)}")
+    logger.debug(
+        f"[practice] INICIO grouping (round {subsession.round_number}): "
+        f"H={len(H_pool)}, L={len(L_pool)} (mín. {MIN_PER_POOL} cada uno)"
+    )
 
-    while H_pool and L_pool and len(H_pool) + len(L_pool) >= GROUP_SIZE:
+    while enough_players(H_pool, L_pool):
 
+        # 1) Sorteo del tratamiento
         prob_H, tlabel = draw_treatment()
-        inform        = random.choice([True, False])
-        logger.debug(f"  → Sorteando tratamiento, remanentes totales: "
-             f"{len(H_pool)+len(L_pool)}")
-        
-        failed_attempts = 0
-        while failed_attempts < 5:            # ≤ 5 intentos con este tratamiento
-            logger.debug(f"    Intento #{failed_attempts+1}")
-            tentative: list[tuple[Player, str]] = []
+        inform         = random.choice([True, False])
+        logger.debug(f"  → Nuevo treatment={tlabel}, prob_H={prob_H:.2f}")
 
-            for _ in range(GROUP_SIZE):
-                pick_H = (random.random() < prob_H and H_pool) or not L_pool
-                if pick_H:
-                    tentative.append((H_pool.pop(), 'H'))
-                else:
-                    tentative.append((L_pool.pop(), 'L'))
-                if not H_pool or not L_pool:   # pool agotado → revertir
-                    for p, pool in tentative:
-                        (H_pool if pool == 'H' else L_pool).append(p)
-                    failed_attempts += 1
-                    break
-            else:
-                # éxito: formamos el trío definitivo
-                trio = [tpl[0] for tpl in tentative]
-                treatment = {'prob_H': prob_H,
-                             'label' : tlabel,
-                             'inform': inform,
-                             'practice': True}
-                for p in trio:
-                    p.treatment   = json.dumps(treatment)
-                    p.partner_ids = json.dumps([q.id_in_subsession for q in trio if q != p])
-                logger.info(f"    TRÍO formado: {[p.id_in_subsession for p in trio]} con {treatment}")
-                groups.append(trio)
-                break        # sale del while failed_attempts
+        # 2) Seleccionamos directamente los 3 miembros
+        trio: list[Player] = []
+        for _ in range(GROUP_SIZE):
+            pick_H = (random.random() < prob_H and H_pool) or not L_pool
+            pool   = H_pool if pick_H else L_pool
+            trio.append(pool.pop())
 
-        # si fallamos 5 veces, no volvemos a intentar con este tratamiento
-        if failed_attempts >= 5:
-            logger.warning(f"  Se alcanzaron 5 intentos fallidos para treatment {tlabel}, abandono")
-            break
+        # 3) Guardamos treatment y partner_ids
+        treatment = {
+            'prob_H': prob_H,
+            'label' : tlabel,
+            'inform': inform,
+            'practice': True
+        }
+        for p in trio:
+            p.treatment   = json.dumps(treatment)
+            p.partner_ids = json.dumps(
+                [q.id_in_subsession for q in trio if q != p]
+            )
+        logger.info(f"    TRÍO formado: {[p.id_in_subsession for p in trio]} con {treatment}")
+        groups.append(trio)
 
     # ---------- remanentes = grupos Control ----------
     rem = H_pool + L_pool
@@ -805,47 +799,42 @@ def pair_preconv_players(subsession: Subsession) -> None:
     groups: list[list[Player]] = []
     GROUP_SIZE = 3
 
-    logger.debug(f"[preconv round {rn}] H_pool={len(H_pool)}, L_pool={len(L_pool)}, q_index={q_index}, subround={subround}")
-
+    logger.debug(
+        f"[preconv round {rn}] H={len(H_pool)}, L={len(L_pool)} "
+        f"(mín. {MIN_PER_POOL} cada uno), subround={subround}"
+    )
     # Emparejamiento con reintentos idéntico a pair_players
-    while H_pool and L_pool and len(H_pool) + len(L_pool) >= GROUP_SIZE:
+    while enough_players(H_pool, L_pool):
         prob_H, tlabel = draw_treatment()
         # Inform determinístico: las dos primeras subrondas sin inform, las dos últimas siempre con inform
         use_inform = (subround >= 2)
-        logger.debug(f"  → Sorteando treatment={tlabel}, prob_H={prob_H}, use_inform={use_inform}")
+        logger.debug(
+            f"  → Nuevo treatment={tlabel}, prob_H={prob_H:.2f}, "
+            f"use_inform={use_inform}"
+        )
+        # Seleccionamos directamente los 3 integrantes
+        trio = []
+        for _ in range(GROUP_SIZE):
+            pick_H = (random.random() < prob_H and H_pool) or not L_pool
+            pool   = H_pool if pick_H else L_pool
+            trio.append(pool.pop())
 
-        failed_attempts = 0
-        while failed_attempts < 5:
-            logger.debug(f"    Intento #{failed_attempts + 1}")
-            tentative: list[tuple[Player, str]] = []
-            for _ in range(GROUP_SIZE):
-                pick_H = (random.random() < prob_H and H_pool) or not L_pool
-                if pick_H:
-                    tentative.append((H_pool.pop(), 'H'))
-                else:
-                    tentative.append((L_pool.pop(), 'L'))
+        # Armamos dict treatment
+        treatment = {'prob_H': prob_H, 'label': tlabel}
+        if use_inform:
+            treatment['inform'] = True
 
-                if not H_pool or not L_pool:
-                    for p, pool in tentative:
-                        (H_pool if pool == 'H' else L_pool).append(p)
-                    failed_attempts += 1
-                    break
-            else:
-                trio = [tpl[0] for tpl in tentative]
-                treatment = {'prob_H': prob_H, 'label': tlabel}
-                # Solo agregamos inform cuando use_inform == True
-                if use_inform:
-                    treatment['inform'] = True
-                for p in trio:
-                    p.treatment = json.dumps(treatment)
-                    p.partner_ids = json.dumps([q.id_in_subsession for q in trio if q != p])
-                logger.info(f"    TRÍO preconv (q_index={q_index}): {[p.id_in_subsession for p in trio]} con {treatment}")
-                groups.append(trio)
-                break
-
-        if failed_attempts >= 5:
-            logger.warning(f"  Se alcanzaron 5 intentos fallidos para treatment {tlabel}, abandono")
-            break
+        # Guardamos en cada jugador
+        for p in trio:
+            p.treatment   = json.dumps(treatment)
+            p.partner_ids = json.dumps(
+                [q.id_in_subsession for q in trio if q != p]
+            )
+        logger.info(
+            f"    TRÍO preconv (q_index={q_index}): "
+            f"{[p.id_in_subsession for p in trio]} con {treatment}"
+        )
+        groups.append(trio)
 
     # Remanentes: singleton, igual a pair_players
     rem = H_pool + L_pool
@@ -887,46 +876,33 @@ def pair_players(subsession: Subsession) -> None:
     groups: list[list[Player]] = []
     GROUP_SIZE = 3
 
-    logger.debug(f"INICIO grouping (round {subsession.round_number}): "
-                 f"H_pool={len(H_pool)}, L_pool={len(L_pool)}")
+    logger.debug(
+        f"[conv round {rn}] H={len(H_pool)}, L={len(L_pool)} "
+        f"(mín. {MIN_PER_POOL} cada uno)"
+    )
 
-    while H_pool and L_pool and len(H_pool) + len(L_pool) >= GROUP_SIZE:
+    while enough_players(H_pool, L_pool):
 
         prob_H, tlabel = draw_treatment()
         inform        = random.choice([True, False])
-        logger.debug(f"  → Sorteando tratamiento, remanentes totales: "
-                     f"{len(H_pool) + len(L_pool)}")
-        failed_attempts = 0
+        logger.debug(f"  → Nuevo treatment={tlabel}, prob_H={prob_H:.2f}, inform={inform}")
 
-        while failed_attempts < 5:
-            logger.debug(f"    Intento #{failed_attempts + 1}")
-            tentative: list[tuple[Player, str]] = []
+        trio = []
+        for _ in range(GROUP_SIZE):
+            pick_H = (random.random() < prob_H and H_pool) or not L_pool
+            pool   = H_pool if pick_H else L_pool
+            trio.append(pool.pop())
 
-            for _ in range(GROUP_SIZE):
-                pick_H = (random.random() < prob_H and H_pool) or not L_pool
-                if pick_H:
-                    tentative.append((H_pool.pop(), 'H'))
-                else:
-                    tentative.append((L_pool.pop(), 'L'))
-
-                if not H_pool or not L_pool:
-                    for p, pool in tentative:
-                        (H_pool if pool == 'H' else L_pool).append(p)
-                    failed_attempts += 1
-                    break
-            else:
-                trio = [tpl[0] for tpl in tentative]
-                treatment = {'prob_H': prob_H, 'label': tlabel, 'inform': inform}
-                for p in trio:
-                    p.treatment   = json.dumps(treatment)
-                    p.partner_ids = json.dumps([q.id_in_subsession for q in trio if q != p])
-                logger.info(f"    TRÍO formado: {[p.id_in_subsession for p in trio]} con {treatment}")
-                groups.append(trio)
-                break
-
-        if failed_attempts >= 5:
-            logger.warning(f"  Se alcanzaron 5 intentos fallidos para treatment {tlabel}, abandono")
-            break
+        treatment = {'prob_H': prob_H, 'label': tlabel, 'inform': inform}
+        for p in trio:
+            p.treatment   = json.dumps(treatment)
+            p.partner_ids = json.dumps(
+                [q.id_in_subsession for q in trio if q != p]
+            )
+        logger.info(
+            f"    TRÍO conv: {[p.id_in_subsession for p in trio]} con {treatment}"
+        )
+        groups.append(trio)
 
     # ---------- remanentes = grupos Control ----------
     rem = H_pool + L_pool
@@ -2090,8 +2066,8 @@ page_sequence = [
     #Comprehension,
     #ComprehensionFeedback,
 
-    #PreConvBinaryQuestions,         # Ronda 3
-    #PreConvWillingnessToPayCost,    # 
+    PreConvBinaryQuestions,         # Ronda 3
+    PreConvWillingnessToPayCost,    # 
     #PreConvPunishPage, 
     #PreConvSurveyWaitPage,          # 
 
@@ -2102,8 +2078,6 @@ page_sequence = [
     #PreConvLieQuestionPage,
     #BeliefPreConvPage,
     #PreConvEndGroupWaitPage,
-    BinaryQuestions,
-    WillingnessToPayCost,
     SurveyWaitPage,              
 
     GroupingWaitPage,            # Ronda 13-27
