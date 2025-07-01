@@ -869,8 +869,8 @@ class Topic(Page):
 # ────────────────────────────────────────────────────────────────────
 page_sequence = [
     ConsentForm,
-    #Intro,
-    #ColorChoice,
+    Intro,
+    ColorChoice,
     Comprehension, ComprehensionFeedback,
     PersonalInfo,
     Topic,        # 37 pages, one per topic

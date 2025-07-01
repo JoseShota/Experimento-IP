@@ -37,28 +37,77 @@ PUNISH_CHOICES = [
     ('TAKE',  'Le quitaría los 20 pesos'),
 ]
 
+INTRO_A = """
+Supón que una persona expresó una opinión que es:
+- <strong>diferente</strong> a la opinión privada de la persona misma que expresó la opinión
+- <strong>diferente</strong> a tu opinión privada
+"""
+
+INTRO_B = INTRO_A.replace("diferente</strong> a tu opinión privada",
+                           "igual</strong> a tu opinión privada")
+
+INTRO_C = INTRO_A.replace("diferente</strong> a la opinión privada de la persona misma que expresó la opinión",
+                           "igual</strong> a la opinión privada de la persona misma que expresó la opinión")
+
+INTRO_D = INTRO_C.replace("diferente</strong> a tu opinión privada",
+                           "igual</strong> a tu opinión privada")
+
+YOUR_DECISION = "Tienes que decidir si darle o quitarle 20 pesos. ¿Qué harías?"
+
+THEIR_DECISION_A = """
+Ahora considera a diez personas en esta sesión diferentes a ti. Cada uno tiene que decidir si darle o quitarle 20 pesos a alguien que expresó una opinión:
+- <strong>diferente</strong> a la opinión privada de la persona misma que expresó la opinión
+- <strong>diferente</strong> a la opinión privada de quien va decidir si dar o quitar 20 pesos
+
+¿Cuántos de los diez le darían 20 pesos? Nota que los demás le quitarían 20 pesos.  
+"""
+
+THEIR_DECISION_B = """
+Ahora considera a diez personas en esta sesión diferentes a ti. Cada uno tiene que decidir si darle o quitarle 20 pesos a alguien que expresó una opinión:
+- <strong>diferente</strong> a la opinión privada de la persona misma que expresó la opinión
+- <strong>igual</strong> a la opinión privada de quien va decidir si dar o quitar 20 pesos
+
+¿Cuántos de los diez le darían 20 pesos? Nota que los demás le quitarían 20 pesos.  
+"""
+
+THEIR_DECISION_C = """
+Ahora considera a diez personas en esta sesión diferentes a ti. Cada uno tiene que decidir si darle o quitarle 20 pesos a alguien que expresó una opinión:
+- <strong>igual</strong> a la opinión privada de la persona misma que expresó la opinión
+- <strong>diferente</strong> a la opinión privada de quien va decidir si dar o quitar 20 pesos
+
+¿Cuántos de los diez le darían 20 pesos? Nota que los demás le quitarían 20 pesos.  
+"""
+
+THEIR_DECISION_D = """
+Ahora considera a diez personas en esta sesión diferentes a ti. Cada uno tiene que decidir si darle o quitarle 20 pesos a alguien que expresó una opinión:
+- <strong>igual</strong> a la opinión privada de la persona misma que expresó la opinión
+- <strong>igual</strong> a la opinión privada de quien va decidir si dar o quitar 20 pesos
+
+¿Cuántos de los diez le darían 20 pesos? Nota que los demás le quitarían 20 pesos.  
+"""
+
 PUNISH_TEXTS = [
     # 1-4: decisiones propias ↓
     "Supón que una persona expresó una opinión que es:\n"
-    "- <strong>diferente</strong> a su opinión privada\n"
+    "- <strong>diferente</strong> a la opinión privada de quien expresó la opinión\n"
     "- <strong>diferente</strong> a tu opinión privada\n"
-    "- el tema es uno para el que pagaste el costo para dar o quitar 20 pesos a a los demás miembros de tu grupo\n"
+    "- el tema es uno para el que pagaste el costo para dar o quitar 20 pesos a los demás miembros de tu grupo\n"
     "¿Le darías o quitarías los 20 pesos?",
 
     "Supón que una persona expresó una opinión que es:\n"
-    "- <strong>diferente</strong> a su opinión privada\n"
+    "- <strong>diferente</strong> a la opinión privada de quien expresó la opinión\n"
     "- <strong>igual</strong> a tu opinión privada\n"
     "- el tema es uno para el que pagaste el costo para dar o quitar 20 pesos a a los demás miembros de tu grupo\n"
     "¿Le darías o quitarías los 20 pesos?",
 
     "Supón que una persona expresó una opinión que es:\n"
-    "- <strong>igual</strong> a su opinión privada\n"
+    "- <strong>igual</strong> a la opinión privada de quien expresó la opinión\n"
     "- <strong>diferente</strong> a tu opinión privada\n"
     "- el tema es uno para el que pagaste el costo para dar o quitar 20 pesos a a los demás miembros de tu grupo\n"
     "¿Le darías o quitarías los 20 pesos?",
 
     "Supón que una persona expresó una opinión que es:\n"
-    "- <strong>igual</strong> a su opinión privada\n"
+    "- <strong>igual</strong> a la opinión privada de quien expresó la opinión\n"
     "- <strong>igual</strong> a tu opinión privada\n"
     "- el tema es uno para el que pagaste el costo para dar o quitar 20 pesos a a los demás miembros de tu grupo\n"
     "¿Le darías o quitarías los 20 pesos?",
@@ -902,13 +951,33 @@ class _BasePunishPage(Page):
     template_name = 'experiment_phase/PunishPage.html'
 
     def get_context_data(self, **kwargs):
-        ctx  = super().get_context_data(**kwargs)
-        form = ctx['form']                     # ← aquí
+        ctx = super().get_context_data(**kwargs)
+        f   = ctx['form']
+
         ctx['items'] = [
-            (form[f], PUNISH_TEXTS[i])
-            for i, f in enumerate(self.form_fields)
+            # ---------- Escenario A ----------
+            (None, INTRO_A),
+            (f['preconv_punish_1'], YOUR_DECISION),
+            (f['preconv_punish_5'], THEIR_DECISION_A),
+
+            # ---------- Escenario B ----------
+            (None, INTRO_B),
+            (f['preconv_punish_2'], YOUR_DECISION),
+            (f['preconv_punish_6'], THEIR_DECISION_B),
+
+            # ---------- Escenario C ----------
+            (None, INTRO_C),
+            (f['preconv_punish_3'], YOUR_DECISION),
+            (f['preconv_punish_7'], THEIR_DECISION_C),
+
+            # ---------- Escenario D ----------
+            (None, INTRO_D),
+            (f['preconv_punish_4'], YOUR_DECISION),
+            (f['preconv_punish_8'], THEIR_DECISION_D),
         ]
         return ctx
+
+
 
 
 
@@ -1662,6 +1731,7 @@ class BeliefPreConvPage(Page):
             initial_val=val,
             label_text=BELIEF_QUESTION        # ← usa la constante
         )
+    
 
 class BinaryQuestions(Page):
     form_model = 'player'
@@ -2006,35 +2076,34 @@ page_sequence = [
     #ConsentFormPage,              # Only in round 1
     #ExperimentInstructions,       # Only in round 1
     #PersonalInfoPage,            # Only in round 1
-    PracticeBinaryQuestion,       # Only in round 1 (practice survey)
-    PracticeWillingnessToPayCost, # Only in round 1 (practice survey)
-    PracticeSurveyWaitPage,       # Only in round 1 (practice survey wait)
+    #PracticeBinaryQuestion,       # Only in round 1 (practice survey)
+    #PracticeWillingnessToPayCost, # Only in round 1 (practice survey)
+    #PracticeSurveyWaitPage,       # Only in round 1 (practice survey wait)
 
     # --- Round 2: Practice Group Interaction Stage ---
-    PracticeGroupingWaitPage,             # Only in round 2
-    PracticeTreatmentAndDecision,
-    PracticeSecondDecisionWaitPageForGroup,  # Only in round 2
-    PracticePublicDisplayPage,            # Only in round 2
-    PracticeLieQuestionPage,              # Only in round 2
-    BeliefPracticePage,
-    Comprehension,
-    ComprehensionFeedback,
+    #PracticeGroupingWaitPage,             # Only in round 2
+    #PracticeTreatmentAndDecision,
+    #PracticeSecondDecisionWaitPageForGroup,  # Only in round 2
+    #PracticePublicDisplayPage,            # Only in round 2
+    #PracticeLieQuestionPage,              # Only in round 2
+    #BeliefPracticePage,
+    #Comprehension,
+    #ComprehensionFeedback,
 
-    PreConvBinaryQuestions,         # Ronda 3
-    PreConvWillingnessToPayCost,    # 
-    PreConvPunishPage, 
-    PreConvSurveyWaitPage,          # 
+    #PreConvBinaryQuestions,         # Ronda 3
+    #PreConvWillingnessToPayCost,    # 
+    #PreConvPunishPage, 
+    #PreConvSurveyWaitPage,          # 
 
-    PreConvGroupingWaitPage,        #Rondas 4-11
-    PreConvTreatmentAndDecision,          # Rondas 4-11
-    PreConvSecondDecisionWaitPage,
-    PreConvPublicDisplayPage,
-    PreConvLieQuestionPage,
-    BeliefPreConvPage,
-    PreConvEndGroupWaitPage,
-    
-    #BinaryQuestions,          # Ronda 12
-    #WillingnessToPayCost,        
+    #PreConvGroupingWaitPage,        #Rondas 4-11
+    #PreConvTreatmentAndDecision,          # Rondas 4-11
+    #PreConvSecondDecisionWaitPage,
+    #PreConvPublicDisplayPage,
+    #PreConvLieQuestionPage,
+    #BeliefPreConvPage,
+    #PreConvEndGroupWaitPage,
+    BinaryQuestions,
+    WillingnessToPayCost,
     SurveyWaitPage,              
 
     GroupingWaitPage,            # Ronda 13-27

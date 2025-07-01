@@ -1,0 +1,12 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>"Conversación" de Práctica</h1>
+  <p><h2>Ambos miembros de la pareja escogen simultáneamente qué opinión expresarle a la otra persona. </h2></p>
+  <p>
+    Ahora vas a decidir qué opinión expresar a tu pareja respecto a la pregunta: <strong>{{ current_question }}</strong>. La opinión que les expreses a tu pareja puede o no ser la opinión que nos expresaste en privado. Si la opinión que le expresas a tu pareja es la misma que nos expresaste en privado, obtienes un pago extra de 10 pesos.
+  </p>
+  {{ current_question}}
+  {{ form.second_choice }}
+  {{ next_button }}
+{% endblock %}
+
