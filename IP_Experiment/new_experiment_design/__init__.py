@@ -224,7 +224,7 @@ def enough_players(H_pool, L_pool, min_per_pool=MIN_PER_POOL):
 # Constants and Helper Functions
 # -----------------------------------------------------------------------------
 class C(BaseConstants):
-    NAME_IN_URL = 'experiment_new_logic'
+    NAME_IN_URL = 'new_experiment_design'
     PLAYERS_PER_GROUP = 3
     NUM_BINARY_QUESTIONS = 15 
     NUM_ROUNDS = 27
@@ -924,7 +924,7 @@ def pair_players(subsession: Subsession) -> None:
 # -----------------------------------------------------------------------------
 # Stage 1: Survey pages (only in round 1)
 class _BasePunishPage(Page):
-    template_name = 'experiment_new_logic/PunishPage.html'
+    template_name = 'new_experiment_design/PunishPage.html'
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -979,7 +979,7 @@ class IntroductionPage(Page):
         return {}
 
 class ExperimentInstructions(Page):
-    template_name = 'experiment_new_logic/ExperimentInstructions.html'
+    template_name = 'new_experiment_design/ExperimentInstructions.html'
 
     @staticmethod
     def is_displayed(player: Player) -> bool:

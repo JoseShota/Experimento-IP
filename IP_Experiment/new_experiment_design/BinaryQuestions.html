@@ -1,0 +1,51 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>Opiniones Privadas</h1>
+  <p>Ahora estás en la Parte 3 del experimento.
+
+  
+  <p>
+    Te vamos a pedir que nos des tu opinión sobre múltiples preguntas específicas. Todas las preguntas tienen dos respuestas posibles, y queremos que nos digas honestamente la respuesta que mejor refleja tu opinión. Recuerda que esta respuesta no la va a observar nadie en la sesión, y como no tenemos manera de vincular tus respuestas a tu identidad, tampoco nadie fuera de la sesión va a poder saber qué respondiste. También recuerda que escogimos los temas encuestando a una muestra que obtuvimos de la misma población de donde obtuvimos las personas en esta sesión, y escogimos temas en los que aproximadamente la mitad tomaba cada una de las posturas.
+  </p>
+  
+  <form method="post">
+    {% for field in rendered_fields %}
+      <p>Pregunta {{ forloop.counter }}:
+      {% if forloop.counter == 1 %}
+        ¿Estás de acuerdo con la frase 'el dinero compra la felicidad'?
+      {% elif forloop.counter == 2 %}
+        ¿Crees que el ser humano es inherentemente bueno o malo?
+      {% elif forloop.counter == 3 %}
+        Llega contigo tu mejor amiga/o que acaba de hacerse un nuevo corte de pelo. Emocionada/o te pregunta si te gusta, pero a ti te parece que fue una terrible decisión. ¿Crees que mentir en esta situación es justificable, sabiendo que la verdad le haría sentir muy mal?
+      {% elif forloop.counter == 4 %}
+      ​  ¿Qué equipo de futbol es mejor: el América o las Chivas?
+      {% elif forloop.counter == 5 %}
+        ¿Estás de acuerdo con la frase 'no hay paz sin la violencia'?
+      {% elif forloop.counter == 6 %}
+        ¿Crees que los videojuegos violentos fomentan actitudes violentas en la vida real?
+      {% elif forloop.counter == 7 %}
+        ¿Crees que uno de los criterios principales para contratar a alguien en México es el color de piel?
+      {% elif forloop.counter == 8 %}
+        ¿Quién tiene mejor música, Luis Miguel o Juan Gabriel?
+      {% elif forloop.counter == 9 %}
+        ¿Estás de acuerdo en que hay que separar el arte de Michael Jackson del artista?
+      {% elif forloop.counter == 10 %}
+        Estás en una guerra y debes decidir si salvar la vida de tu compañero o la de un niño inocente que está en peligro. ¿A quién salvarías?
+      {% elif forloop.counter == 11 %}
+        ¿Estás de acuerdo con la pena de muerte?
+      {% elif forloop.counter == 12 %}
+        Una persona rica y grosera tira un billete de cien pesos sin darse cuenta. ¿Deberías devolvérselo?
+      {% elif forloop.counter == 13 %}
+        ¿Qué es lo más higiénico, bañarse en la mañana o en la noche?
+      {% elif forloop.counter == 14 %}
+        ¿Qué saga de películas es mejor: Harry Potter o El Señor de los Anillos?
+      {% elif forloop.counter == 15 %}
+        ¿Qué tan rápido México debería transicionar a las energías renovables, tomando en cuenta que entre más rápido transicionar peor va a ser el crecimiento económico dado que el petróleo es un tercio de la economía del país?
+      {% endif %}
+      
+      </p>
+      {{ field }}
+    {% endfor %}
+    {{ next_button }}
+  </form>
+{% endblock %}

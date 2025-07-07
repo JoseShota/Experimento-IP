@@ -1,0 +1,15 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>“Conversación” de Práctica</h1>
+  <h2>Adivinar si las opiniones que expresaron los miembros del grupo coinciden con la opinión privada que nos expresó cada uno</h2>
+  <p><strong>Pregunta:</strong> {{ current_question }}</p>
+
+  {% for choice in partner_choices %}
+    <p>La respuesta que el miembro {{ forloop.counter }} expresó fue: <strong>{{ choice }}</strong></p>
+  {% endfor %}
+
+  {{ formfield "mentira_1" }}
+  {{ formfield "mentira_2" }}
+  {{ next_button }}
+{% endblock %}
+

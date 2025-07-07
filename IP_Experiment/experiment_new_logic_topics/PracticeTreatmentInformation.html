@@ -1,0 +1,22 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>"Conversación" de Práctica</h1>
+  <p><h2>Aprendes cómo se escogieron los dos que están en la pareja. Tal vez aprendes cuánta gente está dispuesta a darle o quitarle dinero a su pareja después de ver la opinión que le expresaron. </h2></p>
+  <p>
+    Te vamos a anunciar cuál de tres procedimientos utilizamos para escoger a las personas en la pareja. Recuerda que hay tres opciones sobre cómo son las opiniones de esas diez personas, y una de las tres opciones será escogida aleatoriamente. A manera de recordatorio, las tres opciones son:  
+  </p>
+  <ol>
+    <li>Para determinar cada individuo de la pareja, tomamos un grupo de diez candidatos. Hay <strong> cinco </strong> personas a favor de una de las dos posturas del tema, y <strong> cinco </strong> a favor de la otra postura del tema. Escogemos una de ellas al azar. </li>
+    <li>Para determinar cada individuo de la pareja, tomamos un grupo de diez candidatos. Hay <strong> siete </strong> personas a favor de una de las dos posturas del tema, y <strong> tres </strong> a favor de la otra postura del tema. Escogemos una de ellas al azar. </li>
+    <li>Escogimos el grupo sin tomar en cuenta las posturas de las diez personas. </li>
+  </ol>
+  <p>En esta parte de la “conversación” te vamos a anunciar cuál de las tres opciones seguimos para armar tu pareja. Así es como te vamos a anunciar cuál de las tres opciones seguimos. </p>
+  <p>{{ treatment_text }}</p>
+  <p>Además de aprender cómo se armaron los grupos, en algunas “conversaciones” vamos a dar información de cuántas personas en la sesión decidieron que, para el tema que trata la “conversación”, iban a pagar cinco pesos para poder darle 20 pesos o quitarle 20 pesos a su pareja después de observar la opinión que le expresó. Estos grupos se escogen aleatoriamente. En caso de que te haya tocado recibir esa información, aparecerá debajo de este párrafo. Si no, no aparecerá más texto.  </p>
+  <p>{{ inform_text}}</p>
+
+  <hr>
+
+  {{ next_button }}
+{% endblock %}
+

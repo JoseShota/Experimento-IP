@@ -1,0 +1,25 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+Cuestionario de comprensión
+{% endblock %}
+
+{% block content %}
+<p>
+  Contesta las siguientes preguntas para confirmar que entendiste las reglas.
+  Lee con atención: algunas combinan varios puntos de las instrucciones.
+</p>
+
+<hr>
+
+{% formfield player.comp_q1 %}
+{% formfield player.comp_q2 %}
+{% formfield player.comp_q3 %}
+{% formfield player.comp_q4 %}
+{% formfield player.comp_q5 %}
+{% formfield player.comp_q6 %}
+{% formfield player.comp_q7 %}
+
+{% next_button %}
+{% endblock %}

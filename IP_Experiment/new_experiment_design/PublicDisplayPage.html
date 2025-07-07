@@ -1,0 +1,24 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>“Conversación”</h1>
+  <h2>Observa lo que expresaron los demás miembros del grupo.</h2>
+
+  <p><strong>Pregunta:</strong> {{ current_question }}</p>
+  {% for choice in partner_choices %}
+    <p>Respuesta del miembro {{ forloop.counter }}: <strong>{{ choice }}</strong></p>
+  {% endfor %}
+
+  {% if show_judge_form %}
+    <hr>
+    <h2>Decide si dar o quitar 20&nbsp;pesos</h2>
+    <!-- 🔄 -->
+    <p>Miembro 1:</p>
+    {{ formfield "juicio_1" }}
+
+    <p>Miembro 2:</p>
+    {{ formfield "juicio_2" }}
+  {% endif %}
+
+  {{ next_button }}
+{% endblock %}
+
