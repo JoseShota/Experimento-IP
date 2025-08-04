@@ -1,0 +1,150 @@
+{% extends "global/Page.html" %}
+{% block content %}
+
+<h1>Maximum Cost You Are Willing to Pay</h1>
+
+<p>
+  For each of the <strong>10 topics</strong> shown below, imagine you are in a
+  group with two other participants. Each member will share an opinion on the
+  topic. You can choose to <em>give</em> or <em>take</em> 20 pesos from the
+  other two members depending on what they say, but only if you first pay a
+  cost.
+  Use the slider to indicate the <u>highest amount</u> (from 0&nbsp;pesos up to
+  {{ max_wtp }}&nbsp;pesos) that you would be willing to pay to be able to decide.
+</p>
+
+<style>
+/* ---------- base range styles ---------- */
+.wtpmax-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 75%;
+  height: .5rem;
+  border-radius: .25rem;
+  background: #dee2e6;                /* plain grey until touched */
+  cursor: pointer;
+  margin-bottom: .25rem;
+}
+
+/* visible thumb (post-touch) */
+.wtpmax-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 1rem; width: 1rem;
+  border-radius: 50%;
+  background: #0d6efd;
+  cursor: pointer;
+}
+.wtpmax-range::-moz-range-thumb {
+  height: 1rem; width: 1rem;
+  border-radius: 50%;
+  background: #0d6efd;
+  cursor: pointer;
+}
+
+/* HIDE thumb before first interaction */
+.wtpmax-range.untouched::-webkit-slider-thumb {
+  background: transparent;
+  border: 0;
+  height: 0; width: 0;                /* nearly invisible */
+}
+.wtpmax-range.untouched::-moz-range-thumb {
+  background: transparent;
+  border: 0;
+  height: 0; width: 0;
+}
+
+/* ensure track stays plain grey before touch (esp. Firefox) */
+.wtpmax-range.untouched {
+  background: #dee2e6 !important;
+}
+
+/* small legend text */
+.slider-legend {
+  font-size: .85rem;
+  color: #6c757d;
+  width: 75%;
+}
+.slider-legend span {
+  display: inline-block;
+  text-align: center;
+}
+.slider-legend .left {
+  text-align: left;
+}
+.slider-legend .center {
+  text-align: center;
+  visibility: hidden; /* shown on first move */
+  color: #000;
+  font-weight: 600;
+}
+.slider-legend .right {
+  text-align: right;
+}
+</style>
+
+{% for item in items %}
+  <div class="mb-4">
+    <strong>{{ item.index }}.</strong> For the topic:<strong>&nbsp;{{ item.question }}</strong><br>
+    <em>
+      What's the maximum amount you would be willing to pay
+      to be able to decide to give or take 20&nbsp;pesos from the other two members,
+      depending on the opinion they express about this topic?
+    </em><br><br>
+
+    <!-- slider -->
+    <input type="range"
+           class="wtpmax-range untouched"
+           id="{{ item.field_name }}"
+           name="{{ item.field_name }}"
+           min="0" max="{{ max_wtp }}" step="1" value="0">
+
+    <!-- scale legend -->
+    <div class="d-flex justify-content-between slider-legend">
+      <span class="left">
+        0&nbsp;pesos<br>
+        <small>(only if free)</small>
+      </span>
+      <span id="{{ item.field_name }}_val" class="center">0</span>
+      <span class="right">
+        {{ max_wtp }}&nbsp;pesos<br>
+        <small>(willing to pay up to {{ max_wtp }}&nbsp;pesos)</small>
+      </span>
+    </div>
+  </div>
+  <hr>
+{% endfor %}
+
+<script>
+/* Reveal thumb + value & paint gradient when the slider is first moved.
+   Update on every move thereafter. */
+document.addEventListener('input', function (e) {
+  if (e.target.type === 'range') {
+    const rng   = e.target;
+    const max   = parseInt(rng.max, 10);
+    const val   = parseInt(rng.value, 10);
+    const label = document.getElementById(rng.id + '_val');
+
+    if (rng.classList.contains('untouched')) {
+      rng.classList.remove('untouched');
+      label.style.visibility = 'visible';
+    }
+
+    label.innerText = 'I am willing to pay up to ' + val + ' pesos to decide whether to give or take 20 pesos.';
+
+    const pct = (val / max) * 100;
+    rng.style.background =
+      'linear-gradient(to right, #0d6efd 0%, #0d6efd ' + pct + '%, #dee2e6 ' + pct + '%, #dee2e6 100%)';
+  }
+});
+</script>
+
+{{ next_button }}
+
+{% endblock %}
+
+
+
+
+
+

@@ -1,0 +1,60 @@
+{% extends "global/Page.html" %}
+{% load static %}
+
+{% block content %}
+
+<h3>What would you do depending on what others might have expressed</h3>
+
+<p class="mb-3">
+    <strong>Round {{ round_number }} of {{ total_rounds }}</strong>
+</p>
+
+<!-- Topic statement -->
+<p>
+    The topic of the conversation for this round is:
+    <br>
+    <strong>{{ topic }}</strong>
+</p>
+
+<!-- Treatment description -->
+<p>
+    For this topic we have formed your group according to the rule illustrated in the diagram below.
+</p>
+
+<!-- PNG illustration -->
+<div class="text-center my-4">
+    <img src="{% static treatment_png %}"
+         alt="Treatment diagram {{ treatment_png }}"
+         class="img-fluid"
+         style="max-width: 420px;">
+</div>
+
+<hr>
+
+<p>
+    Based on the <strong>topic of this round</strong> and the <strong>way your group was formed</strong>, imagine the following scenario:
+</p>
+
+<p>
+    Suppose you are able to either <strong>give</strong> or <strong>take</strong> 20 pesos from a member of your group based on the opinion they expressed.
+</p>
+
+<p>
+    For each of the following scenarios someone in your group might express, indicate what you would do:
+</p>
+
+{% for item in items %}
+    <div class="mb-4">
+        <p><strong>"Someone in your group expressed {{ item.statement }}. What would you do?"</strong></p>
+        {% formfield item.field_name %}
+    </div>
+{% endfor %}
+
+
+{{ next_button }}
+
+{% endblock %}
+
+
+
+
