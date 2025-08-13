@@ -1,34 +1,380 @@
 {% extends "global/Page.html" %}
+
+{% block styles %}
+<style>
+  .choice-inline .form-check { margin-right: 1rem; }
+  .scale-row { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+  .scale-row input[type="radio"] { margin-top: .15rem; }
+  .scale-notes { display: flex; justify-content: space-between; font-size: .9rem; color: #6c757d; }
+  .question-section + .question-section { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee; }
+  .help { font-size: .95rem; }
+  .dynamic-feedback { margin-top: .5rem; font-size: .95rem; }
+  .is-hidden { display: none; }
+  .badge-soft { background: #f8f9fa; border: 1px solid #e9ecef; padding: .15rem .4rem; border-radius: .25rem; }
+  .legend { font-weight: 600; margin-bottom: .5rem; }
+
+  /* Hover "see more" popover */
+  .help-collapsed { font-size: .95rem; color: #6c757d; }
+  .see-more { text-decoration: underline; cursor: help; }
+  .popover-wrap { position: relative; display: inline-block; }
+  .popover-content {
+    display: none;
+    position: absolute;
+    top: 1.4rem; left: 0;
+    z-index: 10;
+    width: 36rem; max-width: 90vw;
+    background: #fff; border: 1px solid #e9ecef; border-radius: .5rem;
+    padding: .75rem; box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  }
+  .popover-wrap:hover .popover-content { display: block; }
+</style>
+{% endblock %}
+
 {% block content %}
 
-<h1>Questions on Various Topics</h1>
+<h1>Stage&nbsp;1: Questions on Various Topics</h1>
 
 <p>
-  You will now see <strong>10 questions</strong> covering various topics. Each question has two answer choices.  
-  Please select the option that best reflects your opinion.  
-  <em>Try not to overthink your responses; we are interested in your immediate reaction.</em>
+  You will now see <strong>4 questions</strong> related to the same topic. Please select the option that best reflects your opinion.<br>
+  <strong>Your responses are completely anonymous, even the researchers cannot link them to you. There is no advantage to lying at this stage—because of how we will balance who you interact with,
+  there is no payoff benefit from choosing an opinion different from the one that best reflects your opinion.</strong><br>
+  <em>Try not to over-think your responses; we are interested in your immediate and honest reaction.</em>
 </p>
 
+{% for item in items %}
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title mb-3">{{ item.index }}.&nbsp;{{ item.question }}</h5>
 
-{% for q in questions %}
-    <div class="mb-4">
-        <strong>{{ q.index }}. {{ q.question }}</strong><br>
+      <!-- QUESTION 1: Binary choice -->
+      <div class="question-section">
+        <div class="choice-inline mb-0" role="group" aria-label="Question 1 choices">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input"
+                   type="radio"
+                   id="{{ item.ans_field }}_L"
+                   name="{{ item.ans_field }}"
+                   value="{{ item.left }}" required>
+            <label class="form-check-label" for="{{ item.ans_field }}_L">{{ item.left }}</label>
+          </div>
 
-        <input type="radio" id="{{ q.field_name }}_L"
-               name="{{ q.field_name }}"
-               value="{{ q.left }}" required>
-        <label for="{{ q.field_name }}_L" class="me-3">{{ q.left }}</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input"
+                   type="radio"
+                   id="{{ item.ans_field }}_R"
+                   name="{{ item.ans_field }}"
+                   value="{{ item.right }}">
+            <label class="form-check-label" for="{{ item.ans_field }}_R">{{ item.right }}</label>
+          </div>
+        </div>
+      </div>
 
-        <input type="radio" id="{{ q.field_name }}_R"
-               name="{{ q.field_name }}"
-               value="{{ q.right }}">
-        <label for="{{ q.field_name }}_R">{{ q.right }}</label>
+      <!-- QUESTION 2: Willingness under punishment probability -->
+      <div class="question-section">
+
+        {% if show_help %}
+  <div class="help mb-2">
+    <!-- (unchanged long text) -->
+    <p class="mb-2">
+      You will be asked to express an opinion to another person in two circumstances. This is the first of those circumstances. 
+      You must decide whether to express an opinion to someone who, with some probability, will "punish" you for expressing the opinion you just expressed. 
+      The probability of being punished goes from 0 in 10 to 10 in 10. We would like you to indicate the maximum probability of being punished such that you would express the opinion you just expressed. 
+      So if you indicate the maximum probability of being punished is x in 10, then you are indicating that you would express the opinion you just expressed if the probability is x in 10 or if the probability is less than x in 10.
+    </p>
+    <p class="mb-2">
+      There are monetary consequences for your decision. We will build a group of size ten, and choose one person at random from this group to see the opinion you expressed. 
+      In order to form this group, we will include some people that will punish you for expressing the opinion you just expressed, and some that will not. 
+      We will choose a number at random between zero and 10 to decide how many would punish you.
+    </p>
+    <p class="mb-2">
+      What are the consequences of us choosing a number at random? Suppose that you would be willing to express your true opinion if the probability of being punished is at most x in 10. 
+      If you instead answer a number greater than x, we may choose a number higher than x such that you will express your true opinion even though you would not have wanted to express your true opinion at that probability of being punished. 
+      If you instead answer a number smaller than x, we may choose a number higher than x such that you will not express your true opinion even though the probability of being punished is low enough that you would have preferred to state your true opinion.
+    </p>
+    <p class="mb-2"><strong>What is the maximum punishment probability at which you would still express the opinion you decided to express?</strong></p>
+  </div>
+{% else %}
+  <!-- Short mode: visible question + see-more for the long text -->
+  <p class="mb-2"><strong>What is the maximum punishment probability at which you would still express the opinion you decided to express?</strong></p>
+  <div class="help-collapsed mb-2">
+    <div class="popover-wrap">
+      <span class="see-more">(see more)</span>
+      <div class="popover-content">
+        <p class="mb-2">
+          You will be asked to express an opinion to another person in two circumstances. This is the first of those circumstances. 
+          You must decide whether to express an opinion to someone who, with some probability, will "punish" you for expressing the opinion you just expressed. 
+          The probability of being punished goes from 0 in 10 to 10 in 10. We would like you to indicate the maximum probability of being punished such that you would express the opinion you just expressed. 
+          So if you indicate the maximum probability of being punished is x in 10, then you are indicating that you would express the opinion you just expressed if the probability is x in 10 or if the probability is less than x in 10.
+        </p>
+        <p class="mb-2">
+          There are monetary consequences for your decision. We will build a group of size ten, and choose one person at random from this group to see the opinion you expressed. 
+          In order to form this group, we will include some people that will punish you for expressing the opinion you just expressed, and some that will not. 
+          We will choose a number at random between zero and 10 to decide how many would punish you.
+        </p>
+        <p class="mb-0">
+          What are the consequences of us choosing a number at random? Suppose that you would be willing to express your true opinion if the probability of being punished is at most x in 10. 
+          If you instead answer a number greater than x, we may choose a number higher than x such that you will express your true opinion even though you would not have wanted to express your true opinion at that probability of being punished. 
+          If you instead answer a number smaller than x, we may choose a number higher than x such that you will not express your true opinion even though the probability of being punished is low enough that you would have preferred to state your true opinion.
+        </p>
+      </div>
     </div>
-    <hr>
+  </div>
+{% endif %}
+
+
+        <!-- Scale: 1..10 radios (matches wtl_* choices) -->
+        <div class="scale-row mb-1" role="radiogroup" aria-label="Maximum acceptable punishment probability">
+          {% for n in scale_prob %}
+            <div class="form-check form-check-inline">
+              <input class="form-check-input"
+                     type="radio"
+                     id="{{ item.wtl_field }}_{{ n }}"
+                     name="{{ item.wtl_field }}"
+                     value="{{ n }}" required
+                     data-feedback-target="{{ item.wtl_field }}_feedback"
+                     data-feedback-type="prob">
+              <label for="{{ item.wtl_field }}_{{ n }}">{{ n }}</label>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="scale-notes">
+          <span class="text-muted">
+            <span class="badge-soft">0 in 10</span> No chance of punishment
+          </span>
+          <span class="text-muted">
+            Certain punishment <span class="badge-soft">10 in 10</span>
+          </span>
+        </div>
+
+        <div id="{{ item.wtl_field }}_feedback" class="dynamic-feedback is-hidden" aria-live="polite"></div>
+      </div>
+
+      <!-- NEW QUESTION: JudgementRule -->
+<div class="question-section" id="{{ item.jr_field }}_section">
+  <div class="legend">Punish Rule</div>
+  <p class="mb-2">
+    Suppose you hear someone express an opinion on topic
+    <strong>{{ item.question }}</strong>, and you have the opportunity to punish them with a cost based on the opinion they express.
+    We will give you three approaches for deciding whether to punish, and we would like you to tell us which approach best captures how you would decide whether to punish.
+  </p>
+  <p class="mb-3">You will use whichever approach you decide to punish someone in your next decision.</p>
+  
+  <p><strong>Which approach best captures how you would decide whether to punish.</strong></p>
+
+  <div class="form-check mb-2">
+    <input class="form-check-input"
+           type="radio"
+           id="{{ item.jr_field }}_1"
+           name="{{ item.jr_field }}"
+           value="1" required
+           data-approach="1">
+    <label class="form-check-label" for="{{ item.jr_field }}_1">
+      <strong>Approach 1)</strong> Punish someone if the opinion they express is different from your own.
+    </label>
+  </div>
+
+  <div class="form-check mb-2">
+    <input class="form-check-input"
+           type="radio"
+           id="{{ item.jr_field }}_2"
+           name="{{ item.jr_field }}"
+           value="2"
+           data-approach="2">
+    <label class="form-check-label" for="{{ item.jr_field }}_2">
+      <strong>Approach 2)</strong> Regardless of the opinion they express, punish someone the more likely they are to have an opinion different from your own.
+    </label>
+  </div>
+
+  <div class="form-check">
+    <input class="form-check-input"
+           type="radio"
+           id="{{ item.jr_field }}_3"
+           name="{{ item.jr_field }}"
+           value="3"
+           data-approach="3">
+    <label class="form-check-label" for="{{ item.jr_field }}_3">
+      <strong>Approach 3)</strong> Punish someone if they expressed an opinion different from their own true opinion.
+    </label>
+  </div>
+</div>
+
+
+<!-- QUESTION 3 (dynamic): Willingness to punish under cost -->
+<div class="question-section is-hidden"
+     id="{{ item.wtp_field }}_section"
+     data-max-wtp="{{ max_wtp }}">
+  
+  {% if show_help %}
+    <div class="help mb-2">
+      <p class="mb-2">
+        You will be asked whether to punish another person in two circumstances. This is the first of those circumstances.
+        You must decide whether to punish <span class="dyn-condition"><!-- filled by JS --></span>.
+        The cost of punishing goes from 0 to {{ max_wtp }} points, and the person you punish will lose 40 points. We will randomly choose the cost.
+      </p>
+      <p class="mb-2">
+        We would like you to indicate the maximum value that you are willing to pay to punish <span class="dyn-condition"><!-- filled by JS --></span>.
+        So if you indicate the maximum value you are willing to pay is at most x of {{ max_wtp }}, then you are indicating that you would pay the cost to punish if the value we chose is x of {{ max_wtp }}
+        or if the value we chose is less than x of {{ max_wtp }}.
+      </p>
+      <p class="mb-2">
+        What are the consequences of us choosing a number at random? Suppose that you would be willing to pay the cost to punish if the value is at most x of {{ max_wtp }}.
+        If you instead answer a number greater than x, we may choose a number higher than x such that you will pay the cost to punish even though you would not have wanted to pay the cost at that value.
+        If you instead answer a number smaller than x, we may choose a number higher than x such that you will not pay the cost to punish even though the value is low enough that you would have preferred to pay the cost to punish.
+      </p>
+      <p class="mb-2"><strong id="{{ item.wtp_field }}_prompt"><!-- filled by JS --></strong></p>
+    </div>
+  {% else %}
+    <p class="mb-2"><strong id="{{ item.wtp_field }}_prompt"><!-- filled by JS --></strong></p>
+    <div class="help-collapsed mb-2">
+      <div class="popover-wrap">
+        <span class="see-more">(see more)</span>
+        <div class="popover-content">
+          <p class="mb-2">
+            You will be asked whether to punish another person in two circumstances. This is the first of those circumstances.
+            You must decide whether to punish <span class="dyn-condition"><!-- filled by JS --></span>.
+            The cost of punishing goes from 0 to {{ max_wtp }} points, and the person you punish will lose 40 points. We will randomly choose the cost.
+          </p>
+          <p class="mb-0">
+            We would like you to indicate the maximum value that you are willing to pay to punish <span class="dyn-condition"><!-- filled by JS --></span>.
+            So if you indicate the maximum value you are willing to pay is at most x of {{ max_wtp }}, then you are indicating that you would pay the cost to punish if the value we chose is x of {{ max_wtp }}
+            or if the value we chose is less than x of {{ max_wtp }}.
+          </p>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Scale: 0..MAX_WTP radios -->
+  <div class="scale-row mb-1" role="radiogroup" aria-label="Maximum willingness to pay to punish">
+    {% for n in scale_cost %}
+      <div class="form-check form-check-inline">
+        <input class="form-check-input"
+               type="radio"
+               id="{{ item.wtp_field }}_{{ n }}"
+               name="{{ item.wtp_field }}"
+               value="{{ n }}" required disabled
+               data-feedback-target="{{ item.wtp_field }}_feedback"
+               data-feedback-type="cost"
+               data-cost-field="{{ item.wtp_field }}">
+        <label for="{{ item.wtp_field }}_{{ n }}">{{ n }}</label>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="scale-notes">
+    <span class="text-muted">
+      <span class="badge-soft">0 of {{ max_wtp }}</span> I'm not willing to pay anything
+    </span>
+    <span class="text-muted">
+      I'm willing to pay {{ max_wtp }} of {{ max_wtp }} <span class="badge-soft">{{ max_wtp }} of {{ max_wtp }}</span>
+    </span>
+  </div>
+
+  <div id="{{ item.wtp_field }}_feedback" class="dynamic-feedback is-hidden" aria-live="polite"></div>
+</div>
+
 {% endfor %}
 
 {{ next_button }}
 
 {% endblock %}
 
+{% block scripts %}
+<script>
+  (function () {
+    // ----- Approach-specific clauses coming from the server -----
+    // (We embed them once per topic item; there is only 1 item on this page.)
+    var COST_CLAUSE_BY_APPROACH = {{ cost_clause_by_approach|json }};
 
+
+    function costPromptFor(approach) {
+      var clause = COST_CLAUSE_BY_APPROACH[approach] || "";
+      // Main prompt line (short mode + last line of long mode)
+      return "What is the maximum value at which you are willing to pay to punish " + clause + "?";
+    }
+
+    function setDynConditionText(rootEl, approach) {
+      var clause = COST_CLAUSE_BY_APPROACH[approach] || "";
+      // Update ALL spans that carry the class dyn-condition inside the cost section
+      rootEl.querySelectorAll(".dyn-condition").forEach(function(el){
+        el.textContent = clause;
+      });
+    }
+
+    function messageFor(type, value, extra) {
+      var v = parseInt(value, 10);
+      if (isNaN(v)) return "";
+      if (type === 'prob') {
+        return "I would express the opinion I chose if the punishment probability is " + v + " in 10 or lower.";
+      }
+      if (type === 'cost') {
+        var maxW = (extra && extra.max_wtp) ? extra.max_wtp : 10;
+        var approach = (extra && extra.approach) ? extra.approach : null;
+        var clause = approach ? (" when " + COST_CLAUSE_BY_APPROACH[approach]) : "";
+        return "I would pay the cost to punish if the value randomly chosen is " + v + " of " + maxW + " or lower" + clause + ".";
+      }
+      return "";
+    }
+
+    // ----- Enable dynamic feedback and conditional reveal -----
+    document.addEventListener("change", function (e) {
+      // Handle normal feedback updates (Q2/Q3 radios)
+      if (e.target && e.target.matches('input[type="radio"][data-feedback-target]')) {
+        var targetId = e.target.getAttribute("data-feedback-target");
+        var type = e.target.getAttribute("data-feedback-type");
+        var panel = document.getElementById(targetId);
+        if (!panel) return;
+
+        var extra = {};
+        if (type === 'cost') {
+          var section = document.getElementById(e.target.getAttribute("data-cost-field") + "_section");
+          if (section) {
+            extra.max_wtp = parseInt(section.getAttribute("data-max-wtp"), 10);
+          }
+          var picked = document.querySelector('input[name^="jr_"]:checked');
+          if (picked) {
+            extra.approach = parseInt(picked.value, 10);
+          }
+        }
+
+        var text = messageFor(type, e.target.value, extra);
+        if (text) {
+          panel.textContent = text;
+          panel.classList.remove("is-hidden");
+        }
+      }
+
+      // Handle JudgementRule selection (reveals cost section + rewrites text)
+      if (e.target && e.target.matches('input[type="radio"][name^="jr_"]')) {
+        var approach = parseInt(e.target.value, 10);
+
+        // Reveal & prepare the COST section for this topic
+        var fieldBase = e.target.name.replace('jr_', 'wtpmax_');
+        var section = document.getElementById(fieldBase + "_section");
+        var promptEl = document.getElementById(fieldBase + "_prompt");
+        if (section) {
+          section.classList.remove("is-hidden");
+          // Write all dynamic condition placeholders
+          setDynConditionText(section, approach);
+          if (promptEl) promptEl.textContent = costPromptFor(approach);
+
+          // Enable the cost radios now that an approach is chosen
+          section.querySelectorAll('input[type="radio"][name="' + fieldBase + '"]').forEach(function(input){
+            input.disabled = false;
+          });
+        }
+      }
+    }, { passive: true });
+
+    // On load: if participant navigated back and already chose an approach, reveal section
+    document.addEventListener("DOMContentLoaded", function(){
+      var picked = document.querySelector('input[type="radio"][name^="jr_"]:checked');
+      if (picked) {
+        var ev = new Event('change', { bubbles: true });
+        picked.dispatchEvent(ev);
+      }
+    });
+  })();
+</script>
+{% endblock %}

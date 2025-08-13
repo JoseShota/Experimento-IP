@@ -1,47 +1,74 @@
 {% extends "global/Page.html" %}
+{% load static %}
+
 {% block content %}
 
-<h1>Decision to Pay a Cost</h1>
+<h1>Stage 2: Decision to Pay a Cost</h1>
 
-<p>
-  For each of the <strong>10 topics</strong> shown below, imagine you are in a
-  group with two other participants. Each member will share an opinion on the
-  topic. You can choose to <em>give</em> or <em>take</em> 20 pesos from the
-  other two members depending on what they say, but only if you first pay a
-  cost of {{ C.COST_X }} pesos.  
-  Please indicate, for <u>each topic</u>, whether you are willing to pay this
-  cost to gain that option.
+<p class="mb-3">
+  <strong>You are in Round {{ round_number }} of {{ total_rounds }}</strong>
 </p>
 
-{% for item in items %}
-  <div class="mb-4">
-      <!-- Spanish topic statement -->
-      <strong>{{ item.index }}.</strong>For the topic:<strong>&nbsp;{{ item.question }}</strong><br>
+<p>
+  You will make a decision that involves a participant randomly drawn from one of the groups of ten participants we previously formed.
+</p>
+<p>
+  Remember that your decision is related to the following question:<br>
+  <strong>{{ topic }}</strong>
+</p>
 
-      <!-- Framing question in English -->
-      <em>
-        Are you willing to pay {{ item.cost }} pesos so that you may decide to
-        give or take 20 pesos from the other two group members, depending on the
-        opinion they express about this topic?
-      </em><br><br>
+<ul class="list-unstyled ms-2">
+  <li><strong>Response&nbsp;A:</strong> {{ topic_left }}</li>
+  <li><strong>Response&nbsp;B:</strong> {{ topic_right }}</li>
+</ul>
 
-      <!-- Yes / No radio buttons, possibly flipped -->
-      <input type="radio" id="{{ item.field_name }}_L"
-             name="{{ item.field_name }}"
-             value="{{ item.left }}" required>
-      <label for="{{ item.field_name }}_L" class="me-3">{{ item.left }}</label>
+<!-- Treatment description -->
+<p>
+    As you know, the group in which we randomly draw the participant has the following distribution:
+</p>
+<p class="mt-3">
+  <img src="{% static treatment_png %}"
+       alt="Group composition"
+       class="img-fluid"
+       style="max-width: 420px;">
+</p>
 
-      <input type="radio" id="{{ item.field_name }}_R"
-             name="{{ item.field_name }}"
-             value="{{ item.right }}">
-      <label for="{{ item.field_name }}_R">{{ item.right }}</label>
-  </div>
-  <hr>
-{% endfor %}
+<p>In this group, five chose A and five chose B.</p>
+<p>
+  The drawn participant also knows that they will interact with a randomly drawn participant from a group of ten with five A and five B responses. The participant will express an opinion on the topic to you. You have the option to pay a cost of x dollars to impose a 1 dollar penalty on that participant, but only if their opinion differs from your own true opinion. 
+</p>
+<div class="alert alert-secondary">
+  <strong>Remember:</strong> You will be put into groups of ten participants, and will be randomly drawn to interact with other participants. Each participant knows only the distribution of responses in the group they interact with, not individual preferences.
+</div>
+
+<p>
+  Please indicate whether you are willing to pay this cost.
+</p>
+
+<hr>
+<!-- pay-to-judge radio buttons -->
+<div class="form-group">
+  <em>
+    Are you willing to pay {{ cost }} dollars to deduct 1 dollar
+    from the other participant if their opinion differs
+    from your own true opinion?
+  </em><br><br>
+
+  <label>
+    <input type="radio" name="{{ field_name }}" value="{{ yes_label }}" required>
+    {{ yes_label }}
+  </label><br>
+  <label>
+    <input type="radio" name="{{ field_name }}" value="{{ no_label }}">
+    {{ no_label }}
+  </label>
+</div>
+
 
 {{ next_button }}
 
 {% endblock %}
+
 
 
 

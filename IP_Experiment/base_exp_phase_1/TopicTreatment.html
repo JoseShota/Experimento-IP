@@ -1,0 +1,38 @@
+{% extends "global/Page.html" %}
+{% load static %}            {# needed for the static template tag #}
+
+{% block content %}
+
+<h1>Topic of the Convesation and Creation of Groups</h1>
+
+<p class="mb-3">
+    <strong>Round {{ player.round_number }} of {{ C.NUM_ROUNDS }}</strong>
+</p>
+
+<!-- Topic statement -->
+<p>
+    The topic of the conversation for this round is:
+    <br>
+    <strong>{{ topic }}</strong>
+</p>
+
+<!-- Treatment description -->
+<p>
+    For this topic we have formed your group according to the rule illustrated in the diagram below.
+</p>
+
+<!-- PNG illustration -->
+<div class="text-center my-4">
+    <img src="{% static treatment_png %}"
+         alt="Treatment diagram {{ treatment_png }}"
+         class="img-fluid"
+         style="max-width: 420px;">
+</div>
+
+{{ next_button }}
+
+{% endblock %}
+
+
+
+

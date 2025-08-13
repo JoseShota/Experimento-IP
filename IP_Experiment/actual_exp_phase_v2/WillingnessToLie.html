@@ -1,0 +1,35 @@
+{% extends "global/Page.html" %}
+{% block content %}
+
+<h1>Willingness to State Your Actual Opinion</h1>
+
+<p>
+  Suppose you are in a conversation with another person who holds a <em>different opinion</em> from yours on the topics below. The other person does not yet know your opinion.<br>
+  On a scale from <strong>1&nbsp;(not at all important)</strong> to <strong>10&nbsp;(very important)</strong>, how important is it to you to state your actual opinion?
+</p>
+
+{% for item in items %}
+  <div class="mb-4">
+    <strong>{{ item.index }}. For the topic: {{ item.topic }}</strong><br>
+    How important is it to you to state your actual opinion?<br>
+    <div class="mt-1">
+      <span class="small text-muted me-2">Not at all important</span>
+      {% for n in scale %}
+        <input type="radio"
+               id="{{ item.field_name }}_{{ n }}"
+               name="{{ item.field_name }}"
+               value="{{ n }}" required>
+        <label for="{{ item.field_name }}_{{ n }}" class="me-1">{{ n }}</label>
+      {% endfor %}
+      <span class="small text-muted ms-2">Very important</span>
+    </div>
+  </div>
+  <hr>
+{% endfor %}
+
+{{ next_button }}
+
+{% endblock %}
+
+
+

@@ -1,0 +1,44 @@
+{% extends "global/Page.html" %}
+{% block content %}
+
+<h1>Stage 2: Decision to Pay a Cost</h1>
+
+<p>
+  For each of the <strong>10 topics</strong> below, another participant (randomly selected) will express an opinion to you. You have the option to pay a cost of x dollars to impose a 1 dollar penalty on that participant, but only if their opinion differs from your own true opinion.
+  Please indicate, for <u>each topic</u>, whether you are willing to pay this
+  cost.
+</p>
+
+{% for item in items %}
+  <div class="mb-4">
+      <!-- Spanish topic statement -->
+      <strong>{{ item.index }}.</strong>For the topic:<strong>&nbsp;{{ item.question }}</strong><br>
+
+      <!-- Framing question in English -->
+      <em>
+        Are you willing to pay {{ item.cost }} dollars to deduct 1 dollar
+      from the other participant if their opinion differs
+      from your own true opinion?
+      </em><br><br>
+
+      <!-- Yes / No radio buttons, possibly flipped -->
+      <input type="radio" id="{{ item.field_name }}_L"
+             name="{{ item.field_name }}"
+             value="{{ item.left }}" required>
+      <label for="{{ item.field_name }}_L" class="me-3">{{ item.left }}</label>
+
+      <input type="radio" id="{{ item.field_name }}_R"
+             name="{{ item.field_name }}"
+             value="{{ item.right }}">
+      <label for="{{ item.field_name }}_R">{{ item.right }}</label>
+  </div>
+  <hr>
+{% endfor %}
+
+{{ next_button }}
+
+{% endblock %}
+
+
+
+

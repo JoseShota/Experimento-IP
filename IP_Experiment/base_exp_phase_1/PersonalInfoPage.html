@@ -1,0 +1,25 @@
+{% extends "global/Page.html" %}
+{% block content %}
+  <h1>Initial Survey</h1>
+  <p>Please answer the following personal questions. Remember that your identity will remain confidential throughout the study.</p>
+  
+  <form method="post">
+    <p>
+      <label>{{ form.age.label }}</label>
+      {{ form.age }}
+    </p>
+    <p>
+      <label>{{ form.gender.label }}</label>
+      {{ form.gender }}
+    </p>
+    <p>
+      <label>{{ form.racial_identification.label }}</label>
+      {{ form.racial_identification }}
+    </p>
+    <p>
+      <label>{{ form.previous_experiment.label }}</label>
+      {{ form.previous_experiment }}
+    </p>
+    {{ next_button }}
+  </form>
+{% endblock %}

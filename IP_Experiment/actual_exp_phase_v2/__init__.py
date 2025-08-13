@@ -1,15 +1,14 @@
 from __future__ import annotations
-
-from otree.api import *
+import random
 import secrets
-import random as _random  # keep stdlib random under a distinct alias
+from otree.api import *
+
 
 def _rng_for_participant(participant):
     if 'rng' not in participant.vars:
-        seed = secrets.randbits(64)  # 64 bits of OS entropy
-        participant.vars['rng'] = _random.Random(seed)
+        seed = secrets.randbits(64)          # 64 bits of OS entropy
+        participant.vars['rng'] = random.Random(seed)
     return participant.vars['rng']
-
 
 
 # -----------------------------------------------------------------------------
@@ -51,7 +50,7 @@ class C(BaseConstants):
 # Willingness to judge fixed cost and maximum cost
     COST_X = 'x'            # replace later with cu(10) or similar
     YES_NO = ('Yes, I am willing to pay x to make the decision', 'No, I am not willing to pay x to make the decision')  # canonical label pair
-    MAX_WTP = 10          # numeric ceiling for the slider (pesos)
+    MAX_WTP = 20          # numeric ceiling for the slider (dollars)
 
 # Treatment codes for the experiment
     TREATMENT_CODES = [
@@ -72,26 +71,13 @@ class C(BaseConstants):
 # -----------------------------------------------------------------------------
 # Models
 # -----------------------------------------------------------------------------
-def _get_topic_treatment_order(participant):
-    if 'pair_order' not in participant.vars:
-        rng = _rng_for_participant(participant)
-        order = C.PAIRS.copy()
-        rng.shuffle(order)                   # <‑‑ use local RNG
-        participant.vars['pair_order'] = order
-    return participant.vars['pair_order']
+
 
 
 class Subsession(BaseSubsession):
-    pass
-
-def creating_session(subsession: Subsession):
-    # Ensure participant-level pair order exists
-    for p in subsession.get_players():
-        order = _get_topic_treatment_order(p.participant)
-        # Proactively bind the (topic_idx, treatment_idx) for this round
-        t_idx, trt_idx = order[subsession.round_number - 1]
-        p.topic_idx = t_idx
-        p.treatment_idx = trt_idx
+    def creating_session(subsession):
+        for p in subsession.get_players():
+            _get_topic_treatment_order(p.participant)   # ensures it exists
 
 
 class Group(BaseGroup):
@@ -127,20 +113,23 @@ class Player(BasePlayer):
     topic_idx     = models.IntegerField()
     treatment_idx = models.IntegerField()
 
+    # Judgment fields based on the two binary options of the current topic
+    judge_first = models.StringField(
+        choices=[('Give', 'Give 20 dollars'), ('Take', 'Take 20 dollars')],
+        label='',
+        blank=True,
+    )
+
+    judge_second = models.StringField(
+        choices=[('Give', 'Give 20 dollars'), ('Take', 'Take 20 dollars')],
+        label='',
+        blank=True,
+    )
+
     public_opinion = models.StringField(
         label="What opinion would you express to the rest of your group?"
     )
-    num_paid_cost = models.IntegerField(
-        min=0,
-        max=10,
-        label="How many of the 10 incurred the cost to punish?"
-    )
-    num_lied = models.IntegerField(
-        min=0,
-        max=10,
-        label="How many of the 10 expressed an opinion different from their true opinion?"
-    )
-    # ─── Stage-4 guesses (0–5 each) ──────────────────────────────────────────
+
     paid_cost_A = models.IntegerField(min=0, max=5, blank=True,
                                 label="How many of the 5 with opinion A paid the cost?")
     paid_cost_B = models.IntegerField(min=0, max=5, blank=True,
@@ -149,8 +138,6 @@ class Player(BasePlayer):
                                 label="How many of the 5 with opinion A expressed A?")
     expr_A_from_B = models.IntegerField(min=0, max=5, blank=True,
                                 label="How many of the 5 with opinion B expressed A?")
-
-
 
 
 
@@ -182,26 +169,14 @@ for letter in ['A', 'B', 'C']:
         ),
     )
 
-# Willingness-To-Lie importance ratings (keep as-is)
+# NEW: Willingness‑To‑Lie importance ratings (1‑10)
 for i in range(1, 11):
     setattr(
         Player,
         f"wtl_{i}",
         models.IntegerField(
-            choices=list(range(1, 11)),  # If switching to 0..10, use range(0, 11)
+            choices=list(range(1, 11)),  # 1–10 inclusive
             widget=widgets.RadioSelectHorizontal,
-        ),
-    )
-
-
-# --- add 10 IntegerFields for JudgementRule (Approach 1/2/3) -------------
-for i in range(1, 11):
-    setattr(
-        Player,
-        f'jr_{i}',
-        models.IntegerField(
-            choices=[(1, 'Approach 1'), (2, 'Approach 2'), (3, 'Approach 3')],
-            blank=True,       # UI will enforce selection; keep DB tolerant
         ),
     )
 
@@ -211,7 +186,7 @@ for i in range(1, 11):
 # ---------------------------------------------------------------------
 
 def get_randomised_questions(participant):
-    """Order of 10 topics + per-topic flip, once per participant."""
+    """Return (order, flip_list) for the 10 binary questions."""
     if 'q_order' not in participant.vars:
         rng = _rng_for_participant(participant)
         order = list(range(10))
@@ -220,17 +195,23 @@ def get_randomised_questions(participant):
         participant.vars['flip'] = [rng.choice([True, False]) for _ in order]
     return participant.vars['q_order'], participant.vars['flip']
 
+
 def get_randomised_wtj(participant):
-    """Order/flip for WTJ block."""
+    """Return (order, flip_list) for WTJ block."""
     if 'wtj_order' not in participant.vars:
-        rng = _rng_for_participant(participant)
         order = list(range(10))
-        rng.shuffle(order)
+        random.shuffle(order)
         participant.vars['wtj_order'] = order
-        participant.vars['wtj_flip'] = [rng.choice([True, False]) for _ in order]
+        participant.vars['wtj_flip'] = [random.choice([True, False]) for _ in order]
     return participant.vars['wtj_order'], participant.vars['wtj_flip']
 
-
+def _get_topic_treatment_order(participant):
+    if 'pair_order' not in participant.vars:
+        rng = _rng_for_participant(participant)
+        order = C.PAIRS.copy()
+        rng.shuffle(order)
+        participant.vars['pair_order'] = order
+    return participant.vars['pair_order']
 
 # -----------------------------------------------------------------------------
 # Page Definitions
@@ -257,11 +238,10 @@ def _stage1_topic(player: Player, n: int):
 
 
 # --- factory for the 10 per-topic pages (still shown only in round 1) --------
-# --- factory for the 10 per-topic pages (still shown only in round 1) --------
 def make_binary_topic_page(n: int):
     class _BinaryTopicPage(Page):
-        form_model    = 'player'
-        template_name = 'actual_exp_phase_1/BinaryQuestionsPage.html'
+        form_model   = 'player'
+        template_name = 'actual_exp_phase_1/BinaryQuestionsPage.html'  # reuse your template
 
         @staticmethod
         def is_displayed(player: Player):
@@ -270,73 +250,27 @@ def make_binary_topic_page(n: int):
         @staticmethod
         def get_form_fields(player: Player):
             q_idx, _ = _stage1_topic(player, n)
-            return [
-                f'answer_{q_idx + 1}',
-                f'wtl_{q_idx + 1}',
-                f'jr_{q_idx + 1}',
-                f'wtpmax_{q_idx + 1}',
-            ]
+            return [f'answer_{q_idx + 1}', f'wtl_{q_idx + 1}']
 
         @staticmethod
         def vars_for_template(player: Player):
-            # Which topic is shown on this n-th Stage-1 page?
             q_idx, flip = _stage1_topic(player, n)
-
-            # Canonical left/right for that topic, maybe flipped for this participant
             left, right = C.BINARY_OPTIONS[q_idx]
             if flip:
                 left, right = right, left
-
             item = dict(
                 index     = n,
                 question  = C.TOPIC_LABELS[q_idx],
                 ans_field = f'answer_{q_idx + 1}',
                 left      = left,
                 right     = right,
-                wtl_field = f'wtl_{q_idx + 1}',     # 1..10 radios
-                wtp_field = f'wtpmax_{q_idx + 1}',  # 0..MAX_WTP radios
-                jr_field  = f'jr_{q_idx + 1}',      # approach 1/2/3
+                wtl_field = f'wtl_{q_idx + 1}',
             )
-
-            # Approach-specific clauses the JS interpolates into prompts
-            a1 = "someone if they expressed an opinion different from your own"
-            a2 = "someone if their actual true opinion is different from your own"
-            a3 = "someone if they expressed an opinion different from their own true opinion"
-
-            return dict(
-                items=[item],                         # <-- the thing the template expects
-                scale_prob = range(1, 11),            # keep 1..10 to match your wtl_* choices
-                scale_cost = range(0, C.MAX_WTP + 1), # 0..MAX_WTP
-                max_wtp = C.MAX_WTP,
-                show_help = (n == 1),                 # long help on the first topic only
-                cost_clause_by_approach = {1: a1, 2: a2, 3: a3},
-            )
-
-        @staticmethod
-        def error_message(player: Player, values):
-            q_idx, _ = _stage1_topic(player, n)
-            allowed = set(C.BINARY_OPTIONS[q_idx])
-            ans = values.get(f'answer_{q_idx + 1}')
-            if ans not in allowed:
-                return "Please select one of the two options."
-
-            wtl = values.get(f'wtl_{q_idx + 1}')
-            if wtl is None:
-                return "Please choose a maximum punishment probability."
-
-            jr = values.get(f'jr_{q_idx + 1}')
-            if jr not in {1, 2, 3}:
-                return "Please choose one approach."
-
-            wtp = values.get(f'wtpmax_{q_idx + 1}')
-            if wtp is None or not (0 <= wtp <= C.MAX_WTP):
-                return f"Please set your maximum willingness to pay between 0 and {C.MAX_WTP}."
+            # Your template loops `{% for item in items %}` — we pass exactly one.
+            return dict(items=[item], scale=range(1, 11))
 
     _BinaryTopicPage.__name__ = f'BinaryTopic_{n}'
     return _BinaryTopicPage
-
-
-
 
 # Create and register 10 classes: BinaryTopic_1 .. BinaryTopic_10
 BINARY_TOPIC_PAGES = []
@@ -345,23 +279,65 @@ for i in range(1, 11):
     globals()[cls.__name__] = cls
     BINARY_TOPIC_PAGES.append(cls)
 
+class WillingnessToJudgeFixedCost(Page):
+    form_model = 'player'
+
+    @staticmethod
+    def get_form_fields(player):
+        order, _ = get_randomised_wtj(player.participant)
+        return [f'wtj_{idx + 1}' for idx in order]
+
+    @staticmethod
+    def vars_for_template(player):
+        order, flips = get_randomised_wtj(player.participant)
+        items = []
+        for pos, q_idx in enumerate(order):
+            labels = list(C.YES_NO)
+            if flips[pos]:
+                labels.reverse()
+            items.append(
+                dict(
+                    index=pos + 1,
+                    field_name=f'wtj_{q_idx + 1}',
+                    question=C.TOPIC_LABELS[q_idx],          # Spanish statement
+                    cost=C.COST_X,
+                    left=labels[0],                          # Yes/No (maybe flipped)
+                    right=labels[1],
+                )
+            )
+        return dict(items=items)
+    
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == 1
+
 class TopicTreatment(Page):
     @staticmethod
     def vars_for_template(player: Player):
+
+        # ---------- one-off assignment (unchanged) ----------
+        if player.field_maybe_none('topic_idx') is None:
+            order = _get_topic_treatment_order(player.participant)
+            t_idx, trt_idx = order[player.round_number - 1]
+            player.topic_idx     = t_idx
+            player.treatment_idx = trt_idx
+
+        # ---------- core info ----------
         topic       = C.TOPIC_LABELS[player.topic_idx]
         trt_code    = C.TREATMENT_CODES[player.treatment_idx]
         png_path    = f"experiment/{trt_code}.png"
 
+        # ---------- retrieve the canonical A/B pair ----------
         left, right = C.BINARY_OPTIONS[player.topic_idx]
 
-        # Keep orientation from Stage 1
+        # ---------- OPTIONAL: keep the same flip used on Q-page ----------
         q_order, flips = get_randomised_questions(player.participant)
         try:
             pos = q_order.index(player.topic_idx)
             if flips[pos]:
-                left, right = right, left
+                left, right = right, left    # flip orientation
         except ValueError:
-            pass
+            pass  # should not happen, but fail-safe
 
         return dict(
             topic         = topic,
@@ -369,70 +345,10 @@ class TopicTreatment(Page):
             left          = left,
             right         = right,
         )
-
-    
-class WillingnessToJudgeFixedCost(Page):
-    form_model = 'player'
-
-    @staticmethod
-    def get_form_fields(player):
-        return [f'wtj_{player.topic_idx + 1}']
-
-    @staticmethod
-    def error_message(player: Player, values):
-        v = values.get(f'wtj_{player.topic_idx + 1}')
-        if v not in C.YES_NO:
-            return "Please choose Yes or No."
-
-    # vars_for_template unchanged...
-
-
-    @staticmethod
-    def vars_for_template(player):
-        # --- canonical topic options (A/B) ---
-        topic_left, topic_right = C.BINARY_OPTIONS[player.topic_idx]
-
-        # keep the same A/B left-right orientation used on BinaryQuestionsPage
-        q_order, flips_q = get_randomised_questions(player.participant)
-        pos_topic = q_order.index(player.topic_idx)
-        if flips_q[pos_topic]:
-            topic_left, topic_right = topic_right, topic_left
-
-        # --- Yes / No labels for the decision ---
-        yes, no = C.YES_NO
-        order, flips_w = get_randomised_wtj(player.participant)
-        pos_wtj = order.index(player.topic_idx)
-        if flips_w[pos_wtj]:
-            yes, no = no, yes           # optional left-right flip
-
-        return dict(
-            field_name     = f'wtj_{player.topic_idx + 1}',
-            topic          = C.TOPIC_LABELS[player.topic_idx],
-            topic_left     = topic_left,
-            topic_right    = topic_right,
-            yes_label      = yes,
-            no_label       = no,
-            cost           = C.COST_X,
-            treatment_png  = f"experiment/{C.TREATMENT_CODES[player.treatment_idx]}.png",
-            round_number   = player.round_number,
-            total_rounds   = C.NUM_ROUNDS,
-        )
-
-    is_displayed = staticmethod(lambda p: True)
-
-
     
 class ExpressYourOpinion(Page):
     form_model = 'player'
     form_fields = ['public_opinion']
-
-    @staticmethod
-    def error_message(player: Player, values):
-        left, right = C.BINARY_OPTIONS[player.topic_idx]
-        v = values.get('public_opinion')
-        if v not in {left, right}:
-            return "Please select one of the two opinions."
-
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -534,10 +450,10 @@ class ThankYouPage(Page):
 # Page Sequence
 # -----------------------------------------------------------------------------
 page_sequence = [
-    PersonalInfoPage
+    #PersonalInfoPage,
 ] + BINARY_TOPIC_PAGES + [
-    TopicTreatment,
     WillingnessToJudgeFixedCost,
+    TopicTreatment,
     ExpressYourOpinion,
     HowManyLied,
     ThankYouPage

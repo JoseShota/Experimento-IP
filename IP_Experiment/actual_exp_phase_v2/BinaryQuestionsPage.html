@@ -1,0 +1,65 @@
+{% extends "global/Page.html" %}
+{% block content %}
+
+<h1>Stage&nbsp;1: Questions on Various Topics</h1>
+
+<p>
+  You will now see <strong>10 questions</strong> covering various topics. Each question has two answer choices.
+  Please select the option that best reflects your opinion.<br>
+  <strong>Your responses are completely anonymous, even the researchers cannot link them to you.
+  There is no advantage to lying at this stage—because of how we will balance who you interact with,
+  there is no payoff benefit from choosing an opinion different from the one that best reflects your opinion.</strong><br>
+  <em>Try not to over-think your responses; we are interested in your immediate and honest reaction.</em>
+</p>
+
+<p class="fst-italic">
+  After each choice you’ll also rate <u>how important it is to you to state your actual opinion</u>
+  when talking to someone who disagrees with you.
+</p>
+
+{% for item in items %}
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title mb-3">{{ item.index }}.&nbsp;{{ item.question }}</h5>
+
+      <!-- binary choice row -->
+      <div class="mb-2">
+        <input type="radio" id="{{ item.ans_field }}_L"
+               name="{{ item.ans_field }}"
+               value="{{ item.left }}" required>
+        <label for="{{ item.ans_field }}_L" class="me-3">{{ item.left }}</label>
+
+        <input type="radio" id="{{ item.ans_field }}_R"
+               name="{{ item.ans_field }}"
+               value="{{ item.right }}">
+        <label for="{{ item.ans_field }}_R">{{ item.right }}</label>
+      </div>
+
+      <!-- importance scale row -->
+      <p class="mb-1">
+        Suppose you’re in a conversation with someone who holds a different opinion on this topic,
+        and they don’t yet know yours.  
+        On a scale from <strong>1 (not at all important)</strong> to
+        <strong>10 (very important)</strong>, how important is it to you to state your actual opinion?
+      </p>
+      <br>
+      <div class="d-flex align-items-center flex-wrap">
+        <span class="small text-muted me-2">Not at all important</span>
+        {% for n in scale %}
+          <input type="radio" id="{{ item.wtl_field }}_{{ n }}"
+                 name="{{ item.wtl_field }}" value="{{ n }}" required>
+          <label for="{{ item.wtl_field }}_{{ n }}" class="me-1">{{ n }}</label>
+        {% endfor %}
+        <span class="small text-muted ms-2">Very important</span>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+
+{{ next_button }}
+
+{% endblock %}
+
+
+
+

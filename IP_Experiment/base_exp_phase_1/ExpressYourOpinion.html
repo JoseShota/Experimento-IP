@@ -1,0 +1,55 @@
+{% extends "global/Page.html" %}
+{% load static %}
+
+{% block content %}
+
+<h1>Express Your Opinion to the Group</h1>
+
+<p class="mb-3">
+    <strong>Round {{ player.round_number }} of {{ C.NUM_ROUNDS }}</strong>
+</p>
+
+<p>
+    The topic of the conversation for this round is:
+    <br>
+    <strong>{{ topic }}</strong>
+</p>
+
+<p>
+    For this topic, your group was formed as illustrated below:
+</p>
+
+<div class="text-center my-4">
+    <img src="{% static treatment_png %}"
+         alt="Treatment diagram"
+         class="img-fluid"
+         style="max-width: 420px;">
+</div>
+
+ <p>What opinion would you express to the rest of your group?</p>
+
+  <!-- show required‐field error if they didn’t pick one -->
+  <div class="text-danger mb-2">
+    {{ formfield_errors 'public_opinion' }}
+  </div>
+
+  <div class="form-group">
+    <label>
+      <input type="radio" name="public_opinion" value="{{ left }}" required>
+      {{ left }}
+    </label><br>
+    <label>
+      <input type="radio" name="public_opinion" value="{{ right }}">
+      {{ right }}
+    </label>
+  </div>
+
+  {{ next_button }}
+{% endblock %}
+
+
+
+
+
+
+
