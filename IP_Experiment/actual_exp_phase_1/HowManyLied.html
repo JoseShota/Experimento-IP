@@ -4,9 +4,11 @@
 {% block content %}
 <h1>Stage 4: Guessing What Others Decided</h1>
 
-<p class="mb-3">
-    <strong>You are in Round {{ player.round_number }} of {{ C.NUM_ROUNDS }}</strong>
-</p>
+{% if is_practice %}
+  <p class="mb-3"><strong>Practice round</strong></p>
+{% else %}
+  <p class="mb-3">You are now in <strong>Round {{ player.round_number }} of {{ C.NUM_ROUNDS }}</strong>.</p>
+{% endif %}
 <p>
   You will be asked to guess how ten participants of the same group made their decisions.
 </p>
@@ -28,11 +30,10 @@
          class="img-fluid"
          style="max-width: 420px;">
 </div>
-<p>
-  In this group, five chose A and five chose B.
-</p>
+<p>In this group, <strong>{{ n_A }}</strong> chose A and <strong>{{ n_B }}</strong> chose B.</p>
+
 <br>
-    Your task is to guess how many paid the cost to punish and expressed an opinion different from their true opinion. If your guess is correct, you will earn a bonus of c dollars.
+    Your task is to guess how many paid the cost to punish and expressed an opinion different from their true opinion. If your guess is correct, you will earn a bonus of { bonus_stage_4 } dollars.
     </em><br><br>
 <hr>
 <!-- slider styling (reuse your WTP styles) -->
@@ -83,20 +84,22 @@
   <div class="mb-4">
     <strong>{{ item.index }}.</strong>
     <label for="{{ item.field_name }}">
-      {{ item.prompt }} 
+      {{ item.prompt }}
     </label>
+
+    <!-- NEW: show field-specific validation errors -->
+    <div class="text-danger small">
+      {{ formfield_errors item.field_name }}
+    </div>
+
     <input type="number"
            id="{{ item.field_name }}"
            name="{{ item.field_name }}"
            class="form-control w-auto mt-2"
-           min="0" max="5" step="1" required>
+           min="0" max="{{ item.max }}" step="1" required>
   </div>
 {% endfor %}
 
+
 {{ next_button }}
 {% endblock %}
-
-
-
-
-

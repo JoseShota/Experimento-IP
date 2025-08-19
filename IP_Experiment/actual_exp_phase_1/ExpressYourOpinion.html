@@ -5,9 +5,12 @@
 
 <h1>Stage 3: Express Your Opinion</h1>
 
-<p class="mb-3">
-    <strong> You are in Round {{ player.round_number }} of {{ C.NUM_ROUNDS }}</strong>
-</p>
+{% if is_practice %}
+  <p class="mb-3"><strong>Practice round</strong></p>
+{% else %}
+  <p class="mb-3">You are now in <strong>Round {{ player.round_number }} of {{ C.NUM_ROUNDS }}</strong>.</p>
+{% endif %}
+
 
 <p>
   You will make a decision that involves a participant randomly drawn from one of the groups of ten participants we previously formed. This participant may or may not be the same one you interacted with in the previous stage.
@@ -33,14 +36,14 @@
          style="max-width: 420px;">
 </div>
 
-<p>
-    In this group, five chose A and five chose B.
+<p>In this group, <strong>{{ n_A }}</strong> chose A and <strong>{{ n_B }}</strong> chose B.</p>
+
 
   
- <p>The drawn participant also knows that they will interact with a randomly drawn participant from a group of ten with five A and five B responses. You have to decide which opinion you would express to this participant. The participant may have paid a cost of x dollars to punish you with a 1 dollar penalty, if your opinion differs from theirs.
+ <p>The drawn participant also knows that they will interact with a randomly drawn participant from a group of ten with <strong>{{ n_A }}</strong> A and <strong>{{ n_B }}</strong> B responses. You have to decide which opinion you would express to this participant. The participant may have paid a cost of { cost_stage_2 } points to punish you with a { punishment_stage_2 } point penalty depending on the opinion you express.</p>
  </p>
  <div class="alert alert-secondary">
-  <strong>Note:</strong> The other participant may have made a decision to punish the person they were going to interact with. This persons happens to be you, but they made that choice knowing only the distribution of opinions in the group (five A and five B).
+  <strong>Note:</strong> The other participant may have made a decision to punish the person they were going to interact with. This persons happens to be you, but they made that choice knowing only the distribution of opinions in the group (<strong>{{ n_A }}</strong> A and <strong>{{ n_B }}</strong> B).
 </div>
 <hr>
 <p>What opinion would you express?</p>
@@ -63,10 +66,3 @@
 
   {{ next_button }}
 {% endblock %}
-
-
-
-
-
-
-

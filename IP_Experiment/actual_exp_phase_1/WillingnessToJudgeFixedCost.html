@@ -5,9 +5,11 @@
 
 <h1>Stage 2: Decision to Pay a Cost</h1>
 
-<p class="mb-3">
-  <strong>You are in Round {{ round_number }} of {{ total_rounds }}</strong>
-</p>
+{% if is_practice %}
+  <p class="mb-3"><strong>Practice round</strong></p>
+{% else %}
+  <p class="mb-3">You are now in <strong>Round {{ player.round_number }} of {{ C.NUM_ROUNDS }}</strong>.</p>
+{% endif %}
 
 <p>
   You will make a decision that involves a participant randomly drawn from one of the groups of ten participants we previously formed.
@@ -33,10 +35,12 @@
        style="max-width: 420px;">
 </p>
 
-<p>In this group, five chose A and five chose B.</p>
+<p>In this group, <strong>{{ n_A }}</strong> chose A and <strong>{{ n_B }}</strong> chose B.</p>
+
 <p>
-  The drawn participant also knows that they will interact with a randomly drawn participant from a group of ten with five A and five B responses. The participant will express an opinion on the topic to you. You have the option to pay a cost of x dollars to impose a 1 dollar penalty on that participant, but only if their opinion differs from your own true opinion. 
+  The drawn participant also knows that they will interact with a randomly drawn participant from a group of ten with <strong>{{ n_A }}</strong> A and <strong>{{ n_B }}</strong> B responses. The participant will express an opinion on the topic to you. You have the option to pay a cost of {{ cost_stage_2 }} points to impose a { punishment_stage_2 } point penalty on that participant <strong>only if</strong> {{ jr_clause }}.
 </p>
+
 <div class="alert alert-secondary">
   <strong>Remember:</strong> You will be put into groups of ten participants, and will be randomly drawn to interact with other participants. Each participant knows only the distribution of responses in the group they interact with, not individual preferences.
 </div>
@@ -49,10 +53,10 @@
 <!-- pay-to-judge radio buttons -->
 <div class="form-group">
   <em>
-    Are you willing to pay {{ cost }} dollars to deduct 1 dollar
-    from the other participant if their opinion differs
-    from your own true opinion?
-  </em><br><br>
+  Are you willing to pay {{ cost_stage_2 }} points to deduct { punishment_stage_2 } points
+  from the other participant <strong>only if</strong> {{ jr_clause }}?
+  </em>
+  <br><br>
 
   <label>
     <input type="radio" name="{{ field_name }}" value="{{ yes_label }}" required>
@@ -68,8 +72,3 @@
 {{ next_button }}
 
 {% endblock %}
-
-
-
-
-

@@ -77,14 +77,14 @@
     <!-- (unchanged long text) -->
     <p class="mb-2">
       You will be asked to express an opinion to another person in two circumstances. This is the first of those circumstances. 
-      You must decide whether to express an opinion to someone who, with some probability, will "punish" you for expressing the opinion you just expressed. 
+      You must decide whether to express an opinion to someone who, with some probability, will "punish" you by subtracting { punishment_stage_1 } points for expressing the opinion you just expressed. 
       The probability of being punished goes from 0 in 10 to 10 in 10. We would like you to indicate the maximum probability of being punished such that you would express the opinion you just expressed. 
       So if you indicate the maximum probability of being punished is x in 10, then you are indicating that you would express the opinion you just expressed if the probability is x in 10 or if the probability is less than x in 10.
     </p>
     <p class="mb-2">
       There are monetary consequences for your decision. We will build a group of size ten, and choose one person at random from this group to see the opinion you expressed. 
       In order to form this group, we will include some people that will punish you for expressing the opinion you just expressed, and some that will not. 
-      We will choose a number at random between zero and 10 to decide how many would punish you.
+      We will choose a number at random between zero and ten to decide how many would punish you. If the selected person decided to punish the opinion you expressed, { punishment_stage_1 } points will be deducted from your payment.
     </p>
     <p class="mb-2">
       What are the consequences of us choosing a number at random? Suppose that you would be willing to express your true opinion if the probability of being punished is at most x in 10. 
@@ -102,14 +102,14 @@
       <div class="popover-content">
         <p class="mb-2">
           You will be asked to express an opinion to another person in two circumstances. This is the first of those circumstances. 
-          You must decide whether to express an opinion to someone who, with some probability, will "punish" you for expressing the opinion you just expressed. 
+          You must decide whether to express an opinion to someone who, with some probability, will "punish" you by subtracting { punishment_stage_1 } points for expressing the opinion you just expressed. 
           The probability of being punished goes from 0 in 10 to 10 in 10. We would like you to indicate the maximum probability of being punished such that you would express the opinion you just expressed. 
           So if you indicate the maximum probability of being punished is x in 10, then you are indicating that you would express the opinion you just expressed if the probability is x in 10 or if the probability is less than x in 10.
         </p>
         <p class="mb-2">
           There are monetary consequences for your decision. We will build a group of size ten, and choose one person at random from this group to see the opinion you expressed. 
           In order to form this group, we will include some people that will punish you for expressing the opinion you just expressed, and some that will not. 
-          We will choose a number at random between zero and 10 to decide how many would punish you.
+          We will choose a number at random between zero and ten to decide how many would punish you. If the selected person decided to punish the opinion you expressed, { punishment_stage_1 } will be deducted from your payment.
         </p>
         <p class="mb-0">
           What are the consequences of us choosing a number at random? Suppose that you would be willing to express your true opinion if the probability of being punished is at most x in 10. 
@@ -210,7 +210,7 @@
       <p class="mb-2">
         You will be asked whether to punish another person in two circumstances. This is the first of those circumstances.
         You must decide whether to punish <span class="dyn-condition"><!-- filled by JS --></span>.
-        The cost of punishing goes from 0 to {{ max_wtp }} points, and the person you punish will lose 40 points. We will randomly choose the cost.
+        The cost of punishing goes from 0 to {{ max_wtp }} points, and the person you punish will lose { punishment_stage_1 } points. We will randomly choose the cost.
       </p>
       <p class="mb-2">
         We would like you to indicate the maximum value that you are willing to pay to punish <span class="dyn-condition"><!-- filled by JS --></span>.
@@ -233,7 +233,7 @@
           <p class="mb-2">
             You will be asked whether to punish another person in two circumstances. This is the first of those circumstances.
             You must decide whether to punish <span class="dyn-condition"><!-- filled by JS --></span>.
-            The cost of punishing goes from 0 to {{ max_wtp }} points, and the person you punish will lose 40 points. We will randomly choose the cost.
+            The cost of punishing goes from 0 to {{ max_wtp }} points, and the person you punish will lose { punishment_stage_1 } points. We will randomly choose the cost.
           </p>
           <p class="mb-0">
             We would like you to indicate the maximum value that you are willing to pay to punish <span class="dyn-condition"><!-- filled by JS --></span>.
