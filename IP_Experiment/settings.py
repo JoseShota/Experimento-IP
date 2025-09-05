@@ -18,7 +18,7 @@ SESSION_CONFIGS = [
 
 SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00, participation_fee=0.00, doc="",
-    practice_topic_label='Emmanuel o Mijares',     # any string
+    practice_topic_label='Emmanuel o Mijares',     # any string 
     practice_binary_options=('Option H', 'Option L'),         # tuple/list of 2 strings
     practice_treatment='New_Fifty_Fifty',                       # one of C.TREATMENT_CODES
 )
