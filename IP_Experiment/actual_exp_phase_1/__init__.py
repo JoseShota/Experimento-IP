@@ -148,6 +148,7 @@ class Player(BasePlayer):
     wtl_practice      = models.IntegerField(choices=list(range(1, 11)), widget=widgets.RadioSelectHorizontal, blank=True)
     jr_practice       = models.IntegerField(choices=[1, 2, 3], blank=True)
     wtpmax_practice   = models.IntegerField(min=0, max=C.MAX_WTP, blank=True)
+    cost_stage_1_practice = models.IntegerField()
     # Stage 2 (WTJ practice)
     wtj_practice      = models.StringField(blank=True)
     # Stage 3 (public opinion practice)
@@ -313,7 +314,12 @@ class Practice_BinaryTopic(Page):
 
     @staticmethod
     def get_form_fields(player: Player):
-        return ['answer_practice', 'wtl_practice', 'jr_practice', 'wtpmax_practice']
+        return ['answer_practice', 'wtl_practice', 'jr_practice',
+                'wtpmax_practice']
+    
+    def before_next_page(player, timeout_happened):
+        # generar costo aleatorio entre 0 y max_wtp
+        player.cost_stage_1_practice = _random.randint(0, player.wtpmax_practice)
 
     @staticmethod
     def vars_for_template(player: Player):
