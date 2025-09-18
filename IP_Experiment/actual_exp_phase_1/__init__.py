@@ -149,6 +149,7 @@ class Player(BasePlayer):
     wtl_practice      = models.IntegerField(choices=list(range(1, 11)), widget=widgets.RadioSelectHorizontal, blank=True)
     jr_practice       = models.IntegerField(choices=[1, 2, 3], blank=True)
     wtpmax_practice   = models.IntegerField(min=0, max=C.MAX_WTP, blank=True)
+    cost_stage_1_practice = models.IntegerField()
     # Stage 2 (WTJ practice)
     wtj_practice      = models.StringField(blank=True)
     # Stage 3 (public opinion practice)
