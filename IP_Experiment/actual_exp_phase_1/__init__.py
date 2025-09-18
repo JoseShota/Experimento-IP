@@ -50,7 +50,8 @@ class C(BaseConstants):
     COST_X = '{ cost_stage_2 }'            # replace later with cu(10) or similar
     YES_NO = ('Yes, I am willing to pay  { cost_stage_2 } to make the decision', 'No, I am not willing to pay { cost_stage_2 } to make the decision')  # canonical label pair
     MAX_WTP = 10          # numeric ceiling for the slider (pesos)
-
+    # NEW: cost text for Stage 1 (used in the new Q3)
+    COST_STAGE_1 = '{ cost_stage_1 }'
 # Treatment codes for the experiment
     TREATMENT_CODES = [
         'New_Ten_Ninety',
@@ -152,6 +153,8 @@ class Player(BasePlayer):
     wtj_practice      = models.StringField(blank=True)
     # Stage 3 (public opinion practice)
     public_opinion_practice = models.StringField(blank=True)
+    # NEW (practice):
+    min_opp_punish_practice = models.IntegerField(min=0, max=10, blank=True)
     # Stage 4 (guesses practice)
     paid_cost_A_practice   = models.IntegerField(min=0, max=10, blank=True)
     paid_cost_B_practice   = models.IntegerField(min=0, max=10, blank=True)
@@ -209,6 +212,14 @@ for i in range(1, 11):
             choices=[(1, 'Approach 1'), (2, 'Approach 2'), (3, 'Approach 3')],
             blank=True,       # UI will enforce selection; keep DB tolerant
         ),
+    )
+
+# NEW (10 per-topic integer thresholds, 0..10)
+for i in range(1, 11):
+    setattr(
+        Player,
+        f'min_opp_punish_{i}',
+        models.IntegerField(min=0, max=10, blank=True),
     )
 
 # ---------------------------------------------------------------------
@@ -277,17 +288,13 @@ def _practice_yes_no(player: Player):
 
 # --- text helper for the 3 judgment approaches ------------------------------
 def approach_clause(approach: int) -> str:
-    """
-    Short, grammatically clean clause describing WHEN punishment would be applied,
-    matching the labels shown on the BinaryQuestionsPage.
-    """
     mapping = {
         1: "if the opinion they express is different from your own",
         2: "if their actual true opinion is different from your own",
         3: "if the opinion they express is different from their own true opinion",
     }
-    # default to approach 2 (closest to current generic text) if missing
-    return mapping.get(approach, mapping[2])
+    return mapping.get(approach, mapping[1])  # default → 1
+
 
 
 # -----------------------------------------------------------------------------
@@ -313,12 +320,11 @@ class Practice_BinaryTopic(Page):
 
     @staticmethod
     def get_form_fields(player: Player):
-        return ['answer_practice', 'wtl_practice', 'jr_practice', 'wtpmax_practice']
+        return ['answer_practice', 'wtl_practice', 'min_opp_punish_practice']
 
     @staticmethod
     def vars_for_template(player: Player):
         topic_label, left, right = _practice_left_right(player)
-
         item = dict(
             index     = 1,
             question  = topic_label,
@@ -326,22 +332,16 @@ class Practice_BinaryTopic(Page):
             left      = left,
             right     = right,
             wtl_field = 'wtl_practice',
-            wtp_field = 'wtpmax_practice',
-            jr_field  = 'jr_practice',
+            thr_field = 'min_opp_punish_practice',   # NEW
         )
-
-        a1 = "someone if they expressed an opinion different from your own"
-        a2 = "someone if their actual true opinion is different from your own"
-        a3 = "someone if they expressed an opinion different from their own true opinion"
-
         return dict(
             items=[item],
-            scale_prob = range(1, 11),
-            scale_cost = range(0, C.MAX_WTP + 1),
-            max_wtp = C.MAX_WTP,
-            show_help = True,  # long help on the practice page
-            cost_clause_by_approach = {1: a1, 2: a2, 3: a3},
-            is_practice=True, 
+            scale_prob  = range(1, 11),
+            scale_opp   = range(0, 11),              # NEW (0..10)
+            cost_stage_1 = C.COST_STAGE_1,           # NEW
+            max_wtp = C.MAX_WTP,                     # (unused by the new Q3; harmless)
+            show_help = True,
+            is_practice=True,
         )
 
     @staticmethod
@@ -352,11 +352,15 @@ class Practice_BinaryTopic(Page):
             return "Please select one of the two options."
         if values.get('wtl_practice') is None:
             return "Please choose a maximum punishment probability."
-        if values.get('jr_practice') not in {1, 2, 3}:
-            return "Please choose one approach."
-        wtp = values.get('wtpmax_practice')
-        if wtp is None or not (0 <= wtp <= C.MAX_WTP):
-            return f"Please set your maximum willingness to pay between 0 and {C.MAX_WTP}."
+        v = values.get('min_opp_punish_practice')
+        if v is None or not (0 <= v <= 10):
+            return "Please choose a number between 0 and 10."
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        # Fix the practice judgment rule to "Approach 1" without raising on None
+        if player.field_maybe_none('jr_practice') in (None, 0):
+            player.jr_practice = 1
 
 
 class Practice_TopicTreatment(Page):
@@ -573,16 +577,13 @@ def make_binary_topic_page(n: int):
             return [
                 f'answer_{q_idx + 1}',
                 f'wtl_{q_idx + 1}',
-                f'jr_{q_idx + 1}',
-                f'wtpmax_{q_idx + 1}',
+                f'min_opp_punish_{q_idx + 1}',  # NEW
             ]
+
 
         @staticmethod
         def vars_for_template(player: Player):
-            # Which topic is shown on this n-th Stage-1 page?
             q_idx, flip = _stage1_topic(player, n)
-
-            # Canonical left/right for that topic, maybe flipped for this participant
             left, right = C.BINARY_OPTIONS[q_idx]
             if flip:
                 left, right = right, left
@@ -593,23 +594,16 @@ def make_binary_topic_page(n: int):
                 ans_field = f'answer_{q_idx + 1}',
                 left      = left,
                 right     = right,
-                wtl_field = f'wtl_{q_idx + 1}',     # 1..10 radios
-                wtp_field = f'wtpmax_{q_idx + 1}',  # 0..MAX_WTP radios
-                jr_field  = f'jr_{q_idx + 1}',      # approach 1/2/3
+                wtl_field = f'wtl_{q_idx + 1}',
+                thr_field = f'min_opp_punish_{q_idx + 1}',   # NEW
             )
-
-            # Approach-specific clauses the JS interpolates into prompts
-            a1 = "someone if they expressed an opinion different from your own"
-            a2 = "someone if their actual true opinion is different from your own"
-            a3 = "someone if they expressed an opinion different from their own true opinion"
-
             return dict(
-                items=[item],                         # <-- the thing the template expects
-                scale_prob = range(1, 11),            # keep 1..10 to match your wtl_* choices
-                scale_cost = range(0, C.MAX_WTP + 1), # 0..MAX_WTP
-                max_wtp = C.MAX_WTP,
-                show_help = (n == 1),                 # long help on the first topic only
-                cost_clause_by_approach = {1: a1, 2: a2, 3: a3},
+                items=[item],
+                scale_prob  = range(1, 11),
+                scale_opp   = range(0, 11),                  # NEW
+                cost_stage_1 = C.COST_STAGE_1,               # NEW
+                max_wtp = C.MAX_WTP,                         # (unused by the new Q3; harmless)
+                show_help = (n == 1),
             )
 
         @staticmethod
@@ -624,13 +618,20 @@ def make_binary_topic_page(n: int):
             if wtl is None:
                 return "Please choose a maximum punishment probability."
 
-            jr = values.get(f'jr_{q_idx + 1}')
-            if jr not in {1, 2, 3}:
-                return "Please choose one approach."
+            thr = values.get(f'min_opp_punish_{q_idx + 1}')
+            if thr is None or not (0 <= thr <= 10):
+                return "Please choose a number between 0 and 10."
+        
+        @staticmethod
+        def before_next_page(player: Player, timeout_happened):
+            q_idx, _ = _stage1_topic(player, n)
+            jr_field = f'jr_{q_idx + 1}'
+            val = player.field_maybe_none(jr_field)
+            if val in (None, 0):
+                setattr(player, jr_field, 1)
 
-            wtp = values.get(f'wtpmax_{q_idx + 1}')
-            if wtp is None or not (0 <= wtp <= C.MAX_WTP):
-                return f"Please set your maximum willingness to pay between 0 and {C.MAX_WTP}."
+
+
 
     _BinaryTopicPage.__name__ = f'BinaryTopic_{n}'
     return _BinaryTopicPage
@@ -706,10 +707,10 @@ class WillingnessToJudgeFixedCost(Page):
         # NEW: dynamic A/B counts
         n_A, n_B = counts_for_treatment(player.treatment_idx)
 
-        # NEW: pull the judgment rule chosen on Stage-1 for this topic
         jr_field = f'jr_{player.topic_idx + 1}'
-        jr_approach = getattr(player, jr_field, None)
-        jr_clause = approach_clause(jr_approach)  # uses the helper above
+        jr_approach = player.field_maybe_none(jr_field) or 1
+        jr_clause = approach_clause(jr_approach)
+
 
         return dict(
             field_name     = f'wtj_{player.topic_idx + 1}',
