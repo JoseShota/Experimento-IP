@@ -1,5 +1,4 @@
 {% extends "global/Page.html" %}
-{% load static %}            {# needed for the static template tag #}
 
 {% block content %}
 
@@ -30,7 +29,7 @@
 
 <!-- PNG illustration -->
 <div class="text-center my-4">
-    <img src="{% static treatment_png %}"
+    <img src="{{ static treatment_png }}"
          alt="Treatment diagram {{ treatment_png }}"
          class="img-fluid"
          style="max-width: 420px;">

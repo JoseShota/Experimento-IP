@@ -49,7 +49,6 @@ class C(BaseConstants):
 # Willingness to judge fixed cost and maximum cost
     COST_X = '{ cost_stage_2 }'            # replace later with cu(10) or similar
     YES_NO = ('Yes, I am willing to pay  { cost_stage_2 } to make the decision', 'No, I am not willing to pay { cost_stage_2 } to make the decision')  # canonical label pair
-    MAX_WTP = 10          # numeric ceiling for the slider (pesos)
     # NEW: cost text for Stage 1 (used in the new Q3)
     COST_STAGE_1 = '{ cost_stage_1 }'
 # Treatment codes for the experiment
@@ -65,17 +64,19 @@ class C(BaseConstants):
         'New_Ninety_Ten',
     ]
 
+    PRACTICE_ROUNDS = 1
+
     # ---------- derived combinations ----------
     PAIRS = []
     for t_idx in range(len(TOPIC_LABELS)):
         for trt_idx in range(len(TREATMENT_CODES)):
             PAIRS.append((t_idx, trt_idx))
 
-    NUM_ROUNDS = len(PAIRS)
+    NUM_ROUNDS = PRACTICE_ROUNDS + len(PAIRS)
 
 # --- Map each treatment code to (#A, #B) among 10 participants ---------------
 TREATMENT_TO_COUNTS = {
-    'New_Ten_Ninenty':   (1, 9),  # note the original spelling is kept
+    'New_Ten_Ninety':   (1, 9),  # note the original spelling is kept
     'New_Twenty_Eighty': (2, 8),
     'New_Thirty_Seventy':(3, 7),
     'New_Forty_Sixty':   (4, 6),
@@ -107,13 +108,28 @@ class Subsession(BaseSubsession):
     pass
 
 def creating_session(subsession: Subsession):
-    # Ensure participant-level pair order exists
     for p in subsession.get_players():
-        order = _get_topic_treatment_order(p.participant)
-        # Proactively bind the (topic_idx, treatment_idx) for this round
-        t_idx, trt_idx = order[subsession.round_number - 1]
+        order = _get_topic_treatment_order(p.participant)  # list of (t_idx, trt_idx), len == len(C.PAIRS)
+
+        # paid index: 1..len(PAIRS); 0 on practice
+        er = subsession.round_number - C.PRACTICE_ROUNDS
+
+        if er < 1:
+            # practice round: don't bind a paid pair
+            p.topic_idx = None
+            p.treatment_idx = None
+            continue
+
+        if er > len(order):
+            raise RuntimeError(
+                f"Round {subsession.round_number} exceeds paid trials ({len(order)}). "
+                f"Check NUM_ROUNDS={C.NUM_ROUNDS} vs PRACTICE_ROUNDS+len(PAIRS)={C.PRACTICE_ROUNDS + len(C.PAIRS)}."
+            )
+
+        t_idx, trt_idx = order[er - 1]   # 0-based into paid portion
         p.topic_idx = t_idx
         p.treatment_idx = trt_idx
+
 
 class Group(BaseGroup):
     pass
@@ -148,8 +164,6 @@ class Player(BasePlayer):
     answer_practice   = models.StringField(blank=True)
     wtl_practice      = models.IntegerField(choices=list(range(1, 11)), widget=widgets.RadioSelectHorizontal, blank=True)
     jr_practice       = models.IntegerField(choices=[1, 2, 3], blank=True)
-    wtpmax_practice   = models.IntegerField(min=0, max=C.MAX_WTP, blank=True)
-    cost_stage_1_practice = models.IntegerField()
     # Stage 2 (WTJ practice)
     wtj_practice      = models.StringField(blank=True)
     # Stage 3 (public opinion practice)
@@ -161,8 +175,8 @@ class Player(BasePlayer):
     paid_cost_B_practice   = models.IntegerField(min=0, max=10, blank=True)
     expr_A_from_A_practice = models.IntegerField(min=0, max=10, blank=True)
     expr_A_from_B_practice = models.IntegerField(min=0, max=10, blank=True)
-    topic_idx     = models.IntegerField()
-    treatment_idx = models.IntegerField()
+    topic_idx     = models.IntegerField(blank=True)
+    treatment_idx = models.IntegerField(blank=True)
 
     public_opinion = models.StringField(
         label="What opinion would you express to the rest of your group?"
@@ -184,14 +198,6 @@ for i in range(1, 11):
 # --- add 10 WTJ fields dynamically -------------
 for i in range(1, 11):
     setattr(Player, f'wtj_{i}', models.StringField(blank=True))
-
-# --- add 10 IntegerFields for maximum WTP --------------------
-for i in range(1, 11):
-    setattr(
-        Player,
-        f'wtpmax_{i}',
-        models.IntegerField(min=0, max=C.MAX_WTP, blank=True),
-    )
 
 # Willingness-To-Lie importance ratings (keep as-is)
 for i in range(1, 11):
@@ -340,7 +346,6 @@ class Practice_BinaryTopic(Page):
             scale_prob  = range(1, 11),
             scale_opp   = range(0, 11),              # NEW (0..10)
             cost_stage_1 = C.COST_STAGE_1,           # NEW
-            max_wtp = C.MAX_WTP,                     # (unused by the new Q3; harmless)
             show_help = True,
             is_practice=True,
         )
@@ -447,16 +452,11 @@ class Practice_ExpressYourOpinion(Page):
 
     @staticmethod
     def error_message(player: Player, values):
-        # Use the Stage-1–oriented A/B for THIS topic (same logic as vars_for_template)
-        topic_left, topic_right = C.BINARY_OPTIONS[player.topic_idx]
-        q_order, flips_q = get_randomised_questions(player.participant)
-        pos_topic = q_order.index(player.topic_idx)
-        if flips_q[pos_topic]:
-            topic_left, topic_right = topic_right, topic_left
-
+        _, left, right = _practice_left_right(player)
         v = values.get('public_opinion')
-        if v not in {topic_left, topic_right}:
+        if v not in {left, right}:
             return "Please select one of the two opinions."
+
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -602,8 +602,7 @@ def make_binary_topic_page(n: int):
                 items=[item],
                 scale_prob  = range(1, 11),
                 scale_opp   = range(0, 11),                  # NEW
-                cost_stage_1 = C.COST_STAGE_1,               # NEW
-                max_wtp = C.MAX_WTP,                         # (unused by the new Q3; harmless)
+                cost_stage_1 = C.COST_STAGE_1,               # NEW                     # (unused by the new Q3; harmless)
                 show_help = (n == 1),
             )
 
@@ -646,6 +645,10 @@ for i in range(1, 11):
 
 class TopicTreatment(Page):
     @staticmethod
+    def is_displayed(player):
+        return player.round_number >= 2
+
+    @staticmethod
     def vars_for_template(player: Player):
         topic       = C.TOPIC_LABELS[player.topic_idx]
         trt_code    = C.TREATMENT_CODES[player.treatment_idx]
@@ -678,6 +681,10 @@ class TopicTreatment(Page):
 
 class WillingnessToJudgeFixedCost(Page):
     form_model = 'player'
+
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number >= 2
 
     @staticmethod
     def get_form_fields(player):
@@ -733,13 +740,13 @@ class WillingnessToJudgeFixedCost(Page):
             jr_clause      = jr_clause,
         )
 
-
-    is_displayed = staticmethod(lambda p: True)
-
-  
 class ExpressYourOpinion(Page):
     form_model = 'player'
     form_fields = ['public_opinion']
+
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number >= 2
 
     @staticmethod
     def error_message(player: Player, values):
@@ -787,6 +794,10 @@ class ExpressYourOpinion(Page):
 class HowManyLied(Page):
     form_model  = 'player'
     form_fields = ['paid_cost_A', 'paid_cost_B', 'expr_A_from_A', 'expr_A_from_B']
+
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number >= 2
 
     @staticmethod
     def vars_for_template(player: Player):
