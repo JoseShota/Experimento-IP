@@ -892,15 +892,15 @@ page_sequence = [
 
     # ----- PRACTICE (one topic, once) -----
     Practice_BinaryTopic,
-    Practice_TopicTreatment,
-    Practice_WTJ,
-    Practice_ExpressYourOpinion,
-    Practice_HowManyLied,
+    # Practice_TopicTreatment,
+    # Practice_WTJ,
+    # Practice_ExpressYourOpinion,
+    # Practice_HowManyLied,
 
 ] + BINARY_TOPIC_PAGES + [
-    TopicTreatment,
-    WillingnessToJudgeFixedCost,
-    ExpressYourOpinion,
-    HowManyLied,
+    # TopicTreatment,
+    # WillingnessToJudgeFixedCost,
+    # ExpressYourOpinion,
+    # HowManyLied,
     ThankYouPage,
 ]
