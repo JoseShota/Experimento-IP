@@ -131,6 +131,9 @@ def creating_session(subsession: Subsession):
         p.treatment_idx = trt_idx
 
 
+def vars_for_admin_report(subsession):
+    return dict(mensaje="Dummy: pagos calculados 🚀")
+
 class Group(BaseGroup):
     pass
 
