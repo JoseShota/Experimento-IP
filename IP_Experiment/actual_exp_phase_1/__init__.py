@@ -72,7 +72,7 @@ class C(BaseConstants):
         for trt_idx in range(len(TREATMENT_CODES)):
             PAIRS.append((t_idx, trt_idx))
 
-    NUM_ROUNDS = PRACTICE_ROUNDS + len(PAIRS)
+    NUM_ROUNDS = 1 #PRACTICE_ROUNDS + len(PAIRS)
 
 # --- Map each treatment code to (#A, #B) among 10 participants ---------------
 TREATMENT_TO_COUNTS = {

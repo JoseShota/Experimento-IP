@@ -7,10 +7,11 @@ SESSION_CONFIGS = [
         'display_name': "IP Experiment",
         'num_demo_participants': 6,
         'app_sequence': ['actual_exp_phase_1'],
-        'number_of_rounds': 10,
+        'number_of_rounds': 1,
         'participation_fee': 15.00,
         'real_world_currency_per_point': 1.00,
-        'num_demo_participants': 15,
+        #'num_demo_participants': 15,
+        'num_demo_participants': 50,
     },
 ]
 
