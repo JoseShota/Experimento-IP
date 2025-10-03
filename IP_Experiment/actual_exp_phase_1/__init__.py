@@ -71,7 +71,8 @@ class C(BaseConstants):
     for t_idx in range(len(TOPIC_LABELS)):
         for trt_idx in range(len(TREATMENT_CODES)):
             PAIRS.append((t_idx, trt_idx))
-
+    PUNISHMENT_STAGE1 = 4
+    COST_STAGE1 = 1
     NUM_ROUNDS = 1 #PRACTICE_ROUNDS + len(PAIRS)
 
 # --- Map each treatment code to (#A, #B) among 10 participants ---------------
@@ -305,7 +306,131 @@ def approach_clause(approach: int) -> str:
     }
     return mapping.get(approach, mapping[1])  # default → 1
 
+def set_stage1_payoffs(subsession: Subsession):
+        players = subsession.get_players()
+        for p in players:
+            topic_idx = _random.randint(1, 10)
+            ans = getattr(p, f"answer_{topic_idx}", None)
+            wtl = getattr(p, f"wtl_{topic_idx}", None)
 
+            if ans is None:
+                continue
+
+            prob_punishment = _random.randint(0, 10)
+            opposite_opinion = _random.randint(0, 10)
+
+            if prob_punishment <= int(wtl or 0):
+                public_opinion = ans
+            else:
+                public_opinion = 'Option L' if ans == 'Option H' else 'Option H'
+
+            _simulate_punishment(
+                player=p,
+                all_players=players,
+                topic_idx=topic_idx,
+                prob_punishment=prob_punishment,
+                opposite_opinion=opposite_opinion,
+                public_opinion=public_opinion,
+                punishment_stage_1=C.PUNISHMENT_STAGE1,
+                cost_stage_1=C.COST_STAGE1
+            )
+        print("Stage 1 payoffs set for group.")
+
+def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
+                        opposite_opinion, public_opinion,
+                        punishment_stage_1, cost_stage_1):
+    """
+    Simula si el jugador 'player' es castigado en Stage 1 y aplica los costos.
+
+    Params
+    ------
+    player : Player
+        Jugador i al que se calcula el castigo.
+    all_players : list[Player]
+        Todos los jugadores de la sesión.
+    topic_idx : int
+        Índice del tema pagado (1..10).
+    prob_punishment : int
+        Número sorteado de castigadores en el grupo (0..10).
+    opposite_opinion : int
+        Regla sorteada para decidir quién castiga.
+    public_opinion : str/int
+        Opinión pública de i en ese tema (A/B o 0/1).
+    punishment_stage_1 : int/float
+        Puntos que pierde el castigado.
+    cost_stage_1 : int/float
+        Puntos que paga el castigador.
+
+    Returns
+    -------
+    castigado : bool
+        True si el jugador fue castigado, False si no.
+    """
+
+    # ---------------------------------------------------
+    # Paso 4.1: posibles castigadores
+    # ---------------------------------------------------
+    castigadores = []
+    for other in all_players:
+        if other.id_in_subsession == player.id_in_subsession:
+            continue
+        min_opp = getattr(other, f"min_opp_punish_{topic_idx}")
+        answer_other = getattr(other, f"answer_{topic_idx}")
+        if (opposite_opinion >= min_opp) and (public_opinion != answer_other):
+            castigadores.append(other)
+
+    # ---------------------------------------------------
+    # Paso 4.3: posibles no castigadores
+    # ---------------------------------------------------
+    no_castigadores = []
+    for other in all_players:
+        if other.id_in_subsession == player.id_in_subsession:
+            continue
+        min_opp = getattr(other, f"min_opp_punish_{topic_idx}")
+        answer_other = getattr(other, f"answer_{topic_idx}")
+        if (public_opinion == answer_other) or (opposite_opinion < min_opp):
+            no_castigadores.append(other)
+
+    # ---------------------------------------------------
+    # Ajuste de casos
+    # ---------------------------------------------------
+    if len(castigadores) >= prob_punishment and len(no_castigadores) >= (10 - prob_punishment):
+        grupo_castigadores = _random.sample(castigadores, prob_punishment)
+        grupo_no_castigadores = _random.sample(no_castigadores, 10 - prob_punishment)
+
+    elif len(castigadores) > 0 or len(no_castigadores) > 0:
+        # insuficientes → redistribuir con repetición
+        grupo_castigadores = _random.choices(castigadores, k=min(prob_punishment, len(castigadores)))
+        grupo_no_castigadores = _random.choices(no_castigadores, k=10 - len(grupo_castigadores))
+
+    else:
+        # nadie disponible → ficticios
+        grupo_castigadores = ["ficticio"] * prob_punishment
+        grupo_no_castigadores = ["ficticio"] * (10 - prob_punishment)
+
+    grupo_total = grupo_castigadores + grupo_no_castigadores
+
+    if not grupo_total:
+        return False
+
+    # ---------------------------------------------------
+    # Paso 5: elegir observador
+    # ---------------------------------------------------
+    observador = _random.choice(grupo_total)
+
+    if observador == "ficticio":
+        # ficticio castiga → solo aplica castigo al jugador
+        player.payoff -= punishment_stage_1
+        return True
+
+    elif observador in grupo_castigadores:
+        # real castiga → jugador pierde y castigador paga costo
+        player.payoff -= punishment_stage_1
+        observador.payoff -= cost_stage_1
+        return True
+
+    else:
+        return False
 
 # -----------------------------------------------------------------------------
 # Page Definitions
@@ -553,6 +678,10 @@ class Practice_HowManyLied(Page):
 
         return errs or None
 
+
+class PaymentWaitPage(WaitPage):
+    wait_for_all_groups = True
+    after_all_players_arrive = set_stage1_payoffs
 
 # --- helper: nth topic for Stage 1 -------------------------------------------
 def _stage1_topic(player: Player, n: int):
@@ -906,4 +1035,5 @@ page_sequence = [
     # ExpressYourOpinion,
     # HowManyLied,
     ThankYouPage,
+    PaymentWaitPage
 ]
