@@ -71,9 +71,10 @@ class C(BaseConstants):
     for t_idx in range(len(TOPIC_LABELS)):
         for trt_idx in range(len(TREATMENT_CODES)):
             PAIRS.append((t_idx, trt_idx))
-    PUNISHMENT_STAGE1 = 4
-    COST_STAGE1 = 1
+    PUNISHMENT_STAGE1 = cu(1000)
+    COST_STAGE1 = cu(1000)
     NUM_ROUNDS = 1 #PRACTICE_ROUNDS + len(PAIRS)
+    STARTING_ENDOWMENT = cu(2000) * NUM_ROUNDS
 
 # --- Map each treatment code to (#A, #B) among 10 participants ---------------
 TREATMENT_TO_COUNTS = {
@@ -109,6 +110,16 @@ class Subsession(BaseSubsession):
     pass
 
 def creating_session(subsession: Subsession):
+    if subsession.round_number == 1:
+        total_rounds = C.NUM_ROUNDS          # o len(C.PAIRS) si NO quieres incluir práctica
+        endowment = C.STARTING_ENDOWMENT * total_rounds
+
+        for p in subsession.get_players():
+            # fija el saldo inicial del jugador
+            p.payoff = endowment
+            # guarda una copia en participant.vars para auditoría/debug
+            p.participant.vars['starting_endowment'] = endowment
+
     for p in subsession.get_players():
         order = _get_topic_treatment_order(p.participant)  # list of (t_idx, trt_idx), len == len(C.PAIRS)
 
@@ -446,7 +457,7 @@ def set_stage1_payoffs(subsession: Subsession):
     3) Llama a _simulate_punishment y aplica el castigo al jugador si corresponde.
     4) Cobra cost_stage_1 al observador real *una sola vez en toda la ronda*.
     """
-    
+
     players = subsession.get_players()
     cobrados = set()  # ids de observadores a los que ya se les cobró en esta ronda
 
