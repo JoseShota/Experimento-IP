@@ -73,8 +73,9 @@ class C(BaseConstants):
             PAIRS.append((t_idx, trt_idx))
     PUNISHMENT_STAGE1 = cu(1000)
     COST_STAGE1 = cu(1000)
-    NUM_ROUNDS = 1 #PRACTICE_ROUNDS + len(PAIRS)
-    STARTING_ENDOWMENT = cu(2000) * NUM_ROUNDS
+    NUM_ROUNDS = 2 # PRACTICE_ROUNDS + len(PAIRS)
+    STARTING_ENDOWMENT_STAGE_1 = cu(2000)
+    STARTING_ENDOWMENT_STAGE_2 = cu(2000) * NUM_ROUNDS
 
 # --- Map each treatment code to (#A, #B) among 10 participants ---------------
 TREATMENT_TO_COUNTS = {
@@ -112,13 +113,13 @@ class Subsession(BaseSubsession):
 def creating_session(subsession: Subsession):
     if subsession.round_number == 1:
         total_rounds = C.NUM_ROUNDS          # o len(C.PAIRS) si NO quieres incluir práctica
-        endowment = C.STARTING_ENDOWMENT * total_rounds
+        endowment_stage_1 = C.STARTING_ENDOWMENT_STAGE_1 
 
         for p in subsession.get_players():
             # fija el saldo inicial del jugador
-            p.payoff = endowment
+            p.payoff = endowment_stage_1
             # guarda una copia en participant.vars para auditoría/debug
-            p.participant.vars['starting_endowment'] = endowment
+            p.participant.vars['starting_endowment_stage_1'] = endowment_stage_1
 
     for p in subsession.get_players():
         order = _get_topic_treatment_order(p.participant)  # list of (t_idx, trt_idx), len == len(C.PAIRS)
@@ -278,7 +279,7 @@ def _practice_topic_config(session):
     return str(label), (str(opts[0]), str(opts[1]))
 
 
-def _practice_treatment_idx(session):
+def practice_treatment_idx(session):
     """Resolve practice treatment code to index in C.TREATMENT_CODES."""
     code = session.config.get('practice_treatment', C.TREATMENT_CODES[0])
     try:
@@ -287,7 +288,7 @@ def _practice_treatment_idx(session):
         return 0
 
 
-def _practice_left_right(player: Player):
+def practice_left_right(player: Player):
     """
     Compute the practice topic's left/right labels with a per-participant flip
     that is *separate* from Stage 1 flips (since practice is outside the 10 topics).
@@ -716,7 +717,7 @@ class Practice_BinaryTopic(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        topic_label, left, right = _practice_left_right(player)
+        topic_label, left, right = practice_left_right(player)
         item = dict(
             index     = 1,
             question  = topic_label,
@@ -737,7 +738,7 @@ class Practice_BinaryTopic(Page):
 
     @staticmethod
     def error_message(player: Player, values):
-        _, left, right = _practice_left_right(player)
+        _, left, right = practice_left_right(player)
         allowed = {left, right}
         if values.get('answer_practice') not in allowed:
             return "Please select one of the two options."
@@ -762,8 +763,8 @@ class Practice_TopicTreatment(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        topic_label, left, right = _practice_left_right(player)
-        trt_idx = _practice_treatment_idx(player.session)
+        topic_label, left, right = practice_left_right(player)
+        trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)   # NEW
         return dict(
             topic         = topic_label,
@@ -795,9 +796,9 @@ class Practice_WTJ(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        topic_label, topic_left, topic_right = _practice_left_right(player)
+        topic_label, topic_left, topic_right = practice_left_right(player)
         yes, no = _practice_yes_no(player)
-        trt_idx = _practice_treatment_idx(player.session)
+        trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)
 
         # NEW:
@@ -837,7 +838,7 @@ class Practice_ExpressYourOpinion(Page):
 
     @staticmethod
     def error_message(player: Player, values):
-        _, left, right = _practice_left_right(player)
+        _, left, right = practice_left_right(player)
         v = values.get('public_opinion')
         if v not in {left, right}:
             return "Please select one of the two opinions."
@@ -845,11 +846,11 @@ class Practice_ExpressYourOpinion(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        topic_label, topic_left, topic_right = _practice_left_right(player)
+        topic_label, topic_left, topic_right = practice_left_right(player)
         rng = _rng_for_participant(player.participant)
         flip = player.participant.vars.setdefault('public_flip_practice', rng.choice([True, False]))
         left, right = (topic_right, topic_left) if flip else (topic_left, topic_right)
-        trt_idx = _practice_treatment_idx(player.session)
+        trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)   # NEW
         return dict(
             topic         = C.PRACTICE_TOPIC_LABEL,
@@ -886,8 +887,8 @@ class Practice_HowManyLied(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        topic_label, topic_left, topic_right = _practice_left_right(player)
-        trt_idx = _practice_treatment_idx(player.session)
+        topic_label, topic_left, topic_right = practice_left_right(player)
+        trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)   # NEW
         items = [
             dict(index=1, field_name='paid_cost_A_practice',
@@ -917,7 +918,7 @@ class Practice_HowManyLied(Page):
         )
     @staticmethod
     def error_message(player: Player, values):
-        trt_idx = _practice_treatment_idx(player.session)
+        trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)
         errs = {}
 
@@ -935,10 +936,6 @@ class Practice_HowManyLied(Page):
 
         return errs or None
 
-
-class PaymentWaitPage(WaitPage):
-    wait_for_all_groups = True
-    after_all_players_arrive = set_stage1_payoffs
 
 # --- helper: nth topic for Stage 1 -------------------------------------------
 def _stage1_topic(player: Player, n: int):
@@ -1263,7 +1260,6 @@ class HowManyLied(Page):
         return errs or None
 
 
-
 class ThankYouPage(Page):
     @staticmethod
     def is_displayed(player: Player) -> bool:
@@ -1273,6 +1269,22 @@ class ThankYouPage(Page):
     def vars_for_template(player: Player) -> dict:
         return {}
 
+
+class PaymentWaitPage(WaitPage):
+    wait_for_all_groups = True
+
+    @staticmethod
+    def is_displayed(player: Player):
+        # Solo mostrar esta página en la ronda 1
+        return player.round_number == 1
+
+    @staticmethod
+    def after_all_players_arrive(subsession):
+        # Ejecutar lógica solo si estamos en ronda 1
+        if subsession.round_number == 1:
+            set_stage1_payoffs(subsession)
+
+
 # -----------------------------------------------------------------------------
 # Page Sequence
 # -----------------------------------------------------------------------------
@@ -1281,10 +1293,10 @@ page_sequence = [
 
     # ----- PRACTICE (one topic, once) -----
     Practice_BinaryTopic,
-    # Practice_TopicTreatment,
-    # Practice_WTJ,
-    # Practice_ExpressYourOpinion,
-    # Practice_HowManyLied,
+    Practice_TopicTreatment,
+    Practice_WTJ,
+    Practice_ExpressYourOpinion,
+    Practice_HowManyLied,
 
 ] + BINARY_TOPIC_PAGES + [
     # TopicTreatment,

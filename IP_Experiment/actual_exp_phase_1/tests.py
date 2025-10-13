@@ -5,6 +5,7 @@ from . import *
 
 class PlayerBot(Bot):
     def play_round(self):
+
         if self.round_number == 1:
             yield PersonalInfoPage, dict(
                 age=25,
@@ -17,6 +18,26 @@ class PlayerBot(Bot):
                 answer_practice=random.choice(['Option H','Option L']),
                 wtl_practice=random.randint(1, 10),
                 min_opp_punish_practice=random.randint(0, 10),
+            )
+
+            yield Practice_TopicTreatment
+
+            yield Practice_WTJ, dict(
+                wtj_practice=random.choice(C.YES_NO)
+            )
+
+            _, left, right = practice_left_right(self.player)
+            yield Practice_ExpressYourOpinion, dict(
+                public_opinion=random.choice([left, right])
+            )
+
+            trt_idx = practice_treatment_idx(self.player.session)
+            n_A, n_B = counts_for_treatment(trt_idx)
+            yield Practice_HowManyLied, dict(
+                paid_cost_A_practice=random.randint(0, n_A),
+                paid_cost_B_practice=random.randint(0, n_B),
+                expr_A_from_A_practice=random.randint(0, n_A),
+                expr_A_from_B_practice=random.randint(0, n_B),
             )
 
             for PageClass in BINARY_TOPIC_PAGES:
