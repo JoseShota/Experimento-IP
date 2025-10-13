@@ -502,15 +502,99 @@ def set_stage1_payoffs(subsession: Subsession):
     print("Stage 1 payoffs set for group.")
 
 
+# def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
+#                          opposite_opinion, public_opinion,
+#                          punishment_stage_1, cost_stage_1):
+#     """
+#     Simula Stage 1 para 'player' sin duplicar personas en el panel:
+#       - Si faltan reales, se rellena con "ficticio" (no hay reposición).
+#       - Observador "ficticio" => el jugador recibe castigo; no hay costo de observador real.
+#       - Observador real en castigadores => castiga (costo se cobra fuera).
+#       - Observador real en no castigadores => no castiga.
+
+#     Returns (dict):
+#       {
+#         'castigado': bool,
+#         'observador': Player | None,   # None si fue ficticio o no hubo panel
+#         'punisher': bool               # True si el observador (real o ficticio) castiga
+#       }
+#     """
+#     PANEL_SIZE = 10
+
+#     # 1) Clasificar posibles castigadores / no castigadores (excluyendo al propio jugador)
+#     castigadores = []
+#     no_castigadores = []
+#     for other in all_players:
+#         if other.id_in_subsession == player.id_in_subsession:
+#             continue
+#         min_opp = getattr(other, f"min_opp_punish_{topic_idx}", None)
+#         answer_other = getattr(other, f"answer_{topic_idx}", None)
+#         if min_opp is None or answer_other is None:
+#             continue
+
+#         if (opposite_opinion >= min_opp) and (public_opinion != answer_other):
+#             castigadores.append(other)
+#         elif (public_opinion == answer_other) or (opposite_opinion < min_opp):
+#             no_castigadores.append(other)
+
+#     # 2) Armar panel sin reposición; si faltan, rellenar con ficticios
+#     kC_desired = min(prob_punishment, PANEL_SIZE)
+
+#     # 2.a) Bloque de castigadores (tamaño kC_desired)
+#     if len(castigadores) >= kC_desired:
+#         grupo_castigadores = _random.sample(castigadores, kC_desired)
+#     else:
+#         grupo_castigadores = list(castigadores)  # todos los disponibles
+#         faltan_c = kC_desired - len(grupo_castigadores)
+#         if faltan_c > 0:
+#             grupo_castigadores += ["ficticio"] * faltan_c
+
+#     # 2.b) Bloque de no castigadores (completa hasta PANEL_SIZE)
+#     remaining = PANEL_SIZE - len(grupo_castigadores)  # siempre PANEL_SIZE - kC_desired
+#     if remaining > 0:
+#         if len(no_castigadores) >= remaining:
+#             grupo_no_castigadores = _random.sample(no_castigadores, remaining)
+#         else:
+#             grupo_no_castigadores = list(no_castigadores)
+#             faltan_nc = remaining - len(grupo_no_castigadores)
+#             if faltan_nc > 0:
+#                 grupo_no_castigadores += ["ficticio"] * faltan_nc
+#     else:
+#         grupo_no_castigadores = []
+
+#     grupo_total = grupo_castigadores + grupo_no_castigadores
+
+#     if not grupo_total:
+#         # Caso extremo: no hay nadie ni ficticio (muy raro)
+#         return {'castigado': False, 'observador': None, 'punisher': False}
+
+#     # 3) Elegir observador
+#     observador = _random.choice(grupo_total)
+
+#     # 4) Aplicar resultado
+#     if observador == "ficticio":
+#         # Ficticio castiga: solo el jugador pierde; sin costo de observador real
+#         player.payoff -= punishment_stage_1
+#         return {'castigado': True, 'observador': None, 'punisher': True}
+
+#     if observador in grupo_castigadores:
+#         # Observador real castigador: jugador pierde; el costo al observador se cobra fuera
+#         player.payoff -= punishment_stage_1
+#         return {'castigado': True, 'observador': observador, 'punisher': True}
+
+#     # Observador real no castigador: no hay castigo
+#     return {'castigado': False, 'observador': observador, 'punisher': False}
+
 def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
                          opposite_opinion, public_opinion,
                          punishment_stage_1, cost_stage_1):
     """
-    Simula Stage 1 para 'player' sin duplicar personas en el panel:
-      - Si faltan reales, se rellena con "ficticio" (no hay reposición).
-      - Observador "ficticio" => el jugador recibe castigo; no hay costo de observador real.
-      - Observador real en castigadores => castiga (costo se cobra fuera).
-      - Observador real en no castigadores => no castiga.
+    Simula Stage 1 para 'player' con panel de 10:
+      - Si faltan jugadores reales para completar el panel, se re-muestrean (con reposición).
+      - Solo si NO hay ningún jugador real disponible, se usa 'ficticio'.
+      - Observador ficticio => solo el jugador pierde (sin costo a observador).
+      - Observador real castigador => jugador pierde y el observador paga costo AQUÍ.
+      - Observador real no castigador => no hay castigo.
 
     Returns (dict):
       {
@@ -537,36 +621,43 @@ def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
         elif (public_opinion == answer_other) or (opposite_opinion < min_opp):
             no_castigadores.append(other)
 
-    # 2) Armar panel sin reposición; si faltan, rellenar con ficticios
-    kC_desired = min(prob_punishment, PANEL_SIZE)
-
-    # 2.a) Bloque de castigadores (tamaño kC_desired)
-    if len(castigadores) >= kC_desired:
-        grupo_castigadores = _random.sample(castigadores, kC_desired)
+    # Si no hay NADIE real disponible, usar ficticios
+    if (not castigadores) and (not no_castigadores):
+        grupo_total = ["ficticio"] * PANEL_SIZE
     else:
-        grupo_castigadores = list(castigadores)  # todos los disponibles
-        faltan_c = kC_desired - len(grupo_castigadores)
-        if faltan_c > 0:
-            grupo_castigadores += ["ficticio"] * faltan_c
+        # 2) Armar panel con objetivo: kC_desired castigadores y (10 - kC_desired) no castigadores
+        kC_desired = min(prob_punishment, PANEL_SIZE)
 
-    # 2.b) Bloque de no castigadores (completa hasta PANEL_SIZE)
-    remaining = PANEL_SIZE - len(grupo_castigadores)  # siempre PANEL_SIZE - kC_desired
-    if remaining > 0:
-        if len(no_castigadores) >= remaining:
-            grupo_no_castigadores = _random.sample(no_castigadores, remaining)
+        # 2.a) Bloque de castigadores (preferir sin reposición; si faltan, re-muestrear con reposición)
+        if len(castigadores) >= kC_desired:
+            grupo_castigadores = _random.sample(castigadores, kC_desired)
         else:
-            grupo_no_castigadores = list(no_castigadores)
-            faltan_nc = remaining - len(grupo_no_castigadores)
-            if faltan_nc > 0:
-                grupo_no_castigadores += ["ficticio"] * faltan_nc
-    else:
-        grupo_no_castigadores = []
+            if len(castigadores) > 0:
+                grupo_castigadores = _random.choices(castigadores, k=kC_desired)  # con reposición
+            else:
+                grupo_castigadores = []
 
-    grupo_total = grupo_castigadores + grupo_no_castigadores
+        # 2.b) Completar hasta PANEL_SIZE con no castigadores (misma lógica)
+        remaining = PANEL_SIZE - len(grupo_castigadores)
+        if remaining > 0:
+            if len(no_castigadores) >= remaining:
+                grupo_no_castigadores = _random.sample(no_castigadores, remaining)
+            elif len(no_castigadores) > 0:
+                grupo_no_castigadores = _random.choices(no_castigadores, k=remaining)  # con reposición
+            else:
+                # No hay no castigadores reales; completar re-muestreando castigadores reales
+                # (si tampoco hubiera castigadores, ya habríamos entrado al caso de ficticios arriba)
+                grupo_no_castigadores = _random.choices(
+                    castigadores, k=remaining
+                ) if castigadores else []
+        else:
+            grupo_no_castigadores = []
 
-    if not grupo_total:
-        # Caso extremo: no hay nadie ni ficticio (muy raro)
-        return {'castigado': False, 'observador': None, 'punisher': False}
+        grupo_total = grupo_castigadores + grupo_no_castigadores
+
+        # Como salvaguarda extrema (poco probable): si aún quedó vacío, usar ficticios
+        if not grupo_total:
+            grupo_total = ["ficticio"] * PANEL_SIZE
 
     # 3) Elegir observador
     observador = _random.choice(grupo_total)
@@ -577,14 +668,25 @@ def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
         player.payoff -= punishment_stage_1
         return {'castigado': True, 'observador': None, 'punisher': True}
 
-    if observador in grupo_castigadores:
-        # Observador real castigador: jugador pierde; el costo al observador se cobra fuera
-        player.payoff -= punishment_stage_1
-        return {'castigado': True, 'observador': observador, 'punisher': True}
+    # Si el observador (real) está en el bloque de castigadores, castiga
+    # OJO: grupo_castigadores puede no existir si entramos al caso de ficticios directo
+    if isinstance(observador, type(player)):
+        # Determinar si es castigador revisando su regla respecto al jugador
+        min_opp_obs = getattr(observador, f"min_opp_punish_{topic_idx}", None)
+        answer_obs  = getattr(observador, f"answer_{topic_idx}", None)
+        es_castigador = (min_opp_obs is not None and answer_obs is not None
+                         and (opposite_opinion >= min_opp_obs)
+                         and (public_opinion != answer_obs))
 
-    # Observador real no castigador: no hay castigo
-    return {'castigado': False, 'observador': observador, 'punisher': False}
+        if es_castigador:
+            # Jugador pierde  AQUÍ
+            player.payoff -= punishment_stage_1
+            return {'castigado': True, 'observador': observador, 'punisher': True}
+        else:
+            return {'castigado': False, 'observador': observador, 'punisher': False}
 
+    # Por seguridad, si llegara un tipo inesperado
+    return {'castigado': False, 'observador': None, 'punisher': False}
 
 
 # -----------------------------------------------------------------------------
