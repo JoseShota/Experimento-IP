@@ -558,7 +558,7 @@ def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
             grupo_total = ["ficticio"] * PANEL_SIZE
 
     # 3) Elegir observador
-    observador = _random.choice(grupo_total)
+    observador = random.choice(grupo_total)
 
     # 4) Aplicar resultado
     if observador == "ficticio":
