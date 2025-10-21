@@ -1,12 +1,12 @@
 from __future__ import annotations
 from otree.api import *
 import secrets
-import random as _random  # keep stdlib random under a distinct alias
+import random
 
 def _rng_for_participant(participant):
     if 'rng' not in participant.vars:
         seed = secrets.randbits(64)  # 64 bits of OS entropy
-        participant.vars['rng'] = _random.Random(seed)
+        participant.vars['rng'] = random.Random(seed)
     return participant.vars['rng']
 
 # -----------------------------------------------------------------------------
@@ -439,7 +439,7 @@ def set_stage1_payoffs(subsession: Subsession):
     cobrados = set()  # ids de observadores a los que ya se les cobró en esta ronda
 
     for p in players:
-        topic_idx = _random.randint(1, 10)
+        topic_idx = random.randint(1, 10)
 
         ans = getattr(p, f"answer_{topic_idx}", None)
         wtl = getattr(p, f"wtl_{topic_idx}", None)
@@ -447,8 +447,8 @@ def set_stage1_payoffs(subsession: Subsession):
             # Si el jugador no respondió ese tópico, pasa al siguiente.
             continue
 
-        prob_punishment   = _random.randint(0, 10)
-        opposite_opinion  = _random.randint(0, 10)
+        prob_punishment   = random.randint(0, 10)
+        opposite_opinion  = random.randint(0, 10)
 
         # Regla: si la prob. de ser castigado es <= a su umbral wtl, dice su verdad; si no, invierte.
         if prob_punishment <= int(wtl or 0):
@@ -523,10 +523,10 @@ def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
 
         # 2.a) Bloque de castigadores (preferir sin reposición; si faltan, re-muestrear con reposición)
         if len(castigadores) >= kC_desired:
-            grupo_castigadores = _random.sample(castigadores, kC_desired)
+            grupo_castigadores = random.sample(castigadores, kC_desired)
         else:
             if len(castigadores) > 0:
-                grupo_castigadores = _random.choices(castigadores, k=kC_desired)  # con reposición
+                grupo_castigadores = random.choices(castigadores, k=kC_desired)  # con reposición
             else:
                 grupo_castigadores = []
 
@@ -534,13 +534,13 @@ def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
         remaining = PANEL_SIZE - len(grupo_castigadores)
         if remaining > 0:
             if len(no_castigadores) >= remaining:
-                grupo_no_castigadores = _random.sample(no_castigadores, remaining)
+                grupo_no_castigadores = random.sample(no_castigadores, remaining)
             elif len(no_castigadores) > 0:
-                grupo_no_castigadores = _random.choices(no_castigadores, k=remaining)  # con reposición
+                grupo_no_castigadores = random.choices(no_castigadores, k=remaining)  # con reposición
             else:
                 # No hay no castigadores reales; completar re-muestreando castigadores reales
                 # (si tampoco hubiera castigadores, ya habríamos entrado al caso de ficticios arriba)
-                grupo_no_castigadores = _random.choices(
+                grupo_no_castigadores = random.choices(
                     castigadores, k=remaining
                 ) if castigadores else []
         else:
