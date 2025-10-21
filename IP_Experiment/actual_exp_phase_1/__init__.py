@@ -449,12 +449,17 @@ def set_stage1_payoffs(subsession: Subsession):
 
         prob_punishment   = random.randint(0, 10)
         opposite_opinion  = random.randint(0, 10)
+        options = C.BINARY_OPTIONS[topic_idx - 1]
+        left_opt, right_opt = options
 
         # Regla: si la prob. de ser castigado es <= a su umbral wtl, dice su verdad; si no, invierte.
-        if prob_punishment <= int(wtl or 0):
+        if prob_punishment <= wtl:
             public_opinion = ans
         else:
-            public_opinion = 'Option L' if ans == 'Option H' else 'Option H'
+            if ans == left_opt:
+                public_opinion = right_opt
+            elif ans == right_opt:
+                public_opinion = left_opt
 
         # Simula castigo. Esta función YA no cobra el costo al observador.
         result = _simulate_punishment(
@@ -1371,10 +1376,9 @@ class ThankYouPage(Page):
 
 class PaymentWaitPage(WaitPage):
     wait_for_all_groups = True
-    # Solo en ronda 1
     @staticmethod
     def is_displayed(player):
-        return player.round_number == 1
+        return player.round_number == C.NUM_ROUNDS
 
     # Ejecuta la lógica cuando todos llegaron
     @staticmethod
