@@ -18,6 +18,20 @@ class C(BaseConstants):
     PLAYERS_PER_GROUP = None
     PRACTICE_TOPIC_LABEL = 'Emmanuel o Mijares'
     PRACTICE_OPTIONS     = ('Option H', 'Option L')
+    ########################### ADD ON ###########################
+    # Stage 2: costos y castigos (ajusta a tus valores reales)
+    COST_STAGE_2 = 3            # cost_stage_2
+    PUNISH_STAGE_2 = 5          # punishment_stage_2
+    COST_TO_LIE = 2             # cost_to_lie
+    BONUS_STAGE_2 = 1           # bonus_stage_2 (en $$$; si conviertes puntos a $ en otra parte, deja aquí sólo el flag)
+
+    # Mapear tratamiento->(nA, nB). Si ya tienes TREATMENT_CODES/round schedule, usa eso.
+    # Ejemplo genérico: 9 tratamientos con 1A–9B ... 9A–1B
+    TREATMENT_TO_COMPOSITION = {
+        'A1B9': (1, 9), 'A2B8': (2, 8), 'A3B7': (3, 7), 'A4B6': (4, 6),
+        'A5B5': (5, 5), 'A6B4': (6, 4), 'A7B3': (7, 3), 'A8B2': (8, 2), 'A9B1': (9, 1),
+    }
+
 # 10 Binary Questions 
     TOPIC_LABELS = [
         "Topic 1",
@@ -46,11 +60,6 @@ class C(BaseConstants):
     ('Option H', 'Option L'),  # Question 10
     ]
 
-# Willingness to judge fixed cost and maximum cost
-    COST_X = '{ cost_stage_2 }'            # replace later with cu(10) or similar
-    YES_NO = ('Yes, I am willing to pay  { cost_stage_2 } to make the decision', 'No, I am not willing to pay { cost_stage_2 } to make the decision')  # canonical label pair
-    # NEW: cost text for Stage 1 (used in the new Q3)
-    COST_STAGE_1 = '{ cost_stage_1 }'
 # Treatment codes for the experiment
     TREATMENT_CODES = [
         'New_Ten_Ninety',
@@ -71,6 +80,12 @@ class C(BaseConstants):
     for t_idx in range(len(TOPIC_LABELS)):
         for trt_idx in range(len(TREATMENT_CODES)):
             PAIRS.append((t_idx, trt_idx))
+
+# Willingness to judge fixed cost and maximum cost
+    COST_X = '{ cost_stage_2 }'            # replace later with cu(10) or similar
+    YES_NO = ('Yes, I am willing to pay  { cost_stage_2 } to make the decision', 'No, I am not willing to pay { cost_stage_2 } to make the decision')  # canonical label pair
+    # NEW: cost text for Stage 1 (used in the new Q3)
+    COST_STAGE_1 = '{ cost_stage_1 }'
     PUNISHMENT_STAGE1 = cu(1000)
     COST_STAGE1 = cu(1000)
     NUM_ROUNDS = 2 # PRACTICE_ROUNDS + len(PAIRS)
@@ -150,6 +165,64 @@ def vars_for_admin_report(subsession):
 class Group(BaseGroup):
     pass
 
+# class Player(BasePlayer):
+#     # Personal information fields:
+#     age = models.IntegerField(label="What is your age?", min=18)
+#     gender = models.StringField(
+#         choices=[('M', 'Male'), ('F', 'Female'), ('I', 'Intersex'), ('N', 'Prefer not to say')],
+#         label="What sex were you assigned at birth?"
+#     )
+#     racial_identification = models.StringField(
+#         choices=[
+#             ('White', 'White / Caucasian'),
+#             ('Black', 'Black / African American'),
+#             ('Hispanic', 'Hispanic / Latino'),
+#             ('Indigenous', 'Indigenous'),
+#             ('Mixed', 'Mixed / Biracial'),
+#             ('Pacific Islander', 'Pacific Islander'),
+#             ('Middle Eastern', 'Middle Eastern'),
+#             ('Asian', 'Asian'),
+#             ('Arab', 'Arab'),
+#             ('Other', 'Other'),
+#         ],
+#         label="How do you identify racially?"
+#     )
+#     previous_experiment = models.IntegerField(
+#         label="Approximately how many research experiments (in economics, psychology, or similar fields) have you participated in before?",
+#         min=0
+#     )
+#     # Stage 1 (practice page)
+#     answer_practice   = models.StringField(blank=True)
+#     wtl_practice      = models.IntegerField(choices=list(range(1, 11)), widget=widgets.RadioSelectHorizontal, blank=True)
+#     jr_practice       = models.IntegerField(choices=[1, 2, 3], blank=True)
+#     # Stage 2 (WTJ practice)
+#     wtj_practice      = models.StringField(blank=True)
+#     # Stage 3 (public opinion practice)
+#     public_opinion_practice = models.StringField(blank=True)
+#     # NEW (practice):
+#     min_opp_punish_practice = models.IntegerField(min=0, max=10, blank=True)
+#     # Stage 4 (guesses practice)
+#     paid_cost_A_practice   = models.IntegerField(min=0, max=10, blank=True)
+#     paid_cost_B_practice   = models.IntegerField(min=0, max=10, blank=True)
+#     expr_A_from_A_practice = models.IntegerField(min=0, max=10, blank=True)
+#     expr_A_from_B_practice = models.IntegerField(min=0, max=10, blank=True)
+#     topic_idx     = models.IntegerField(blank=True)
+#     treatment_idx = models.IntegerField(blank=True)
+
+#     public_opinion = models.StringField(
+#         label="What opinion would you express to the rest of your group?"
+#     )
+#     # ─── Stage-4 guesses (0–5 each) ──────────────────────────────────────────
+#     paid_cost_A = models.IntegerField(min=0, max=10, blank=True,
+#                                 label="How many of the 5 with opinion A paid the cost?")
+#     paid_cost_B = models.IntegerField(min=0, max=10, blank=True,
+#                                 label="How many of the 5 with opinion B paid the cost?")
+#     expr_A_from_A = models.IntegerField(min=0, max=10, blank=True,
+#                                 label="How many of the 5 with opinion A expressed A?")
+#     expr_A_from_B = models.IntegerField(min=0, max=10, blank=True,
+#                                 label="How many of the 5 with opinion B expressed A?")
+
+########################### ADD ON ###########################
 class Player(BasePlayer):
     # Personal information fields:
     age = models.IntegerField(label="What is your age?", min=18)
@@ -176,36 +249,71 @@ class Player(BasePlayer):
         label="Approximately how many research experiments (in economics, psychology, or similar fields) have you participated in before?",
         min=0
     )
+
     # Stage 1 (practice page)
     answer_practice   = models.StringField(blank=True)
     wtl_practice      = models.IntegerField(choices=list(range(1, 11)), widget=widgets.RadioSelectHorizontal, blank=True)
     jr_practice       = models.IntegerField(choices=[1, 2, 3], blank=True)
+
     # Stage 2 (WTJ practice)
     wtj_practice      = models.StringField(blank=True)
+
     # Stage 3 (public opinion practice)
     public_opinion_practice = models.StringField(blank=True)
+
     # NEW (practice):
     min_opp_punish_practice = models.IntegerField(min=0, max=10, blank=True)
+
     # Stage 4 (guesses practice)
     paid_cost_A_practice   = models.IntegerField(min=0, max=10, blank=True)
     paid_cost_B_practice   = models.IntegerField(min=0, max=10, blank=True)
     expr_A_from_A_practice = models.IntegerField(min=0, max=10, blank=True)
     expr_A_from_B_practice = models.IntegerField(min=0, max=10, blank=True)
+
     topic_idx     = models.IntegerField(blank=True)
     treatment_idx = models.IntegerField(blank=True)
 
+    # ─── Stage-2 (decisiones reales) ─────────────────────────────────────────
+    # NEW (stage 2): Willingness To Judge (Sí/No)
+    wtj = models.BooleanField(
+        choices=[(True, 'Yes'), (False, 'No')],
+        widget=widgets.RadioSelectHorizontal,
+        blank=True,
+        label="Are you willing to pay a fixed cost to judge someone who expresses the opposite of your private opinion?"
+    )
+
+    # Ajuste: define choices A/B explícitamente (usado por la lógica de pagos)
     public_opinion = models.StringField(
+        choices=[('A', 'A'), ('B', 'B')],
+        widget=widgets.RadioSelectHorizontal,
+        blank=True,
         label="What opinion would you express to the rest of your group?"
     )
-    # ─── Stage-4 guesses (0–5 each) ──────────────────────────────────────────
-    paid_cost_A = models.IntegerField(min=0, max=10, blank=True,
-                                label="How many of the 5 with opinion A paid the cost?")
-    paid_cost_B = models.IntegerField(min=0, max=10, blank=True,
-                                label="How many of the 5 with opinion B paid the cost?")
-    expr_A_from_A = models.IntegerField(min=0, max=10, blank=True,
-                                label="How many of the 5 with opinion A expressed A?")
-    expr_A_from_B = models.IntegerField(min=0, max=10, blank=True,
-                                label="How many of the 5 with opinion B expressed A?")
+
+    # ─── Stage-4 guesses (0–10 cada una; evita fijar 'de los 5' en la etiqueta) ─
+    paid_cost_A = models.IntegerField(
+        min=0, max=10, blank=True,
+        label="How many with private opinion A paid the cost?"
+    )
+    paid_cost_B = models.IntegerField(
+        min=0, max=10, blank=True,
+        label="How many with private opinion B paid the cost?"
+    )
+    expr_A_from_A = models.IntegerField(
+        min=0, max=10, blank=True,
+        label="How many with private opinion A expressed A?"
+    )
+    expr_A_from_B = models.IntegerField(
+        min=0, max=10, blank=True,
+        label="How many with private opinion B expressed A?"
+    )
+
+    # ─── Variables de pago Stage 2 (se llenan al final) ──────────────────────
+    # NEW (stage 2): ronda pagada, puntos/moneda y bono
+    paid_round_stage2 = models.IntegerField(initial=0)
+    stage2_payoff_points = models.IntegerField(initial=0)   # o CurrencyField si conviertes a dinero directo
+    stage2_bonus_hit = models.BooleanField(initial=False)
+
 
 # --- add 10 StringFields dynamically ---------------------------
 for i in range(1, 11):
@@ -318,138 +426,6 @@ def approach_clause(approach: int) -> str:
     }
     return mapping.get(approach, mapping[1])  # default → 1
 
-######################################################################
-######################################################################
-######################################################################
-# def set_stage1_payoffs(subsession: Subsession):
-#         players = subsession.get_players()
-#         for p in players:
-#             topic_idx = _random.randint(1, 10)
-#             ans = getattr(p, f"answer_{topic_idx}", None)
-#             wtl = getattr(p, f"wtl_{topic_idx}", None)
-
-#             if ans is None:
-#                 continue
-
-#             prob_punishment = _random.randint(0, 10)
-#             opposite_opinion = _random.randint(0, 10)
-
-#             if prob_punishment <= int(wtl or 0):
-#                 public_opinion = ans
-#             else:
-#                 public_opinion = 'Option L' if ans == 'Option H' else 'Option H'
-
-#             _simulate_punishment(
-#                 player=p,
-#                 all_players=players,
-#                 topic_idx=topic_idx,
-#                 prob_punishment=prob_punishment,
-#                 opposite_opinion=opposite_opinion,
-#                 public_opinion=public_opinion,
-#                 punishment_stage_1=C.PUNISHMENT_STAGE1,
-#                 cost_stage_1=C.COST_STAGE1
-#             )
-#         print("Stage 1 payoffs set for group.")
-
-# def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
-#                         opposite_opinion, public_opinion,
-#                         punishment_stage_1, cost_stage_1):
-#     """
-#     Simula si el jugador 'player' es castigado en Stage 1 y aplica los costos.
-
-#     Params
-#     ------
-#     player : Player
-#         Jugador i al que se calcula el castigo.
-#     all_players : list[Player]
-#         Todos los jugadores de la sesión.
-#     topic_idx : int
-#         Índice del tema pagado (1..10).
-#     prob_punishment : int
-#         Número sorteado de castigadores en el grupo (0..10).
-#     opposite_opinion : int
-#         Regla sorteada para decidir quién castiga.
-#     public_opinion : str/int
-#         Opinión pública de i en ese tema (A/B o 0/1).
-#     punishment_stage_1 : int/float
-#         Puntos que pierde el castigado.
-#     cost_stage_1 : int/float
-#         Puntos que paga el castigador.
-
-#     Returns
-#     -------
-#     castigado : bool
-#         True si el jugador fue castigado, False si no.
-#     """
-
-#     # ---------------------------------------------------
-#     # Paso 4.1: posibles castigadores
-#     # ---------------------------------------------------
-#     castigadores = []
-#     for other in all_players:
-#         if other.id_in_subsession == player.id_in_subsession:
-#             continue
-#         min_opp = getattr(other, f"min_opp_punish_{topic_idx}")
-#         answer_other = getattr(other, f"answer_{topic_idx}")
-#         if (opposite_opinion >= min_opp) and (public_opinion != answer_other):
-#             castigadores.append(other)
-
-#     # ---------------------------------------------------
-#     # Paso 4.3: posibles no castigadores
-#     # ---------------------------------------------------
-#     no_castigadores = []
-#     for other in all_players:
-#         if other.id_in_subsession == player.id_in_subsession:
-#             continue
-#         min_opp = getattr(other, f"min_opp_punish_{topic_idx}")
-#         answer_other = getattr(other, f"answer_{topic_idx}")
-#         if (public_opinion == answer_other) or (opposite_opinion < min_opp):
-#             no_castigadores.append(other)
-
-#     # ---------------------------------------------------
-#     # Ajuste de casos
-#     # ---------------------------------------------------
-#     if len(castigadores) >= prob_punishment and len(no_castigadores) >= (10 - prob_punishment):
-#         grupo_castigadores = _random.sample(castigadores, prob_punishment)
-#         grupo_no_castigadores = _random.sample(no_castigadores, 10 - prob_punishment)
-
-#     elif len(castigadores) > 0 or len(no_castigadores) > 0:
-#         # insuficientes → redistribuir con repetición
-#         grupo_castigadores = _random.choices(castigadores, k=min(prob_punishment, len(castigadores)))
-#         grupo_no_castigadores = _random.choices(no_castigadores, k=10 - len(grupo_castigadores))
-
-#     else:
-#         # nadie disponible → ficticios
-#         grupo_castigadores = ["ficticio"] * prob_punishment
-#         grupo_no_castigadores = ["ficticio"] * (10 - prob_punishment)
-
-#     grupo_total = grupo_castigadores + grupo_no_castigadores
-
-#     if not grupo_total:
-#         return False
-
-#     # ---------------------------------------------------
-#     # Paso 5: elegir observador
-#     # ---------------------------------------------------
-#     observador = _random.choice(grupo_total)
-
-#     if observador == "ficticio":
-#         # ficticio castiga → solo aplica castigo al jugador
-#         player.payoff -= punishment_stage_1
-#         return True
-
-#     elif observador in grupo_castigadores:
-#         # real castiga → jugador pierde y castigador paga costo
-#         player.payoff -= punishment_stage_1
-#         observador.payoff -= cost_stage_1
-#         return True
-
-#     else:
-#         return False
-######################################################################
-######################################################################
-######################################################################
-
 def set_stage1_payoffs(subsession: Subsession):
     """
     Para cada jugador:
@@ -501,90 +477,6 @@ def set_stage1_payoffs(subsession: Subsession):
 
 
     print("Stage 1 payoffs set for group.")
-
-
-# def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
-#                          opposite_opinion, public_opinion,
-#                          punishment_stage_1, cost_stage_1):
-#     """
-#     Simula Stage 1 para 'player' sin duplicar personas en el panel:
-#       - Si faltan reales, se rellena con "ficticio" (no hay reposición).
-#       - Observador "ficticio" => el jugador recibe castigo; no hay costo de observador real.
-#       - Observador real en castigadores => castiga (costo se cobra fuera).
-#       - Observador real en no castigadores => no castiga.
-
-#     Returns (dict):
-#       {
-#         'castigado': bool,
-#         'observador': Player | None,   # None si fue ficticio o no hubo panel
-#         'punisher': bool               # True si el observador (real o ficticio) castiga
-#       }
-#     """
-#     PANEL_SIZE = 10
-
-#     # 1) Clasificar posibles castigadores / no castigadores (excluyendo al propio jugador)
-#     castigadores = []
-#     no_castigadores = []
-#     for other in all_players:
-#         if other.id_in_subsession == player.id_in_subsession:
-#             continue
-#         min_opp = getattr(other, f"min_opp_punish_{topic_idx}", None)
-#         answer_other = getattr(other, f"answer_{topic_idx}", None)
-#         if min_opp is None or answer_other is None:
-#             continue
-
-#         if (opposite_opinion >= min_opp) and (public_opinion != answer_other):
-#             castigadores.append(other)
-#         elif (public_opinion == answer_other) or (opposite_opinion < min_opp):
-#             no_castigadores.append(other)
-
-#     # 2) Armar panel sin reposición; si faltan, rellenar con ficticios
-#     kC_desired = min(prob_punishment, PANEL_SIZE)
-
-#     # 2.a) Bloque de castigadores (tamaño kC_desired)
-#     if len(castigadores) >= kC_desired:
-#         grupo_castigadores = _random.sample(castigadores, kC_desired)
-#     else:
-#         grupo_castigadores = list(castigadores)  # todos los disponibles
-#         faltan_c = kC_desired - len(grupo_castigadores)
-#         if faltan_c > 0:
-#             grupo_castigadores += ["ficticio"] * faltan_c
-
-#     # 2.b) Bloque de no castigadores (completa hasta PANEL_SIZE)
-#     remaining = PANEL_SIZE - len(grupo_castigadores)  # siempre PANEL_SIZE - kC_desired
-#     if remaining > 0:
-#         if len(no_castigadores) >= remaining:
-#             grupo_no_castigadores = _random.sample(no_castigadores, remaining)
-#         else:
-#             grupo_no_castigadores = list(no_castigadores)
-#             faltan_nc = remaining - len(grupo_no_castigadores)
-#             if faltan_nc > 0:
-#                 grupo_no_castigadores += ["ficticio"] * faltan_nc
-#     else:
-#         grupo_no_castigadores = []
-
-#     grupo_total = grupo_castigadores + grupo_no_castigadores
-
-#     if not grupo_total:
-#         # Caso extremo: no hay nadie ni ficticio (muy raro)
-#         return {'castigado': False, 'observador': None, 'punisher': False}
-
-#     # 3) Elegir observador
-#     observador = _random.choice(grupo_total)
-
-#     # 4) Aplicar resultado
-#     if observador == "ficticio":
-#         # Ficticio castiga: solo el jugador pierde; sin costo de observador real
-#         player.payoff -= punishment_stage_1
-#         return {'castigado': True, 'observador': None, 'punisher': True}
-
-#     if observador in grupo_castigadores:
-#         # Observador real castigador: jugador pierde; el costo al observador se cobra fuera
-#         player.payoff -= punishment_stage_1
-#         return {'castigado': True, 'observador': observador, 'punisher': True}
-
-#     # Observador real no castigador: no hay castigo
-#     return {'castigado': False, 'observador': observador, 'punisher': False}
 
 def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
                          opposite_opinion, public_opinion,
@@ -689,6 +581,216 @@ def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
     # Por seguridad, si llegara un tipo inesperado
     return {'castigado': False, 'observador': None, 'punisher': False}
 
+########################### ADD ON ###########################
+def _topic_for_round(subsession):
+    """Devuelve el topic_label de esta ronda r (Stage 2). 
+    Debes ligar esto a tu scheduler real."""
+    return subsession.session.vars['round_topic_map'][subsession.round_number]
+
+########################### ADD ON ###########################
+def _treatment_code_for_round(subsession):
+    """Devuelve el código de tratamiento de esta ronda r."""
+    return subsession.session.vars['round_treatment_map'][subsession.round_number]
+
+########################### ADD ON ###########################
+def _composition_for_round(subsession):
+    code = _treatment_code_for_round(subsession)
+    return C.TREATMENT_TO_COMPOSITION[code]  # (nA, nB)
+
+########################### ADD ON ###########################
+def _stage1_answer_for_topic(player, topic_label):
+    """
+    Devuelve 'A'/'B' = answer_i (opinión privada del Stage 1) para el tema dado.
+    ADAPTA esta función a cómo guardaste las 10 respuestas del Stage 1.
+    """
+    # Ejemplo: si guardaste en participant.vars['stage1_answers'][topic_label] = 'A'/'B'
+    return player.participant.vars['stage1_answers'][topic_label]
+
+########################### ADD ON ###########################
+def build_groups_for_player_in_round(p_i, subsession):
+    """
+    Construye GJ, GE, GH para el jugador p_i en la ronda subsession.round_number,
+    cumpliendo: (1) composición (nA, nB) del tratamiento de esta ronda,
+    (2) coincidencia tratamiento–tema (decisiones de los otros en SU ronda r). 
+    Devuelve: dict con claves 'GJ', 'GE', 'GH', cada una lista de Players (o 1 Player si regla de escasez).
+    """
+    r = subsession.round_number
+    assert r >= 2, "Stage 2 empieza en la ronda 2"
+
+    topic = _topic_for_round(subsession)
+    nA, nB = _composition_for_round(subsession)
+
+    # Candidatos: todos los demás players en ESTA ronda r (misma info, misma ronda)  ← coincidencia tratamiento–tema
+    others = [pp for pp in subsession.get_players() if pp.id_in_subsession != p_i.id_in_subsession]
+
+    # Particiona por answer Stage 1 para este tema
+    groupA = [pp for pp in others if _stage1_answer_for_topic(pp, topic) == 'A']
+    groupB = [pp for pp in others if _stage1_answer_for_topic(pp, topic) == 'B']
+
+    def sample_group_exact_or_prob(one_shot=False):
+        """
+        Devuelve:
+        - lista con 10 Players si hay suficientes para (nA,nB)
+        - si no hay suficientes y one_shot=True (para GJ/GE), elige 1 Player con prob pA=nA/(nA+nB), pB=nB/(nA+nB)
+        - si no hay suficientes y one_shot=False (para GH), completa con “archivo” (simulado por re-muestreo con reemplazo)
+        """
+        total_needed = 10
+        if len(groupA) >= nA and len(groupB) >= nB:
+            return random.sample(groupA, nA) + random.sample(groupB, nB)
+
+        if one_shot:
+            # Regla probabilística pA/pB (GJ/GE)
+            pA = nA / (nA + nB)
+            useA = (random.random() < pA) and len(groupA) > 0
+            useB = (not useA) and len(groupB) > 0
+            if useA:
+                return [random.choice(groupA)]
+            elif useB:
+                return [random.choice(groupB)]
+            # Si de plano no hay nadie, devuelve lista vacía (caso extremo)
+            return []
+
+        # GH: completar con “archivo” → simulamos con reemplazo desde lo disponible (si un bucket está vacío, re-muestrea del otro)
+        pickA = [random.choice(groupA)] * min(len(groupA), nA) if groupA else []
+        pickB = [random.choice(groupB)] * min(len(groupB), nB) if groupB else []
+        # Completa hasta nA y nB con reemplazo
+        while len(pickA) < nA:
+            if groupA:
+                pickA.append(random.choice(groupA))
+            elif groupB:
+                pickA.append(random.choice(groupB))  # fallback
+            else:
+                break
+        while len(pickB) < nB:
+            if groupB:
+                pickB.append(random.choice(groupB))
+            elif groupA:
+                pickB.append(random.choice(groupA))
+            else:
+                break
+        picks = pickA + pickB
+        # Si aún no llegamos a 10 por escasez extrema, rellena con lo que haya con reemplazo
+        while len(picks) < total_needed and (groupA or groupB):
+            pool = (groupA + groupB) if (groupA and groupB) else (groupA or groupB)
+            picks.append(random.choice(pool))
+        return picks
+
+    GJ = sample_group_exact_or_prob(one_shot=True)
+    GE = sample_group_exact_or_prob(one_shot=True)
+    GH = sample_group_exact_or_prob(one_shot=False)
+
+    return {'GJ': GJ, 'GE': GE, 'GH': GH}
+
+########################### ADD ON ###########################
+def set_stage2_payoffs(subsession):
+    """
+    Para CADA participante:
+      1) Elige aleatoriamente una ronda r ∈ [2, C.NUM_ROUNDS].
+      2) Construye GJ, GE, GH en esa ronda y aplica las reglas de pago de:
+         - WillingnessToJudgeFixedCost (J)
+         - ExpressYourOpinion (E)
+         - HowManyLied (H)
+      3) Suma puntos de Stage 2 y marca si ganó bono.
+    """
+    session = subsession.session
+    # Trabajaremos con TODA la sesión: necesitamos acceder a la ronda elegida (coincidencia tratamiento–tema)
+    all_subsessions = subsession.in_rounds(2, C.NUM_ROUNDS)
+
+    for p in subsession.get_players():
+        # 1) Ronda aleatoria para Stage 2
+        paid_round = random.randint(2, C.NUM_ROUNDS)
+        paid_sub = all_subsessions[paid_round - 2]  # index offset
+        p.paid_round_stage2 = paid_round
+
+        topic = _topic_for_round(paid_sub)
+        nA, nB = _composition_for_round(paid_sub)
+
+        groups = build_groups_for_player_in_round(p, paid_sub)
+        GJ, GE, GH = groups['GJ'], groups['GE'], groups['GH']
+
+        # Trae decisiones del propio jugador en ESA ronda (sus campos en r)
+        p_in_r = p.in_round(paid_round)
+        wtj = p_in_r.wtj
+        pub_i = p_in_r.public_opinion
+        ans_i = _stage1_answer_for_topic(p, topic)
+
+        points = 0
+        bonus_hit = False
+
+        # -----------------------------
+        # (J) WillingnessToJudgeFixedCost_r
+        # Regla: si wtj=Sí y el extraído de GJ expresa distinto a mi answer_i, yo pago COST_STAGE_2 y él pierde PUNISH_STAGE_2.
+        # (la pérdida del otro no te afecta en puntos, aquí sólo registramos tus puntos).
+        # -----------------------------
+        if GJ:
+            k = random.choice(GJ)
+            k_r = k.in_round(paid_round)
+            pub_k = k_r.public_opinion  # decisión real del otro en SU ronda r  ← coincidencia tratamiento–tema
+            if wtj and (pub_k is not None) and (pub_k != ans_i):
+                points -= C.COST_STAGE_2  # yo pago el costo al castigar
+                # El otro perdería punishment_stage_2 (no sumamos ni restamos al "yo")
+
+        # -----------------------------
+        # (E) ExpressYourOpinion_r
+        # Regla: si j (de GE) eligió Sí en WillingnessToJudge y yo expreso lo opuesto a answer_j, entonces me castigan:
+        # pierdo PUNISH_STAGE_2 y j paga COST_STAGE_2; si yo miento (pub_i != ans_i), pago COST_TO_LIE.
+        # -----------------------------
+        if GE and (pub_i in ('A', 'B')):
+            j = random.choice(GE)
+            j_r = j.in_round(paid_round)
+            wtj_j = j_r.wtj
+            ans_j = _stage1_answer_for_topic(j, topic)
+
+            # Castigo activado si j dijo Sí y yo expreso distinto a la opinión privada de j
+            if wtj_j and (ans_j is not None) and (pub_i != ans_j):
+                points -= C.PUNISH_STAGE_2  # me castigaron
+
+            # Costo por mentir
+            if pub_i != ans_i:
+                points -= C.COST_TO_LIE
+
+        # -----------------------------
+        # (H) HowManyLied_r  (bono si acierta a ±1)
+        # Contar en GH:
+        #  - paid_cost_A: # con answer=A que eligieron Sí a wtj
+        #  - paid_cost_B: # con answer=B que eligieron Sí a wtj
+        #  - expr_A_from_A: # con answer=A que expresaron A
+        #  - expr_A_from_B: # con answer=B que expresaron A
+        # -----------------------------
+        true_paid_A = true_paid_B = true_expr_A_from_A = true_expr_A_from_B = 0
+        for q in GH:
+            q_r = q.in_round(paid_round)
+            ans_q = _stage1_answer_for_topic(q, topic)
+            if ans_q == 'A':
+                if q_r.wtj:
+                    true_paid_A += 1
+                if q_r.public_opinion == 'A':
+                    true_expr_A_from_A += 1
+            elif ans_q == 'B':
+                if q_r.wtj:
+                    true_paid_B += 1
+                if q_r.public_opinion == 'A':
+                    true_expr_A_from_B += 1
+
+        # Predicción del jugador en esa ronda
+        guess_paid_A = p_in_r.paid_cost_A
+        guess_paid_B = p_in_r.paid_cost_B
+        guess_expr_A_from_A = p_in_r.expr_A_from_A
+        guess_expr_A_from_B = p_in_r.expr_A_from_B
+
+        # Elegir al azar una de las 4 preguntas y evaluar bono (±1 persona)
+        true_vec = [true_paid_A, true_paid_B, true_expr_A_from_A, true_expr_A_from_B]
+        guess_vec = [guess_paid_A, guess_paid_B, guess_expr_A_from_A, guess_expr_A_from_B]
+        idx = random.randrange(4)
+        if (guess_vec[idx] is not None) and (abs(guess_vec[idx] - true_vec[idx]) <= 1):
+            bonus_hit = True
+            # Si tu conversión de puntos a dinero es aparte, deja sólo el flag.
+            # Si quieres sumar puntos por bono, cambia aquí por puntos equivalentes.
+            # points += C.BONUS_STAGE_2_POINTS  # opcional si conviertes luego a $
+
+        # Guardar resultados Stage 2
+        p.stage2_payoff_points = points
+        p.stage2_bonus_hit = bonus_hit
 
 # -----------------------------------------------------------------------------
 # Page Definitions
@@ -1064,7 +1166,6 @@ class TopicTreatment(Page):
             is_practice   = False,
         )
 
-
 class WillingnessToJudgeFixedCost(Page):
     form_model = 'player'
 
@@ -1176,7 +1277,6 @@ class ExpressYourOpinion(Page):
             n_B            = n_B,   # NEW
         )
 
-
 class HowManyLied(Page):
     form_model  = 'player'
     form_fields = ['paid_cost_A', 'paid_cost_B', 'expr_A_from_A', 'expr_A_from_B']
@@ -1259,7 +1359,6 @@ class HowManyLied(Page):
 
         return errs or None
 
-
 class ThankYouPage(Page):
     @staticmethod
     def is_displayed(player: Player) -> bool:
@@ -1272,17 +1371,39 @@ class ThankYouPage(Page):
 
 class PaymentWaitPage(WaitPage):
     wait_for_all_groups = True
+    # Solo en ronda 1
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number == 1
+
+    # Ejecuta la lógica cuando todos llegaron
+    @staticmethod
+    def after_all_players_arrive(subsession):
+        set_stage1_payoffs(subsession)
+
+########################### ADD ON ###########################
+class FinalPaymentWaitPage(WaitPage):
+    wait_for_all_groups = True
 
     @staticmethod
     def is_displayed(player: Player):
-        # Solo mostrar esta página en la ronda 1
-        return player.round_number == 1
+        # Al terminar TODAS las rondas
+        return player.round_number == C.NUM_ROUNDS
 
     @staticmethod
-    def after_all_players_arrive(subsession):
-        # Ejecutar lógica solo si estamos en ronda 1
-        if subsession.round_number == 1:
-            set_stage1_payoffs(subsession)
+    def after_all_players_arrive(subsession: Subsession):
+        # Stage 1 (ya lo tienes)
+        # set_stage1_payoffs(subsession)
+
+        # Stage 2 (nuevo)
+        set_stage2_payoffs(subsession)
+
+        # Si conviertes puntos a dinero, hazlo aquí sumando Stage 1 + Stage 2
+        for p in subsession.get_players():
+            total_points = p.participant.vars.get('stage1_points', 0) + p.stage2_payoff_points
+            # Ejemplo: guarda en participant.vars y/o en payoff real de oTree
+            p.participant.vars['total_points'] = total_points
+            # p.payoff = cu_entrega_en_dinero(total_points, p.stage2_bonus_hit)
 
 
 # -----------------------------------------------------------------------------
@@ -1299,10 +1420,11 @@ page_sequence = [
     Practice_HowManyLied,
 
 ] + BINARY_TOPIC_PAGES + [
-    # TopicTreatment,
-    # WillingnessToJudgeFixedCost,
-    # ExpressYourOpinion,
-    # HowManyLied,
+    TopicTreatment,
+    WillingnessToJudgeFixedCost,
+    ExpressYourOpinion,
+    HowManyLied,
     ThankYouPage,
-    PaymentWaitPage
+    PaymentWaitPage,
+    FinalPaymentWaitPage
 ]
