@@ -88,7 +88,7 @@ class C(BaseConstants):
     COST_STAGE_1 = '{ cost_stage_1 }'
     PUNISHMENT_STAGE1 = cu(1000)
     COST_STAGE1 = cu(1000)
-    NUM_ROUNDS = 2 # PRACTICE_ROUNDS + len(PAIRS)
+    NUM_ROUNDS = PRACTICE_ROUNDS + len(PAIRS)
     STARTING_ENDOWMENT_STAGE_1 = cu(2000)
     STARTING_ENDOWMENT_STAGE_2 = cu(2000) * NUM_ROUNDS
 
@@ -916,7 +916,7 @@ class Practice_WTJ(Page):
             topic_right    = topic_right,
             yes_label      = yes,
             no_label       = no,
-            cost_stage_2   = C.COST_X,
+            cost_stage_2   = C.COST_STAGE_2,
             treatment_png  = f"experiment/{C.TREATMENT_CODES[trt_idx]}.png",
             round_number   = player.round_number,
             total_rounds   = C.NUM_ROUNDS,
@@ -1216,7 +1216,7 @@ class WillingnessToJudgeFixedCost(Page):
             topic_right    = topic_right,
             yes_label      = yes,
             no_label       = no,
-            cost_stage_2   = C.COST_X,
+            cost_stage_2   = C.COST_STAGE_2,
             treatment_png  = f"experiment/{C.TREATMENT_CODES[player.treatment_idx]}.png",
             round_number   = player.round_number,
             total_rounds   = C.NUM_ROUNDS,
