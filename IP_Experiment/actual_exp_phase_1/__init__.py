@@ -255,43 +255,37 @@ class Player(BasePlayer):
     stage2_bonus_hit = models.BooleanField(initial=False)
 
 
-# --- add 10 StringFields dynamically ---------------------------
+# --- add StringFields dynamically for Stage 1 ---------------------------
 for i in range(1, len(C.TOPIC_LABELS) + 1):
+    # Answer field
     setattr(Player, f'answer_{i}', models.StringField(blank=True))
-
-# --- add 10 WTJ fields dynamically -------------
-for i in range(1, len(C.TOPIC_LABELS) + 1):
-    setattr(Player, f'wtj_{i}', models.StringField(blank=True))
-
-# Willingness-To-Lie importance ratings (keep as-is)
-for i in range(1, len(C.TOPIC_LABELS) + 1):
+    # Willingness-To-Lie (WTL)
     setattr(
         Player,
         f"wtl_{i}",
         models.IntegerField(
-            choices=list(range(1, 11)),  # If switching to 0..10, use range(0, 11)
+            choices=list(range(1, 11)),
             widget=widgets.RadioSelectHorizontal,
         ),
     )
-
-# --- add 10 IntegerFields for JudgementRule (Approach 1/2/3) -------------
-for i in range(1, len(C.TOPIC_LABELS) + 1):
+    # Willingness-To-Judge (WTJ)
+    setattr(Player, f'wtj_{i}', models.StringField(blank=True))
+    # Judgement Rule (JR)
     setattr(
         Player,
         f'jr_{i}',
         models.IntegerField(
             choices=[(1, 'Approach 1'), (2, 'Approach 2'), (3, 'Approach 3')],
-            blank=True,       # UI will enforce selection; keep DB tolerant
+            blank=True,
         ),
     )
-
-# NEW (10 per-topic integer thresholds, 0..10)
-for i in range(1, len(C.TOPIC_LABELS) + 1):
+    # Minimum Opponent Punishment threshold
     setattr(
         Player,
         f'min_opp_punish_{i}',
         models.IntegerField(min=0, max=10, blank=True),
     )
+
 
 # ---------------------------------------------------------------------
 # Utility functions
