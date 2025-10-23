@@ -378,7 +378,8 @@ def set_stage1_payoffs(subsession: Subsession):
     players = subsession.get_players()
     cobrados = set()  # ids de observadores a los que ya se les cobró en esta ronda
 
-    for p in players:
+    for p1 in players:
+        p = p1.in_round(1)
         topic_idx = random.randint(1, 10)
 
         ans = getattr(p, f"answer_{topic_idx}", None)
@@ -446,7 +447,8 @@ def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
     # 1) Clasificar posibles castigadores / no castigadores (excluyendo al propio jugador)
     castigadores = []
     no_castigadores = []
-    for other in all_players:
+    for other_c in all_players:
+        other = other_c.in_round(1)
         if other.id_in_subsession == player.id_in_subsession:
             continue
         min_opp = getattr(other, f"min_opp_punish_{topic_idx}", None)
