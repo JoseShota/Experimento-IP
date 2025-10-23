@@ -100,5 +100,5 @@ class PlayerBot(Bot):
 
         # 5) Cierre / espera de pago (si están en tu sequence)
         #    (Si ThankYouPage no tiene form, usamos Submission para saltar el check de HTML)
-        if 'ThankYouPage' in globals():
+        if self.round_number == C.NUM_ROUNDS:
             yield Submission(ThankYouPage, {}, check_html=False)
