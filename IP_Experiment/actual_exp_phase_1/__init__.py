@@ -869,7 +869,6 @@ class Practice_WTJ(Page):
         )
 
 
-
 class Practice_ExpressYourOpinion(Page):
     form_model  = 'player'
     form_fields = ['public_opinion']   # <— match the template’s fixed name
