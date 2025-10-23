@@ -256,15 +256,15 @@ class Player(BasePlayer):
 
 
 # --- add 10 StringFields dynamically ---------------------------
-for i in range(1, 11):
+for i in range(1, C.TOPIC_LABELS + 1):
     setattr(Player, f'answer_{i}', models.StringField(blank=True))
 
 # --- add 10 WTJ fields dynamically -------------
-for i in range(1, 11):
+for i in range(1, C.TOPIC_LABELS + 1):
     setattr(Player, f'wtj_{i}', models.StringField(blank=True))
 
 # Willingness-To-Lie importance ratings (keep as-is)
-for i in range(1, 11):
+for i in range(1, C.TOPIC_LABELS + 1):
     setattr(
         Player,
         f"wtl_{i}",
@@ -275,7 +275,7 @@ for i in range(1, 11):
     )
 
 # --- add 10 IntegerFields for JudgementRule (Approach 1/2/3) -------------
-for i in range(1, 11):
+for i in range(1, C.TOPIC_LABELS + 1):
     setattr(
         Player,
         f'jr_{i}',
@@ -286,7 +286,7 @@ for i in range(1, 11):
     )
 
 # NEW (10 per-topic integer thresholds, 0..10)
-for i in range(1, 11):
+for i in range(1, C.TOPIC_LABELS + 1):
     setattr(
         Player,
         f'min_opp_punish_{i}',
@@ -1071,7 +1071,7 @@ def make_binary_topic_page(n: int):
 
 # Create and register 10 classes: BinaryTopic_1 .. BinaryTopic_10
 BINARY_TOPIC_PAGES = []
-for i in range(1, 11):
+for i in range(1, C.TOPIC_LABELS + 1):
     cls = make_binary_topic_page(i)
     globals()[cls.__name__] = cls
     BINARY_TOPIC_PAGES.append(cls)
