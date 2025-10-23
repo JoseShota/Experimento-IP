@@ -11,7 +11,7 @@ SESSION_CONFIGS = [
         'participation_fee': 15.00,
         'real_world_currency_per_point': 1.00,
         #'num_demo_participants': 15,
-        'num_demo_participants': 50
+        'num_demo_participants': 15
     },
 ]
 
