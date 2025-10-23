@@ -162,63 +162,6 @@ def creating_session(subsession: Subsession):
 class Group(BaseGroup):
     pass
 
-# class Player(BasePlayer):
-#     # Personal information fields:
-#     age = models.IntegerField(label="What is your age?", min=18)
-#     gender = models.StringField(
-#         choices=[('M', 'Male'), ('F', 'Female'), ('I', 'Intersex'), ('N', 'Prefer not to say')],
-#         label="What sex were you assigned at birth?"
-#     )
-#     racial_identification = models.StringField(
-#         choices=[
-#             ('White', 'White / Caucasian'),
-#             ('Black', 'Black / African American'),
-#             ('Hispanic', 'Hispanic / Latino'),
-#             ('Indigenous', 'Indigenous'),
-#             ('Mixed', 'Mixed / Biracial'),
-#             ('Pacific Islander', 'Pacific Islander'),
-#             ('Middle Eastern', 'Middle Eastern'),
-#             ('Asian', 'Asian'),
-#             ('Arab', 'Arab'),
-#             ('Other', 'Other'),
-#         ],
-#         label="How do you identify racially?"
-#     )
-#     previous_experiment = models.IntegerField(
-#         label="Approximately how many research experiments (in economics, psychology, or similar fields) have you participated in before?",
-#         min=0
-#     )
-#     # Stage 1 (practice page)
-#     answer_practice   = models.StringField(blank=True)
-#     wtl_practice      = models.IntegerField(choices=list(range(1, 11)), widget=widgets.RadioSelectHorizontal, blank=True)
-#     jr_practice       = models.IntegerField(choices=[1, 2, 3], blank=True)
-#     # Stage 2 (WTJ practice)
-#     wtj_practice      = models.StringField(blank=True)
-#     # Stage 3 (public opinion practice)
-#     public_opinion_practice = models.StringField(blank=True)
-#     # NEW (practice):
-#     min_opp_punish_practice = models.IntegerField(min=0, max=10, blank=True)
-#     # Stage 4 (guesses practice)
-#     paid_cost_A_practice   = models.IntegerField(min=0, max=10, blank=True)
-#     paid_cost_B_practice   = models.IntegerField(min=0, max=10, blank=True)
-#     expr_A_from_A_practice = models.IntegerField(min=0, max=10, blank=True)
-#     expr_A_from_B_practice = models.IntegerField(min=0, max=10, blank=True)
-#     topic_idx     = models.IntegerField(blank=True)
-#     treatment_idx = models.IntegerField(blank=True)
-
-#     public_opinion = models.StringField(
-#         label="What opinion would you express to the rest of your group?"
-#     )
-#     # ─── Stage-4 guesses (0–5 each) ──────────────────────────────────────────
-#     paid_cost_A = models.IntegerField(min=0, max=10, blank=True,
-#                                 label="How many of the 5 with opinion A paid the cost?")
-#     paid_cost_B = models.IntegerField(min=0, max=10, blank=True,
-#                                 label="How many of the 5 with opinion B paid the cost?")
-#     expr_A_from_A = models.IntegerField(min=0, max=10, blank=True,
-#                                 label="How many of the 5 with opinion A expressed A?")
-#     expr_A_from_B = models.IntegerField(min=0, max=10, blank=True,
-#                                 label="How many of the 5 with opinion B expressed A?")
-
 ########################### ADD ON ###########################
 class Player(BasePlayer):
     # Personal information fields:
@@ -281,7 +224,7 @@ class Player(BasePlayer):
 
     # Ajuste: define choices A/B explícitamente (usado por la lógica de pagos)
     public_opinion = models.StringField(
-        choices=[('A', 'A'), ('B', 'B')],
+        choices=[('Option H', 'A'), ('Option L', 'B')],
         widget=widgets.RadioSelectHorizontal,
         blank=True,
         label="What opinion would you express to the rest of your group?"
