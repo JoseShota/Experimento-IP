@@ -523,105 +523,227 @@ def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
     return {'castigado': False, 'observador': None, 'punisher': False}
 
 ########################### ADD ON ###########################
-def _topic_for_round(subsession):
-    """Devuelve el topic_label de esta ronda r (Stage 2). 
-    Debes ligar esto a tu scheduler real."""
-    return subsession.session.vars['round_topic_map'][subsession.round_number]
+def _topic_treatment_code_for_round(player:Player,round:int):
+    """Devuelve el topic_id y treatment_id de esta ronda r (Stage 2)."""
+    t_idx = player.in_round(round).topic_idx
+    t_code = player.in_round(round).treatment_idx
+    return t_idx, t_code
 
-########################### ADD ON ###########################
-def _treatment_code_for_round(subsession):
-    """Devuelve el código de tratamiento de esta ronda r."""
-    return subsession.session.vars['round_treatment_map'][subsession.round_number]
+def _get_round_for_topic_treatment(player:Player, topic_idx:int, treatment_idx:int):
+    """Devuelve la ronda r donde el jugador tiene este (topic_idx, treatment_idx)."""
+    for r in range(2, C.NUM_ROUNDS + 1):
+        p_r = player.in_round(r)
+        if p_r.topic_idx == topic_idx and p_r.treatment_idx == treatment_idx:
+            return r
+    raise ValueError(f"Player {player.id_in_subsession} has no round with topic {topic_idx} and treatment {treatment_idx}.")
 
-########################### ADD ON ###########################
-def _composition_for_round(subsession):
-    code = _treatment_code_for_round(subsession)
-    return C.TREATMENT_TO_COMPOSITION[code]  # (nA, nB)
+def _stage1_answer(pp: Player, topic_idx: int, map_A_B: bool = True) -> str | None:
+        """
+        Devuelve 'A' o 'B' según la respuesta de Stage 1 del jugador pp para el tópico topic_idx.
+        Supone que en Stage 1 almacenaste answer_{k} como string del par BINARY_OPTIONS[k].
+        Mapea izquierda->'A', derecha->'B'. Si no encuentra, devuelve None.
+        """
+        k = topic_idx + 1
+        field = f'answer_{k}'
+        left_raw, right_raw = C.BINARY_OPTIONS[topic_idx]
+        try:
+            # muchas implementaciones guardan Stage1 en round 1
+            p1 = pp.in_round(1)
+            ans = getattr(p1, field, None)
+            if not map_A_B:
+                return ans
+        except Exception:
+            ans = None
+        # Mapea a 'A'/'B'
+        if ans is None:
+            return None
+        if ans == left_raw:
+            return 'A'
+        if ans == right_raw:
+            return 'B'
 
-########################### ADD ON ###########################
-def _stage1_answer_for_topic(player, topic_label):
+def _sample_exact(candA, candB, nA: int, nB: int) -> list:
+        """Devuelve lista exacta de tamaño 10 (nA de A y nB de B) si alcanza; si no, devuelve None."""
+        if len(candA) >= nA and len(candB) >= nB:
+            pickA = random.sample(candA, nA)
+            pickB = random.sample(candB, nB)
+            return pickA + pickB
+        return None
+
+
+def _choose_one_with_probs(candA, candB, nA: int, nB: int) -> list:
+        """regresa un grupo de dos jugadores con diferentes opiniones con probabilidades pA=nA/(nA+nB), pB=nB/(nA+nB)."""
+        pp_a = random.choice(candA)
+        pp_b = random.choice(candB)
+        return [pp_a]*nA + [pp_b]*nB
+
+def _build_GH_exact(
+    candA: list[tuple[Player, int]],
+    candB: list[tuple[Player, int]],
+    nA: int,
+    nB: int,
+) -> list[tuple[Player, int]]:
     """
-    Devuelve 'A'/'B' = answer_i (opinión privada del Stage 1) para el tema dado.
-    ADAPTA esta función a cómo guardaste las 10 respuestas del Stage 1.
+    Construye GH con EXACTAMENTE (nA, nB) usando muestreo CON REEMPLAZO.
+    - candA/candB: listas de tuplas (Player, r_pp) ya filtradas por (topic_idx, treatment_idx).
+    - nA+nB debe ser 10.
+    - Si se requiere >0 de un bucket y ese bucket está vacío, levanta ValueError.
+    - Devuelve lista de longitud 10: nA de A y nB de B (con duplicados posibles).
+
+    Ejemplo de uso:
+        GH = _build_GH_exact(candA, candB, nA, nB, rng=_rng_for_participant(p_i))
     """
-    # Ejemplo: si guardaste en participant.vars['stage1_answers'][topic_label] = 'A'/'B'
-    return player.participant.vars['stage1_answers'][topic_label]
+    # Muestreo con reemplazo (permite repetir al mismo participante)
+    picks_A = [random.choice(candA) for _ in range(nA)]
+    picks_B = [random.choice(candB) for _ in range(nB)]
+
+    GH = picks_A + picks_B
+    # Sanidad final
+    assert len(GH) == 10 and len(picks_A) == nA and len(picks_B) == nB
+    return GH
+
 
 ########################### ADD ON ###########################
-def build_groups_for_player_in_round(p_i, subsession):
+# def build_groups_for_player_in_round(p_i, subsession):
+#     """
+#     Construye GJ, GE, GH para el jugador p_i en la ronda subsession.round_number,
+#     cumpliendo: (1) composición (nA, nB) del tratamiento de esta ronda,
+#     (2) coincidencia tratamiento–tema (decisiones de los otros en SU ronda r). 
+#     Devuelve: dict con claves 'GJ', 'GE', 'GH', cada una lista de Players (o 1 Player si regla de escasez).
+#     """
+#     r = subsession.round_number
+#     assert r >= 2, "Stage 2 empieza en la ronda 2"
+
+#     topic = _topic_for_round(subsession)
+#     nA, nB = _composition_for_round(subsession)
+
+#     # Candidatos: todos los demás players en ESTA ronda r (misma info, misma ronda)  ← coincidencia tratamiento–tema
+#     others = [pp for pp in subsession.get_players() if pp.id_in_subsession != p_i.id_in_subsession]
+
+#     # Particiona por answer Stage 1 para este tema
+#     groupA = [pp for pp in others if _stage1_answer_for_topic(pp, topic) == 'A']
+#     groupB = [pp for pp in others if _stage1_answer_for_topic(pp, topic) == 'B']
+
+#     def sample_group_exact_or_prob(one_shot=False):
+#         """
+#         Devuelve:
+#         - lista con 10 Players si hay suficientes para (nA,nB)
+#         - si no hay suficientes y one_shot=True (para GJ/GE), elige 1 Player con prob pA=nA/(nA+nB), pB=nB/(nA+nB)
+#         - si no hay suficientes y one_shot=False (para GH), completa con “archivo” (simulado por re-muestreo con reemplazo)
+#         """
+#         total_needed = 10
+#         if len(groupA) >= nA and len(groupB) >= nB:
+#             return random.sample(groupA, nA) + random.sample(groupB, nB)
+
+#         if one_shot:
+#             # Regla probabilística pA/pB (GJ/GE)
+#             pA = nA / (nA + nB)
+#             useA = (random.random() < pA) and len(groupA) > 0
+#             useB = (not useA) and len(groupB) > 0
+#             if useA:
+#                 return [random.choice(groupA)]
+#             elif useB:
+#                 return [random.choice(groupB)]
+#             # Si de plano no hay nadie, devuelve lista vacía (caso extremo)
+#             return []
+
+#         # GH: completar con “archivo” → simulamos con reemplazo desde lo disponible (si un bucket está vacío, re-muestrea del otro)
+#         pickA = [random.choice(groupA)] * min(len(groupA), nA) if groupA else []
+#         pickB = [random.choice(groupB)] * min(len(groupB), nB) if groupB else []
+#         # Completa hasta nA y nB con reemplazo
+#         while len(pickA) < nA:
+#             if groupA:
+#                 pickA.append(random.choice(groupA))
+#             elif groupB:
+#                 pickA.append(random.choice(groupB))  # fallback
+#             else:
+#                 break
+#         while len(pickB) < nB:
+#             if groupB:
+#                 pickB.append(random.choice(groupB))
+#             elif groupA:
+#                 pickB.append(random.choice(groupA))
+#             else:
+#                 break
+#         picks = pickA + pickB
+#         # Si aún no llegamos a 10 por escasez extrema, rellena con lo que haya con reemplazo
+#         while len(picks) < total_needed and (groupA or groupB):
+#             pool = (groupA + groupB) if (groupA and groupB) else (groupA or groupB)
+#             picks.append(random.choice(pool))
+#         return picks
+
+#     GJ = sample_group_exact_or_prob(one_shot=True)
+#     GE = sample_group_exact_or_prob(one_shot=True)
+#     GH = sample_group_exact_or_prob(one_shot=False)
+
+#     return {'GJ': GJ, 'GE': GE, 'GH': GH}
+
+def _build_groups_for_player_in_round(subsession: Subsession, p_i: Player, topic_idx: int, treatment_idx: int
+                                      ) -> dict[str, list[tuple[Player,int]]]:
     """
-    Construye GJ, GE, GH para el jugador p_i en la ronda subsession.round_number,
+    Construye GJ, GE, GH para el jugador p_i en la ronda dada,
     cumpliendo: (1) composición (nA, nB) del tratamiento de esta ronda,
     (2) coincidencia tratamiento–tema (decisiones de los otros en SU ronda r). 
-    Devuelve: dict con claves 'GJ', 'GE', 'GH', cada una lista de Players (o 1 Player si regla de escasez).
-    """
-    r = subsession.round_number
-    assert r >= 2, "Stage 2 empieza en la ronda 2"
-
-    topic = _topic_for_round(subsession)
-    nA, nB = _composition_for_round(subsession)
-
-    # Candidatos: todos los demás players en ESTA ronda r (misma info, misma ronda)  ← coincidencia tratamiento–tema
+    Devuelve: dict con claves 'GJ', 'GE', 'GH'"""
+    # todos los jugadores menos p_i
     others = [pp for pp in subsession.get_players() if pp.id_in_subsession != p_i.id_in_subsession]
-
-    # Particiona por answer Stage 1 para este tema
-    groupA = [pp for pp in others if _stage1_answer_for_topic(pp, topic) == 'A']
-    groupB = [pp for pp in others if _stage1_answer_for_topic(pp, topic) == 'B']
-
-    def sample_group_exact_or_prob(one_shot=False):
-        """
-        Devuelve:
-        - lista con 10 Players si hay suficientes para (nA,nB)
-        - si no hay suficientes y one_shot=True (para GJ/GE), elige 1 Player con prob pA=nA/(nA+nB), pB=nB/(nA+nB)
-        - si no hay suficientes y one_shot=False (para GH), completa con “archivo” (simulado por re-muestreo con reemplazo)
-        """
-        total_needed = 10
-        if len(groupA) >= nA and len(groupB) >= nB:
-            return random.sample(groupA, nA) + random.sample(groupB, nB)
-
-        if one_shot:
-            # Regla probabilística pA/pB (GJ/GE)
-            pA = nA / (nA + nB)
-            useA = (random.random() < pA) and len(groupA) > 0
-            useB = (not useA) and len(groupB) > 0
-            if useA:
-                return [random.choice(groupA)]
-            elif useB:
-                return [random.choice(groupB)]
-            # Si de plano no hay nadie, devuelve lista vacía (caso extremo)
-            return []
-
-        # GH: completar con “archivo” → simulamos con reemplazo desde lo disponible (si un bucket está vacío, re-muestrea del otro)
-        pickA = [random.choice(groupA)] * min(len(groupA), nA) if groupA else []
-        pickB = [random.choice(groupB)] * min(len(groupB), nB) if groupB else []
-        # Completa hasta nA y nB con reemplazo
-        while len(pickA) < nA:
-            if groupA:
-                pickA.append(random.choice(groupA))
-            elif groupB:
-                pickA.append(random.choice(groupB))  # fallback
-            else:
-                break
-        while len(pickB) < nB:
-            if groupB:
-                pickB.append(random.choice(groupB))
-            elif groupA:
-                pickB.append(random.choice(groupA))
-            else:
-                break
-        picks = pickA + pickB
-        # Si aún no llegamos a 10 por escasez extrema, rellena con lo que haya con reemplazo
-        while len(picks) < total_needed and (groupA or groupB):
-            pool = (groupA + groupB) if (groupA and groupB) else (groupA or groupB)
-            picks.append(random.choice(pool))
-        return picks
-
-    GJ = sample_group_exact_or_prob(one_shot=True)
-    GE = sample_group_exact_or_prob(one_shot=True)
-    GH = sample_group_exact_or_prob(one_shot=False)
-
+    # crear grupo de 'A' y 'B' según answer Stage 1 para este tema
+    candA: list[tuple[Player,int]] = []
+    candB: list[tuple[Player,int]] = []
+    for pp in others:
+        r_pp = _get_round_for_topic_treatment(pp, topic_idx, treatment_idx)  # <- llave: coincidencia tto–tema
+        ab = _stage1_answer(pp, topic_idx)
+        if ab == 'A':
+            candA.append((pp, r_pp))
+        elif ab == 'B':
+            candB.append((pp, r_pp))
+    # obtener composición (nA, nB) para este tratamiento
+    nA, nB = counts_for_treatment(treatment_idx)
+    # ¿Qué hacer en caso de que ningún participante escogió 'A' o 'B'?
+    # Armar grupos
+    GJ = _sample_exact(candA, candB, nA, nB)
+    if GJ is None:
+        GJ = _choose_one_with_probs(candA, candB, nA, nB)
+    GE = _sample_exact(candA, candB, nA, nB)
+    if GE is None:
+        GE = _choose_one_with_probs(candA, candB, nA, nB)
+    GH = _sample_exact(candA, candB, nA, nB)
+    if GH is None:
+        GH = _build_GH_exact(candA, candB, nA, nB)
     return {'GJ': GJ, 'GE': GE, 'GH': GH}
 
+def _calculate_how_many_lied(group:list,option:str,type:str)->int:
+    """
+    Calcula el número de participantes con respuesta {option} para.
+    - type == 'wtj': # de peronas dispuestas a juzgar (wtj==True)
+    - type == 'public_opinion': # de personas que expresaron 'A'
+    - group: lista de tuplas (Player, ronda del Player)
+    - option: 'A' o 'B' (opciones mapeadas a 'A'/'B')
+    Devuelve el el número de personas en el grupo que cumplen la condición.
+    """
+    count = 0
+    for pp, r_pp in group:
+        player_in_round = pp.in_round(r_pp)
+        # verificar si el jugador escogió la opción dada en Stage 1 (#Preguntar# si esta respuesa 'A/B' se refiere a Stage 1 o public opinion)
+        ans_mapped = _stage1_answer(pp, pp.in_round(r_pp).topic_idx)
+        if type == 'wtj' and ans_mapped == option:
+            if player_in_round.wtj:
+                count += 1
+        elif type == 'public_opinion' and ans_mapped == option:
+            po = player_in_round.public_opinion
+            # mappear public opinion a 'A'/'B'
+            options = C.BINARY_OPTIONS[pp.in_round(r_pp).topic_idx - 1]
+            left_opt, right_opt = options
+            if po == left_opt:
+                po_mapped = 'A'
+            elif po == right_opt:
+                po_mapped = 'B'
+            # comparar
+            if po_mapped == 'A':
+                count += 1
+    return count
+
+    
 ########################### ADD ON ###########################
 def set_stage2_payoffs(subsession):
     """
@@ -633,105 +755,76 @@ def set_stage2_payoffs(subsession):
          - HowManyLied (H)
       3) Suma puntos de Stage 2 y marca si ganó bono.
     """
-    session = subsession.session
-    # Trabajaremos con TODA la sesión: necesitamos acceder a la ronda elegida (coincidencia tratamiento–tema)
-    all_subsessions = subsession.in_rounds(2, C.NUM_ROUNDS)
-
     for p in subsession.get_players():
         # 1) Ronda aleatoria para Stage 2
         paid_round = random.randint(2, C.NUM_ROUNDS)
-        paid_sub = all_subsessions[paid_round - 2]  # index offset
         p.paid_round_stage2 = paid_round
-
-        topic = _topic_for_round(paid_sub)
-        nA, nB = _composition_for_round(paid_sub)
-
-        groups = build_groups_for_player_in_round(p, paid_sub)
+        topic_idx, treatment_idx = _topic_treatment_code_for_round(p, paid_round)
+        # Formar grupos GJ, GE, GH
+        groups = _build_groups_for_player_in_round(subsession, p, topic_idx, treatment_idx)
         GJ, GE, GH = groups['GJ'], groups['GE'], groups['GH']
+        
+        #### Lógica de pago para WillingnessToJudgeFixedCost_r ####
+        wtj = p.in_round(paid_round).wtj
+        # si wtj=Sí, extraer al azar un jugador de GJ para posible comparación
+        if wtj:
+            judged_set = random.choice(GJ)
+            judged_player = judged_set[0]
+            judged_round  = judged_set[1]   
+            judged_opinion = judged_player.in_round(judged_round).public_opinion
+            # si la opinion del juzgado difiere de la propia, cobrar costo y castigo
+            if judged_opinion != _stage1_answer(p, topic_idx, map_A_B=False):
+                p.payoff -= C.COST_STAGE_2
+                judged_player.payoff -= C.PUNISHMENT_STAGE_2
+        
+        #### Lógica de pago para ExpressYourOpinion_r ####
+        judged_opinion = p.in_round(paid_round).public_opinion
+        # si la opinion expresada difiere de la propia, cobrar costo por mentir
+        if judged_opinion != _stage1_answer(p, topic_idx, map_A_B=False):
+            p.payoff -= C.COST_TO_LIE
+        # obtener una persona del grupo
+        judge_set = random.choice(GE)
+        judge_player = judge_set[0]
+        judge_round  = judge_set[1]
+        wtj_j = judge_player.in_round(judge_round).wtj
+        # si esa persona está dispuesta a juzgar y la opinión difiere, cobrar castigo
+        if wtj_j:
+            judge_opinion = judge_player.in_round(judge_round).public_opinion
+            # si la opinion del juez difiere de la propia, cobrar costo y castigo
+            if judge_opinion != judged_opinion:
+                p.payoff -= C.PUNISHMENT_STAGE_2
+                judge_player.payoff -= C.COST_STAGE_2
+        
+        #### Lógica de pago para HowManyLied_r ####
+        prediction_idx = random.randint(1, 4)
+        if prediction_idx == 1:
+            real = _calculate_how_many_lied(GH, 'A', 'wtj')
+            prediction = p.in_round(paid_round).paid_cost_A
+            if real == prediction:
+                p.payoff += C.BONUS_STAGE_2
+        elif prediction_idx == 2:
+            real = _calculate_how_many_lied(GH, 'B', 'wtj')
+            prediction = p.in_round(paid_round).paid_cost_B
+            if real == prediction:
+                p.payoff += C.BONUS_STAGE_2
+        elif prediction_idx == 3:
+            real = _calculate_how_many_lied(GH, 'A', 'public_opinion')
+            prediction = p.in_round(paid_round).expr_A_from_A
+            if real == prediction:
+                p.payoff += C.BONUS_STAGE_2
+        else:  # prediction_idx == 4
+            real = _calculate_how_many_lied(GH, 'B', 'public_opinion')
+            prediction = p.in_round(paid_round).expr_A_from_B
+            if real == prediction:
+                p.payoff += C.BONUS_STAGE_2
+    print("Stage 2 payoffs set for group.")
 
-        # Trae decisiones del propio jugador en ESA ronda (sus campos en r)
-        p_in_r = p.in_round(paid_round)
-        wtj = p_in_r.wtj
-        pub_i = p_in_r.public_opinion
-        ans_i = _stage1_answer_for_topic(p, topic)
+    
 
-        points = 0
-        bonus_hit = False
 
-        # -----------------------------
-        # (J) WillingnessToJudgeFixedCost_r
-        # Regla: si wtj=Sí y el extraído de GJ expresa distinto a mi answer_i, yo pago COST_STAGE_2 y él pierde PUNISH_STAGE_2.
-        # (la pérdida del otro no te afecta en puntos, aquí sólo registramos tus puntos).
-        # -----------------------------
-        if GJ:
-            k = random.choice(GJ)
-            k_r = k.in_round(paid_round)
-            pub_k = k_r.public_opinion  # decisión real del otro en SU ronda r  ← coincidencia tratamiento–tema
-            if wtj and (pub_k is not None) and (pub_k != ans_i):
-                points -= C.COST_STAGE_2  # yo pago el costo al castigar
-                # El otro perdería punishment_stage_2 (no sumamos ni restamos al "yo")
+                
 
-        # -----------------------------
-        # (E) ExpressYourOpinion_r
-        # Regla: si j (de GE) eligió Sí en WillingnessToJudge y yo expreso lo opuesto a answer_j, entonces me castigan:
-        # pierdo PUNISH_STAGE_2 y j paga COST_STAGE_2; si yo miento (pub_i != ans_i), pago COST_TO_LIE.
-        # -----------------------------
-        if GE and (pub_i in ('A', 'B')):
-            j = random.choice(GE)
-            j_r = j.in_round(paid_round)
-            wtj_j = j_r.wtj
-            ans_j = _stage1_answer_for_topic(j, topic)
-
-            # Castigo activado si j dijo Sí y yo expreso distinto a la opinión privada de j
-            if wtj_j and (ans_j is not None) and (pub_i != ans_j):
-                points -= C.PUNISH_STAGE_2  # me castigaron
-
-            # Costo por mentir
-            if pub_i != ans_i:
-                points -= C.COST_TO_LIE
-
-        # -----------------------------
-        # (H) HowManyLied_r  (bono si acierta a ±1)
-        # Contar en GH:
-        #  - paid_cost_A: # con answer=A que eligieron Sí a wtj
-        #  - paid_cost_B: # con answer=B que eligieron Sí a wtj
-        #  - expr_A_from_A: # con answer=A que expresaron A
-        #  - expr_A_from_B: # con answer=B que expresaron A
-        # -----------------------------
-        true_paid_A = true_paid_B = true_expr_A_from_A = true_expr_A_from_B = 0
-        for q in GH:
-            q_r = q.in_round(paid_round)
-            ans_q = _stage1_answer_for_topic(q, topic)
-            if ans_q == 'A':
-                if q_r.wtj:
-                    true_paid_A += 1
-                if q_r.public_opinion == 'A':
-                    true_expr_A_from_A += 1
-            elif ans_q == 'B':
-                if q_r.wtj:
-                    true_paid_B += 1
-                if q_r.public_opinion == 'A':
-                    true_expr_A_from_B += 1
-
-        # Predicción del jugador en esa ronda
-        guess_paid_A = p_in_r.paid_cost_A
-        guess_paid_B = p_in_r.paid_cost_B
-        guess_expr_A_from_A = p_in_r.expr_A_from_A
-        guess_expr_A_from_B = p_in_r.expr_A_from_B
-
-        # Elegir al azar una de las 4 preguntas y evaluar bono (±1 persona)
-        true_vec = [true_paid_A, true_paid_B, true_expr_A_from_A, true_expr_A_from_B]
-        guess_vec = [guess_paid_A, guess_paid_B, guess_expr_A_from_A, guess_expr_A_from_B]
-        idx = random.randrange(4)
-        if (guess_vec[idx] is not None) and (abs(guess_vec[idx] - true_vec[idx]) <= 1):
-            bonus_hit = True
-            # Si tu conversión de puntos a dinero es aparte, deja sólo el flag.
-            # Si quieres sumar puntos por bono, cambia aquí por puntos equivalentes.
-            # points += C.BONUS_STAGE_2_POINTS  # opcional si conviertes luego a $
-
-        # Guardar resultados Stage 2
-        p.stage2_payoff_points = points
-        p.stage2_bonus_hit = bonus_hit
+        
 
 # -----------------------------------------------------------------------------
 # Page Definitions
