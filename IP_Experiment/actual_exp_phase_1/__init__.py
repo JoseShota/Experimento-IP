@@ -20,10 +20,9 @@ class C(BaseConstants):
     PRACTICE_OPTIONS     = ('Option H', 'Option L')
     ########################### ADD ON ###########################
     # Stage 2: costos y castigos (ajusta a tus valores reales)
-    COST_STAGE_2 = 3            # cost_stage_2
-    PUNISH_STAGE_2 = 5          # punishment_stage_2
-    COST_TO_LIE = 2             # cost_to_lie
-    BONUS_STAGE_2 = 1           # bonus_stage_2 (en $$$; si conviertes puntos a $ en otra parte, deja aquí sólo el flag)
+    COST_STAGE_2 = cu(1000)            # cost_stage_2
+    COST_TO_LIE = cu(2000)           # cost_to_lie
+    BONUS_STAGE_2 = cu(3000)           # bonus_stage_2 (en $$$; si conviertes puntos a $ en otra parte, deja aquí sólo el flag)
 
     # Mapear tratamiento->(nA, nB). Si ya tienes TREATMENT_CODES/round schedule, usa eso.
     # Ejemplo genérico: 9 tratamientos con 1A–9B ... 9A–1B
@@ -82,11 +81,10 @@ class C(BaseConstants):
             PAIRS.append((t_idx, trt_idx))
 
 # Willingness to judge fixed cost and maximum cost
-    COST_X = '{ cost_stage_2 }'            # replace later with cu(10) or similar
     YES_NO = ('Yes, I am willing to pay  { cost_stage_2 } to make the decision', 'No, I am not willing to pay { cost_stage_2 } to make the decision')  # canonical label pair
     # NEW: cost text for Stage 1 (used in the new Q3)
-    COST_STAGE_1 = '{ cost_stage_1 }'
-    PUNISHMENT_STAGE1 = cu(1000)
+    PUNISHMENT_STAGE1 = cu(3000)
+    PUNISHMENT_STAGE_2 = cu(3000)          # punishment_stage_2
     COST_STAGE1 = cu(1000)
     NUM_ROUNDS = PRACTICE_ROUNDS + len(PAIRS)
     STARTING_ENDOWMENT_STAGE_1 = cu(2000)
@@ -195,8 +193,6 @@ class Player(BasePlayer):
     wtl_practice      = models.IntegerField(choices=list(range(1, 11)), widget=widgets.RadioSelectHorizontal, blank=True)
     jr_practice       = models.IntegerField(choices=[1, 2, 3], blank=True)
 
-    # Stage 2 (WTJ practice)
-    wtj_practice      = models.StringField(blank=True)
 
     # Stage 3 (public opinion practice)
     public_opinion_practice = models.StringField(blank=True)
@@ -867,7 +863,7 @@ class Practice_BinaryTopic(Page):
             items=[item],
             scale_prob  = range(1, 11),
             scale_opp   = range(0, 11),              # NEW (0..10)
-            cost_stage_1 = C.COST_STAGE_1,           # NEW
+            cost_stage_1 = C.COST_STAGE1,           # NEW
             show_help = True,
             is_practice=True,
         )
@@ -915,6 +911,7 @@ class Practice_TopicTreatment(Page):
 
 class Practice_WTJ(Page):
     form_model = 'player'
+    form_fields = ['wtj']
     template_name = 'actual_exp_phase_1/WillingnessToJudgeFixedCost.html'
 
     @staticmethod
@@ -922,12 +919,9 @@ class Practice_WTJ(Page):
         return player.round_number == 1
 
     @staticmethod
-    def get_form_fields(player: Player):
-        return ['wtj_practice']
-
-    @staticmethod
     def error_message(player: Player, values):
-        if values.get('wtj_practice') not in C.YES_NO:
+        v = values.get('wtj')
+        if not isinstance(v, bool):
             return "Please choose Yes or No."
 
     @staticmethod
@@ -942,7 +936,6 @@ class Practice_WTJ(Page):
         jr_clause   = approach_clause(jr_approach)
 
         return dict(
-            field_name     = 'wtj_practice',
             topic          = topic_label,
             topic_left     = topic_left,
             topic_right    = topic_right,
@@ -1123,7 +1116,7 @@ def make_binary_topic_page(n: int):
                 items=[item],
                 scale_prob  = range(1, 11),
                 scale_opp   = range(0, 11),                  # NEW
-                cost_stage_1 = C.COST_STAGE_1,               # NEW                     # (unused by the new Q3; harmless)
+                cost_stage_1 = C.COST_STAGE1,               # NEW                     # (unused by the new Q3; harmless)
                 show_help = (n == 1),
             )
 
@@ -1201,19 +1194,17 @@ class TopicTreatment(Page):
 
 class WillingnessToJudgeFixedCost(Page):
     form_model = 'player'
+    form_fields = ['wtj']
 
     @staticmethod
     def is_displayed(player):
         return player.round_number >= 2
 
-    @staticmethod
-    def get_form_fields(player):
-        return [f'wtj_{player.topic_idx + 1}']
 
     @staticmethod
     def error_message(player: Player, values):
-        v = values.get(f'wtj_{player.topic_idx + 1}')
-        if v not in C.YES_NO:
+        v = values.get('wtj')
+        if not isinstance(v, bool):
             return "Please choose Yes or No."
 
     @staticmethod
@@ -1241,7 +1232,6 @@ class WillingnessToJudgeFixedCost(Page):
 
 
         return dict(
-            field_name     = f'wtj_{player.topic_idx + 1}',
             topic          = C.TOPIC_LABELS[player.topic_idx],
             topic_left     = topic_left,
             topic_right    = topic_right,

@@ -27,7 +27,7 @@ class PlayerBot(Bot):
 
             # 4) WTJ práctica
             yield Practice_WTJ, dict(
-                wtj_practice=random.choice(C.YES_NO)
+                wtj=random.choice([True, False])
             )
 
             # 5) Opinión pública práctica (usar orientación de práctica)
@@ -74,11 +74,7 @@ class PlayerBot(Bot):
         # 2) WTJ con costo fijo
         #    El campo se llama dinámicamente 'wtj_{topic_idx+1}'
         #    (topic_idx y treatment_idx sí están definidos desde round >= 2)
-        field_name = f'wtj_{self.player.topic_idx + 1}'
-        choice = random.choice(C.YES_NO)
-        yield WillingnessToJudgeFixedCost, {
-            field_name: choice
-        }
+        yield WillingnessToJudgeFixedCost, {'wtj': random.choice([True, False])}
 
         # 3) Expresa tu opinión pública
         #    La validación revisa que sea uno de los 2 strings originales (sin necesidad
