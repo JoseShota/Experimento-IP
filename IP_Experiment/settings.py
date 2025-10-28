@@ -10,7 +10,6 @@ SESSION_CONFIGS = [
         'number_of_rounds': 2,
         'participation_fee': 15.00,
         'real_world_currency_per_point': 1.00,
-        #'num_demo_participants': 15,
         'num_demo_participants': 25
     },
 ]
