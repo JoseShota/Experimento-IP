@@ -126,13 +126,15 @@ class Subsession(BaseSubsession):
 def creating_session(subsession: Subsession):
     if subsession.round_number == 1:
         total_rounds = C.NUM_ROUNDS          # o len(C.PAIRS) si NO quieres incluir práctica
-        endowment_stage_1 = C.STARTING_ENDOWMENT_STAGE_1 
+        endowment_stage_1 = C.STARTING_ENDOWMENT_STAGE_1
+        endowment_stage_2 = C.STARTING_ENDOWMENT_STAGE_2
 
         for p in subsession.get_players():
             # fija el saldo inicial del jugador
-            p.payoff = endowment_stage_1
+            p.payoff = endowment_stage_1 + endowment_stage_2
             # guarda una copia en participant.vars para auditoría/debug
             p.participant.vars['starting_endowment_stage_1'] = endowment_stage_1
+            p.participant.vars['starting_endowment_stage_2'] = endowment_stage_2
 
     for p in subsession.get_players():
         order = _get_topic_treatment_order(p.participant)  # list of (t_idx, trt_idx), len == len(C.PAIRS)
@@ -1339,18 +1341,7 @@ class FinalPaymentWaitPage(WaitPage):
 
     @staticmethod
     def after_all_players_arrive(subsession: Subsession):
-        # Stage 1 (ya lo tienes)
-        # set_stage1_payoffs(subsession)
-
-        # Stage 2 (nuevo)
         set_stage2_payoffs(subsession)
-
-        # Si conviertes puntos a dinero, hazlo aquí sumando Stage 1 + Stage 2
-        for p in subsession.get_players():
-            total_points = p.participant.vars.get('stage1_points', 0) + p.stage2_payoff_points
-            # Ejemplo: guarda en participant.vars y/o en payoff real de oTree
-            p.participant.vars['total_points'] = total_points
-            # p.payoff = cu_entrega_en_dinero(total_points, p.stage2_bonus_hit)
 
 
 # -----------------------------------------------------------------------------
