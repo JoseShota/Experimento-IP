@@ -105,7 +105,7 @@ class Group(BaseGroup):
 
 class Player(BasePlayer):
     # topic and treatment indices for the current round
-    topic_idx     = models.IntegerField(blank=True)
+    topic_idx = models.IntegerField(blank=True)
     treatment_idx = models.IntegerField(blank=True)
     # fields
     wtj = models.BooleanField(
@@ -183,6 +183,25 @@ def get_randomised_wtj(participant):
         participant.vars['wtj_order'] = order
         participant.vars['wtj_flip'] = [rng.choice([True, False]) for _ in order]
     return participant.vars['wtj_order'], participant.vars['wtj_flip']
+
+
+## save data participant level functions
+def _topic_key_from_idx(topic_idx: int) -> str:
+    # Si topic_idx es 0-based en tus listas, esto produce 'topic_1', 'topic_2', ...
+    return f"topic_{topic_idx}"
+
+
+def _treatment_key(treatment_idx: int) -> str:
+    # Si treatment_idx ya es 1-based, elimina el +1 donde lo uses abajo.
+    return f"treatment_{treatment_idx}"
+
+
+def _ensure_topic_dict(pvars: dict, topic_key: str) -> dict:
+    return pvars.setdefault(topic_key, {})
+
+
+def _ensure_treatment_dict(topic_dict: dict, treatment_key: str) -> dict:
+    return topic_dict.setdefault(treatment_key, {})
 
 
 # Practice utilities
@@ -446,6 +465,17 @@ class WillingnessToJudgeFixedCost(Page):
         )
 
 
+    def before_next_page(player, timeout_happened):
+        p = player
+        topic_key     = _topic_key_from_idx(p.topic_idx)
+        treatment_key = _treatment_key(p.treatment_idx)
+
+        topic_dict     = _ensure_topic_dict(p.participant.vars, topic_key)
+        treatment_dict = _ensure_treatment_dict(topic_dict, treatment_key)
+
+        treatment_dict['wtj'] = bool(p.wtj)
+
+
 class ExpressYourOpinion(Page):
     form_model = 'player'
     form_fields = ['public_opinion']
@@ -494,6 +524,16 @@ class ExpressYourOpinion(Page):
             n_A            = n_A,   # NEW
             n_B            = n_B,   # NEW
         )
+
+    def before_next_page(player, timeout_happened):
+        p = player
+        topic_key     = _topic_key_from_idx(p.topic_idx)
+        treatment_key = _treatment_key(p.treatment_idx)
+
+        topic_dict     = _ensure_topic_dict(p.participant.vars, topic_key)
+        treatment_dict = _ensure_treatment_dict(topic_dict, treatment_key)
+
+        treatment_dict['public_opinion'] = p.public_opinion  # 'A' o 'B'
 
 
 class HowManyLied(Page):
@@ -559,6 +599,7 @@ class HowManyLied(Page):
             n_B           = n_B,   # NEW
             is_practice   = False,
         )
+    
     @staticmethod
     def error_message(player: Player, values):
         n_A, n_B = counts_for_treatment(player.treatment_idx)
@@ -577,6 +618,20 @@ class HowManyLied(Page):
         check('expr_A_from_B', n_B)
 
         return errs or None
+    
+    def before_next_page(player, timeout_happened):
+        p = player
+        topic_key     = _topic_key_from_idx(p.topic_idx)
+        treatment_key = _treatment_key(p.treatment_idx)
+
+        topic_dict     = _ensure_topic_dict(p.participant.vars, topic_key)
+        treatment_dict = _ensure_treatment_dict(topic_dict, treatment_key)
+
+        # Guarda enteros (o float si así lo modelaste):
+        treatment_dict['paid_cost_A']   = int(p.paid_cost_A)
+        treatment_dict['paid_cost_B']   = int(p.paid_cost_B)
+        treatment_dict['expr_A_from_A'] = int(p.expr_A_from_A)
+        treatment_dict['expr_A_from_B'] = int(p.expr_A_from_B)
 
 
 class ThankYouPage(Page):
