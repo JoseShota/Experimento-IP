@@ -10,6 +10,7 @@ class C(BaseConstants):
     PRACTICE_TOPIC_LABEL = 'Emmanuel o Mijares'
     PRACTICE_OPTIONS = ('Option H', 'Option L')
     COST_STAGE_2 = cu(1000)
+    PUNISHMENT_STAGE_2 = cu(3000)
     # 10 Binary Questions 
     TOPIC_LABELS = [
         "Topic 1",
@@ -104,12 +105,6 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
-    # practice fields
-    public_opinion_practice = models.StringField(blank=True)
-    paid_cost_A_practice   = models.IntegerField(min=0, max=10, blank=True)
-    paid_cost_B_practice   = models.IntegerField(min=0, max=10, blank=True)
-    expr_A_from_A_practice = models.IntegerField(min=0, max=10, blank=True)
-    expr_A_from_B_practice = models.IntegerField(min=0, max=10, blank=True)
     # topic and treatment indices for the current round
     topic_idx     = models.IntegerField(blank=True)
     treatment_idx = models.IntegerField(blank=True)
@@ -142,8 +137,6 @@ class Player(BasePlayer):
         min=0, max=10, blank=True,
         label="How many with private opinion B expressed A?"
     )
-    # to delete
-    jr_practice       = models.IntegerField(choices=[1, 2, 3], default=1)
 
 
 ##############################
@@ -290,10 +283,6 @@ class Practice_WTJ(Page):
         trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)
 
-        # NEW:
-        jr_approach = player.jr_practice
-        jr_clause   = approach_clause(jr_approach)
-
         return dict(
             topic          = topic_label,
             topic_left     = topic_left,
@@ -307,10 +296,7 @@ class Practice_WTJ(Page):
             is_practice    = True,
             n_A            = n_A,
             n_B            = n_B,
-
-            # NEW -> used by the template
-            jr_approach    = jr_approach,
-            jr_clause      = jr_clause,
+            punishment_stage_2 = C.PUNISHMENT_STAGE_2
         )
 
 
@@ -351,21 +337,10 @@ class Practice_ExpressYourOpinion(Page):
             n_B           = n_B,  # NEW
         )
 
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        # copy to the dedicated practice field, then clear the real one
-        player.public_opinion_practice = player.public_opinion
-        player.public_opinion = None
-
 
 class Practice_HowManyLied(Page):
     form_model  = 'player'
-    form_fields = [
-        'paid_cost_A_practice',
-        'paid_cost_B_practice',
-        'expr_A_from_A_practice',
-        'expr_A_from_B_practice',
-    ]
+    form_fields = ['paid_cost_A', 'paid_cost_B', 'expr_A_from_A', 'expr_A_from_B']
     template_name = 'stage_2/HowManyLied.html'
 
     @staticmethod
@@ -378,17 +353,17 @@ class Practice_HowManyLied(Page):
         trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)   # NEW
         items = [
-            dict(index=1, field_name='paid_cost_A_practice',
+            dict(index=1, field_name='paid_cost_A',
                  prompt=f'How many out of the <strong>{n_A}</strong> with opinion <strong>{topic_left}</strong> decided to pay the cost to punish?',
                  max=n_A),
-            dict(index=2, field_name='paid_cost_B_practice',
+            dict(index=2, field_name='paid_cost_B',
                  prompt=f'How many out of the <strong>{n_B}</strong> with opinion <strong>{topic_right}</strong> decided to pay the cost to punish?',
                  max=n_B),
-            dict(index=3, field_name='expr_A_from_A_practice',
+            dict(index=3, field_name='expr_A_from_A',
                  prompt=(f'How many out of the <strong>{n_A}</strong> with opinion <strong>{topic_left}</strong> '
                          f'expressed <strong>{topic_left}</strong>?'),
                  max=n_A),
-            dict(index=4, field_name='expr_A_from_B_practice',
+            dict(index=4, field_name='expr_A_from_B',
                  prompt=(f'How many out of the <strong>{n_B}</strong> with opinion <strong>{topic_right}</strong> '
                          f'expressed <strong>{topic_left}</strong>?'),
                  max=n_B),
@@ -416,10 +391,10 @@ class Practice_HowManyLied(Page):
             elif not (0 <= v <= max_allowed):
                 errs[name] = f"Please enter a number between 0 and {max_allowed}."
 
-        check('paid_cost_A_practice',   n_A)
-        check('paid_cost_B_practice',   n_B)
-        check('expr_A_from_A_practice', n_A)
-        check('expr_A_from_B_practice', n_B)
+        check('paid_cost_A',   n_A)
+        check('paid_cost_B',   n_B)
+        check('expr_A_from_A', n_A)
+        check('expr_A_from_B', n_B)
 
         return errs or None
 
@@ -494,10 +469,6 @@ class WillingnessToJudgeFixedCost(Page):
         # NEW: dynamic A/B counts
         n_A, n_B = counts_for_treatment(player.treatment_idx)
 
-        jr_field = f'jr_{player.topic_idx + 1}'
-        jr_approach = player.field_maybe_none(jr_field) or 1
-        jr_clause = approach_clause(jr_approach)
-
 
         return dict(
             topic          = C.TOPIC_LABELS[player.topic_idx],
@@ -512,10 +483,7 @@ class WillingnessToJudgeFixedCost(Page):
             is_practice    = False,
             n_A            = n_A,
             n_B            = n_B,
-
-            # NEW -> used by the template
-            jr_approach    = jr_approach,
-            jr_clause      = jr_clause,
+            punishment_stage_2 = C.PUNISHMENT_STAGE_2
         )
 
 
