@@ -1,0 +1,104 @@
+{% extends "global/Page.html" %}
+
+{% block content %}
+<h1>Stage 2: Guessing What Others Decided</h1>
+
+{% if is_practice %}
+  <p class="mb-3"><strong>Practice round</strong></p>
+{% else %}
+  <p class="mb-3">You are now in <strong>Round {{ player.round_number }} of {{ C.NUM_ROUNDS }}</strong>.</p>
+{% endif %}
+<p>
+  You will be asked to guess how ten participants of the same group made their decisions.
+</p>
+
+<p>
+  Remember that the decisions are related to the following question:<br>
+  <strong>{{ topic }}</strong>
+</p>
+
+<ul class="list-unstyled ms-2">
+  <li><strong>Response&nbsp;A:</strong> {{ topic_left }}</li>
+  <li><strong>Response&nbsp;B:</strong> {{ topic_right }}</li>
+</ul>
+
+<p>As you know, the randomly selected group has the following distribution:</p>
+<div class="text-center my-4">
+    <img src="{{ static treatment_png }}"
+         alt="Treatment diagram"
+         class="img-fluid"
+         style="max-width: 420px;">
+</div>
+<p>In this group, <strong>{{ n_A }}</strong> chose A and <strong>{{ n_B }}</strong> chose B.</p>
+
+<br>
+    Your task is to guess how many paid the cost to punish and expressed an opinion different from their true opinion. If your guess is correct, you will earn a bonus of { bonus_stage_4 } dollars.
+    </em><br><br>
+<hr>
+<!-- slider styling (reuse your WTP styles) -->
+<style>
+  .wtpmax-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    max-width: 600px;
+    height: .5rem;
+    border-radius: .25rem;
+    background: #dee2e6;
+    cursor: pointer;
+    margin: 0 auto .25rem;
+    display: block;
+  }
+  .wtpmax-range.untouched {
+    background: #dee2e6 !important;
+  }
+  .wtpmax-range.untouched::-webkit-slider-thumb,
+  .wtpmax-range.untouched::-moz-range-thumb {
+    background: transparent;
+    border: 0;
+    height: 0;
+    width: 0;
+  }
+  .wtpmax-range::-webkit-slider-thumb,
+  .wtpmax-range::-moz-range-thumb {
+    height: 1rem;
+    width: 1rem;
+    border-radius: 50%;
+    background: #0d6efd;
+    cursor: pointer;
+  }
+  .slider-legend {
+    font-size: .85rem;
+    color: #6c757d;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .slider-legend .center {
+    visibility: hidden;
+  }
+</style>
+
+{% for item in items %}
+  <div class="mb-4">
+    <strong>{{ item.index }}.</strong>
+    <label for="{{ item.field_name }}">
+      {{ item.prompt }}
+    </label>
+
+    <!-- NEW: show field-specific validation errors -->
+    <div class="text-danger small">
+      {{ formfield_errors item.field_name }}
+    </div>
+
+    <input type="number"
+           id="{{ item.field_name }}"
+           name="{{ item.field_name }}"
+           class="form-control w-auto mt-2"
+           min="0" max="{{ item.max }}" step="1" required>
+  </div>
+{% endfor %}
+
+
+{{ next_button }}
+{% endblock %}
