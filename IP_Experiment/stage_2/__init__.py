@@ -8,7 +8,6 @@ class C(BaseConstants):
     NAME_IN_URL = 'stage_2_separated'
     PLAYERS_PER_GROUP = None
     PRACTICE_TOPIC_LABEL = 'Emmanuel o Mijares'
-    PRACTICE_OPTIONS = ('Option H', 'Option L')
     COST_STAGE_2 = cu(1000)
     PUNISHMENT_STAGE_2 = cu(3000)
     # 10 Binary Questions 
@@ -116,7 +115,7 @@ class Player(BasePlayer):
         label="Are you willing to pay a fixed cost to judge someone who expresses the opposite of your private opinion?"
     )
     public_opinion = models.StringField(
-        choices=[('Option H', 'A'), ('Option L', 'B')],
+        choices=[('A', 'Option A'), ('B', 'Option B')],
         widget=widgets.RadioSelectHorizontal,
         blank=True,
         label="What opinion would you express to the rest of your group?"
@@ -164,15 +163,6 @@ def counts_for_treatment(trt_idx: int) -> tuple[int, int]:
     return C.TREATMENT_TO_COUNTS.get(code, (5, 5))
 
 
-def approach_clause(approach: int) -> str:
-    mapping = {
-        1: "if the opinion they express is different from your own",
-        2: "if their actual true opinion is different from your own",
-        3: "if the opinion they express is different from their own true opinion",
-    }
-    return mapping.get(approach, mapping[1])  # default → 1
-
-
 def get_randomised_questions(participant):
     """Order of 10 topics + per-topic flip, once per participant."""
     if 'q_order' not in participant.vars:
@@ -196,26 +186,12 @@ def get_randomised_wtj(participant):
 
 
 # Practice utilities
-def _practice_topic_config(session):
-    """Return (label, (optL,optR)) for practice from session.config or constants."""
-    label = session.config.get('practice_topic_label', C.PRACTICE_TOPIC_LABEL)
-    opts  = session.config.get('practice_binary_options', C.PRACTICE_OPTIONS)
-    # Normalize to a 2-tuple of strings
-    if not isinstance(opts, (list, tuple)) or len(opts) != 2:
-        opts = C.PRACTICE_OPTIONS
-    return str(label), (str(opts[0]), str(opts[1]))
-
-
-def practice_left_right(player: Player):
+def practice_left_right():
     """
     Compute the practice topic's left/right labels with a per-participant flip
     that is *separate* from Stage 1 flips (since practice is outside the 10 topics).
     """
-    label, (L, R) = _practice_topic_config(player.session)
-    rng = _rng_for_participant(player.participant)
-    flip = player.participant.vars.setdefault('practice_flip', rng.choice([True, False]))
-    left, right = (R, L) if flip else (L, R)
-    return label, left, right
+    return "Emmanuel o Mijares", "Emmanuel", "Mijares"
 
 
 def practice_treatment_idx(session):
@@ -226,15 +202,6 @@ def practice_treatment_idx(session):
     except ValueError:
         return 0
 
-
-def _practice_yes_no(player: Player):
-    """
-    Optionally flip Yes/No for the practice WTJ page, independent from real WTJ flips.
-    """
-    yes, no = C.YES_NO
-    rng = _rng_for_participant(player.participant)
-    flip = player.participant.vars.setdefault('practice_wtj_flip', rng.choice([True, False]))
-    return (no, yes) if flip else (yes, no)
 
 ##############################
 # PAGES
@@ -247,7 +214,7 @@ class Practice_TopicTreatment(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        topic_label, left, right = practice_left_right(player)
+        topic_label, left, right = practice_left_right()
         trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)   # NEW
         return dict(
@@ -278,8 +245,7 @@ class Practice_WTJ(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        topic_label, topic_left, topic_right = practice_left_right(player)
-        yes, no = _practice_yes_no(player)
+        topic_label, topic_left, topic_right = practice_left_right()
         trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)
 
@@ -287,12 +253,8 @@ class Practice_WTJ(Page):
             topic          = topic_label,
             topic_left     = topic_left,
             topic_right    = topic_right,
-            yes_label      = yes,
-            no_label       = no,
             cost_stage_2   = C.COST_STAGE_2,
             treatment_png  = f"experiment/{C.TREATMENT_CODES[trt_idx]}.png",
-            round_number   = player.round_number,
-            total_rounds   = C.NUM_ROUNDS,
             is_practice    = True,
             n_A            = n_A,
             n_B            = n_B,
@@ -311,18 +273,15 @@ class Practice_ExpressYourOpinion(Page):
 
     @staticmethod
     def error_message(player: Player, values):
-        _, left, right = practice_left_right(player)
         v = values.get('public_opinion')
-        if v not in {left, right}:
+        if v not in {'A', 'B'}:
             return "Please select one of the two opinions."
 
 
     @staticmethod
     def vars_for_template(player: Player):
-        _, topic_left, topic_right = practice_left_right(player)
-        rng = _rng_for_participant(player.participant)
-        flip = player.participant.vars.setdefault('public_flip_practice', rng.choice([True, False]))
-        left, right = (topic_right, topic_left) if flip else (topic_left, topic_right)
+        _, topic_left, topic_right = practice_left_right()
+        left, right = "A", "B"
         trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)   # NEW
         return dict(
@@ -349,7 +308,7 @@ class Practice_HowManyLied(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        topic_label, topic_left, topic_right = practice_left_right(player)
+        topic_label, topic_left, topic_right = practice_left_right()
         trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)   # NEW
         items = [
@@ -497,9 +456,8 @@ class ExpressYourOpinion(Page):
 
     @staticmethod
     def error_message(player: Player, values):
-        left, right = C.BINARY_OPTIONS[player.topic_idx]
         v = values.get('public_opinion')
-        if v not in {left, right}:
+        if v not in {'A', 'B'}:
             return "Please select one of the two opinions."
 
     @staticmethod
@@ -518,7 +476,7 @@ class ExpressYourOpinion(Page):
         if player.round_number not in flips:
             flips[player.round_number] = rng.choice([True, False])
 
-        left, right = (topic_left, topic_right)
+        left, right = ("A", "B")
         if flips[player.round_number]:
             left, right = right, left
 
