@@ -2,16 +2,44 @@ from os import environ
 
 
 SESSION_CONFIGS = [
-    {
-        'name': 'experiment',
-        'display_name': "IP Experiment",
-        # 'num_demo_participants': 6,
-        'app_sequence': ['stage_2'], #['actual_exp_phase_1'],
-        'number_of_rounds': 2,
-        'participation_fee': 15.00,
-        'real_world_currency_per_point': 1.00,
-        'num_demo_participants': 25
-    },
+    dict(
+        name = 'experiment',
+        display_name = "IP Experiment",
+        app_sequence = ['stage_2'], #['actual_exp_phase_1'],
+        num_demo_participants = 25,
+        COST_STAGE_1 = 1000,
+        PUNISHMENT_STAGE_1 = 3000,
+        COST_STAGE_2 = 1000,
+        PUNISHMENT_STAGE_2 = 3000,
+        BONUS_STAGE_2 = 5000,
+        # 10 Binary Questions 
+        TOPIC_LABELS = (
+            "Topic 1",
+            "Topic 2",
+            "Topic 3",
+            "Topic 4",
+            "Topic 5",
+            "Topic 6",
+            "Topic 7",
+            "Topic 8",
+            "Topic 9",
+            "Topic 10",
+        ),
+        # Answers for the 10 binary questions
+        BINARY_OPTIONS = (
+        ('Option H', 'Option L'),  # Question 1
+        ('Option H', 'Option L'),  # Question 2
+        ('Option H', 'Option L'),  # Question 3
+        ('Option H', 'Option L'),  # Question 4
+        ('Option H', 'Option L'),  # Question 5
+        ('Option H', 'Option L'),  # Question 6
+        ('Option H', 'Option L'),  # Question 7
+        ('Option H', 'Option L'),  # Question 8
+        ('Option H', 'Option L'),  # Question 9
+        ('Option H', 'Option L'),  # Question 10
+        ),
+        PRACTICE_ROUNDS=1,
+    ),
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
@@ -22,8 +50,6 @@ SESSION_CONFIGS = [
 
 SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00, participation_fee=0.00, doc="",
-    practice_topic_label='Emmanuel o Mijares',     # any string 
-    practice_binary_options=('Option H', 'Option L'),         # tuple/list of 2 strings
     practice_treatment='New_Fifty_Fifty',                       # one of C.TREATMENT_CODES
 )
 
