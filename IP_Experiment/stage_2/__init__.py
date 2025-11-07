@@ -65,8 +65,6 @@ class C(BaseConstants):
     for t_idx in range(len(TOPIC_LABELS)):
         for trt_idx in range(len(TREATMENT_CODES)):
             PAIRS.append((t_idx, trt_idx))
-    # Willingness to judge fixed cost and maximum cost
-    YES_NO = ('Yes, I am willing to pay  { cost_stage_2 } to make the decision', 'No, I am not willing to pay { cost_stage_2 } to make the decision')  # canonical label pair
     PRACTICE_ROUNDS = 1
     NUM_ROUNDS = PRACTICE_ROUNDS + len(PAIRS)
 
@@ -438,12 +436,6 @@ class WillingnessToJudgeFixedCost(Page):
         if flips_q[pos_topic]:
             topic_left, topic_right = topic_right, topic_left
 
-        yes, no = C.YES_NO
-        order, flips_w = get_randomised_wtj(player.participant)
-        pos_wtj = order.index(player.topic_idx)
-        if flips_w[pos_wtj]:
-            yes, no = no, yes
-
         # NEW: dynamic A/B counts
         n_A, n_B = counts_for_treatment(player.treatment_idx)
 
@@ -452,8 +444,6 @@ class WillingnessToJudgeFixedCost(Page):
             topic          = C.TOPIC_LABELS[player.topic_idx],
             topic_left     = topic_left,
             topic_right    = topic_right,
-            yes_label      = yes,
-            no_label       = no,
             cost_stage_2   = C.COST_STAGE_2,
             treatment_png  = f"experiment/{C.TREATMENT_CODES[player.treatment_idx]}.png",
             round_number   = player.round_number,
