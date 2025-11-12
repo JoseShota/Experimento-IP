@@ -2,7 +2,7 @@
 import random
 import pprint
 from otree.api import *
-from common.params import TREATMENT_TO_COUNTS
+from common.params import TREATMENT_TO_COUNTS, TREATMENT_CODES
 
 # Models
 doc = """
@@ -97,7 +97,7 @@ def _build_groups_for_player_in_round(subsession: Subsession, p_i: Player, topic
         elif pp_ans == 'B':
             candB.append(pp)
     # obtener composición (nA, nB) para este tratamiento
-    nA, nB = TREATMENT_TO_COUNTS[treatment_idx]
+    nA, nB = TREATMENT_TO_COUNTS.get(TREATMENT_CODES[treatment_idx])
     # ¿Qué hacer en caso de que ningún participante escogió 'A' o 'B'?
     # Armar grupos
     GJ = _sample_exact(candA, candB, nA, nB)
@@ -230,21 +230,24 @@ def set_stage_2_payoff(player: Player, pairs: list, cost_stage_2, punishment_sta
                 'correct_prediction': True,
                 'prediction_idx': prediction_idx}
 
-    print("Payment calculation for player: ", player.id_in_subsession)
+    print("Payment calculation stage_2 for player: ", player.id_in_subsession)
     pprint.pprint(player.participant.vars)
 
 # -------- Página invisible que ejecuta el cálculo --------
 class ComputePayoffs(WaitPage):
     wait_for_all_groups = True
 
-    def is_displayed(self):
-        # No mostrar nada al participante
-        return False
-
     def after_all_players_arrive(self):
         for pl in self.subsession.get_players():
             # set_stage_1_payoff(pl)
-            set_stage_2_payoff(pl)
+            set_stage_2_payoff(
+                player=pl,
+                pairs=self.subsession.session.vars['PAIRS'],
+                cost_stage_2=cu(self.subsession.session.config['COST_STAGE_2']),
+                punishment_stage_2=cu(self.subsession.session.config['PUNISHMENT_STAGE_2']),
+                cost_to_lie_stage_2=cu(self.subsession.session.config['COST_STAGE_2']),
+                bonus_stage_2=cu(self.subsession.session.config['BONUS_STAGE_2']),
+                )
 
 
 page_sequence = [ComputePayoffs]

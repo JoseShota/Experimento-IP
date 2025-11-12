@@ -15,19 +15,18 @@ class PlayerBot(Bot):
                 wtj=random.choice([True, False])
             )
 
-            _, left_p, right_p = practice_left_right()
             yield Practice_ExpressYourOpinion, dict(
-                public_opinion=random.choice([left_p, right_p])
+                public_opinion = random.choice(['A', 'B'])
             )
 
             trt_idx_practice = practice_treatment_idx(self.player.session)
-            n_A_p, n_B_p = counts_for_treatment(trt_idx_practice)
-            yield Practice_HowManyLied, dict(
-                paid_cost_A_practice=random.randint(0, n_A_p),
-                paid_cost_B_practice=random.randint(0, n_B_p),
-                expr_A_from_A_practice=random.randint(0, n_A_p),
-                expr_A_from_B_practice=random.randint(0, n_B_p),
-            )
+            n_A, n_B = counts_for_treatment(trt_idx_practice)
+            yield Practice_HowManyLied, {
+            'paid_cost_A':   random.randint(0, n_A),
+            'paid_cost_B':   random.randint(0, n_B),
+            'expr_A_from_A': random.randint(0, n_A),
+            'expr_A_from_B': random.randint(0, n_B),
+        }
 
             return
 
