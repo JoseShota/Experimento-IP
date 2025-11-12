@@ -1,72 +1,14 @@
 import secrets
 import random
 from otree.api import *
+from common.params import TOPIC_LABELS, TREATMENT_CODES, PRACTICE_ROUNDS, TREATMENT_TO_COUNTS, BINARY_OPTIONS
 
 ##############################
 # Otree Setup
 class C(BaseConstants):
     NAME_IN_URL = 'stage_2_separated'
     PLAYERS_PER_GROUP = None
-    PRACTICE_TOPIC_LABEL = 'Emmanuel o Mijares'
-    COST_STAGE_2 = cu(1000)
-    PUNISHMENT_STAGE_2 = cu(3000)
-    # 10 Binary Questions 
-    TOPIC_LABELS = [
-        "Topic 1",
-        "Topic 2",
-        "Topic 3",
-        "Topic 4",
-        "Topic 5",
-        "Topic 6",
-        "Topic 7",
-        "Topic 8",
-        "Topic 9",
-        "Topic 10",
-        ]
-    # Answers for the 10 binary questions
-    BINARY_OPTIONS = [
-    ('Option H', 'Option L'),  # Question 1
-    ('Option H', 'Option L'),  # Question 2
-    ('Option H', 'Option L'),  # Question 3
-    ('Option H', 'Option L'),  # Question 4
-    ('Option H', 'Option L'),  # Question 5
-    ('Option H', 'Option L'),  # Question 6
-    ('Option H', 'Option L'),  # Question 7
-    ('Option H', 'Option L'),  # Question 8
-    ('Option H', 'Option L'),  # Question 9
-    ('Option H', 'Option L'),  # Question 10
-    ]
-    # Treatment codes for the experiment
-    TREATMENT_CODES = [
-        'New_Ten_Ninety',
-        'New_Twenty_Eighty',
-        'New_Thirty_Seventy',
-        'New_Forty_Sixty',
-        'New_Fifty_Fifty',
-        'New_Sixty_Forty',
-        'New_Seventy_Thirty',
-        'New_Eighty_Twenty',
-        'New_Ninety_Ten',
-    ]
-    # Mapping from treatment codes to counts of A and B opinions
-    TREATMENT_TO_COUNTS = {
-        'New_Ten_Ninety':   (1, 9),  # note the original spelling is kept
-        'New_Twenty_Eighty': (2, 8),
-        'New_Thirty_Seventy':(3, 7),
-        'New_Forty_Sixty':   (4, 6),
-        'New_Fifty_Fifty':   (5, 5),
-        'New_Sixty_Forty':   (6, 4),
-        'New_Seventy_Thirty':(7, 3),
-        'New_Eighty_Twenty': (8, 2),
-        'New_Ninety_Ten':    (9, 1),
-    }
-    # ---------- derived combinations ----------
-    PAIRS = []
-    for t_idx in range(len(TOPIC_LABELS)):
-        for trt_idx in range(len(TREATMENT_CODES)):
-            PAIRS.append((t_idx, trt_idx))
-    PRACTICE_ROUNDS = 1
-    NUM_ROUNDS = PRACTICE_ROUNDS + len(PAIRS)
+    NUM_ROUNDS = PRACTICE_ROUNDS + len(TOPIC_LABELS) * len(TREATMENT_CODES)
 
 
 class Subsession(BaseSubsession):
@@ -74,25 +16,36 @@ class Subsession(BaseSubsession):
 
 
 def creating_session(subsession: Subsession):
-    for p in subsession.get_players():
-        order = _get_topic_treatment_order(p.participant)  # list of (t_idx, trt_idx), len == len(C.PAIRS)
+    # 1) Solo en la primera ronda, deriva todo
+    if subsession.round_number == 1:
+        pairs = [(t_idx, trt_idx)
+                 for t_idx in range(len(TOPIC_LABELS))
+                 for trt_idx in range(len(TREATMENT_CODES))]
+        subsession.session.vars['PAIRS'] = pairs
+        subsession.session.vars['NUM_ROUNDS_S2'] = PRACTICE_ROUNDS + len(pairs)
 
-        # paid index: 1..len(PAIRS); 0 on practice
-        er = subsession.round_number - C.PRACTICE_ROUNDS
+    # 2) Para **todas** las rondas, asigna topic/treatment al Player
+    for p in subsession.get_players():
+        # Tu función que devuelve el orden (lista de pares) por participante
+        order = _get_topic_treatment_order(p.participant)  # list[(t_idx, trt_idx)]
+
+        practice = PRACTICE_ROUNDS
+        er = subsession.round_number - practice  # índice pagado (1..N); 0 -> práctica
 
         if er < 1:
-            # practice round: don't bind a paid pair
+            # Ronda de práctica: no asigna par pagado
             p.topic_idx = None
             p.treatment_idx = None
             continue
 
         if er > len(order):
+            total_paid = len(order)
             raise RuntimeError(
-                f"Round {subsession.round_number} exceeds paid trials ({len(order)}). "
-                f"Check NUM_ROUNDS={C.NUM_ROUNDS} vs PRACTICE_ROUNDS+len(PAIRS)={C.PRACTICE_ROUNDS + len(C.PAIRS)}."
+                f"Round {subsession.round_number} exceeds paid trials ({total_paid}). "
+                f"Check NUM_ROUNDS={C.NUM_ROUNDS} vs PRACTICE_ROUNDS+len(pairs)={practice + total_paid}."
             )
 
-        t_idx, trt_idx = order[er - 1]   # 0-based into paid portion
+        t_idx, trt_idx = order[er - 1]  # 0-based dentro de la parte pagada
         p.topic_idx = t_idx
         p.treatment_idx = trt_idx
 
@@ -149,16 +102,24 @@ def _get_topic_treatment_order(participant):
     """Return a shuffled list of (topic_idx, treatment_idx) pairs for this participant."""
     if 'pair_order' not in participant.vars:
         rng = _rng_for_participant(participant)
-        order = C.PAIRS.copy()
+
+        # Obtener los pairs globales guardados en session.vars
+        pairs = participant.session.vars.get('PAIRS')
+        if pairs is None:
+            raise RuntimeError("PAIRS not found in session.vars — asegúrate de que creating_session lo haya guardado.")
+
+        # Hacer copia para no mutar la lista global
+        order = pairs.copy()
         rng.shuffle(order)
         participant.vars['pair_order'] = order
+
     return participant.vars['pair_order']
 
 
 def counts_for_treatment(trt_idx: int) -> tuple[int, int]:
     """Return (n_A, n_B) for a given treatment index. Defaults to 5/5."""
-    code = C.TREATMENT_CODES[trt_idx]
-    return C.TREATMENT_TO_COUNTS.get(code, (5, 5))
+    code = TREATMENT_CODES[trt_idx]
+    return TREATMENT_TO_COUNTS.get(code, (5, 5))
 
 
 def get_randomised_questions(participant):
@@ -170,17 +131,6 @@ def get_randomised_questions(participant):
         participant.vars['q_order'] = order
         participant.vars['flip'] = [rng.choice([True, False]) for _ in order]
     return participant.vars['q_order'], participant.vars['flip']
-
-
-def get_randomised_wtj(participant):
-    """Order/flip for WTJ block."""
-    if 'wtj_order' not in participant.vars:
-        rng = _rng_for_participant(participant)
-        order = list(range(10))
-        rng.shuffle(order)
-        participant.vars['wtj_order'] = order
-        participant.vars['wtj_flip'] = [rng.choice([True, False]) for _ in order]
-    return participant.vars['wtj_order'], participant.vars['wtj_flip']
 
 
 ## save data participant level functions
@@ -204,18 +154,14 @@ def _ensure_treatment_dict(topic_dict: dict, treatment_key: str) -> dict:
 
 # Practice utilities
 def practice_left_right():
-    """
-    Compute the practice topic's left/right labels with a per-participant flip
-    that is *separate* from Stage 1 flips (since practice is outside the 10 topics).
-    """
     return "Emmanuel o Mijares", "Emmanuel", "Mijares"
 
 
 def practice_treatment_idx(session):
     """Resolve practice treatment code to index in C.TREATMENT_CODES."""
-    code = session.config.get('practice_treatment', C.TREATMENT_CODES[0])
+    code = session.config.get('practice_treatment', TREATMENT_CODES[0])
     try:
-        return C.TREATMENT_CODES.index(code)
+        return TREATMENT_CODES.index(code)
     except ValueError:
         return 0
 
@@ -236,7 +182,7 @@ class Practice_TopicTreatment(Page):
         n_A, n_B = counts_for_treatment(trt_idx)   # NEW
         return dict(
             topic         = topic_label,
-            treatment_png = f"experiment/{C.TREATMENT_CODES[trt_idx]}.png",
+            treatment_png = f"experiment/{TREATMENT_CODES[trt_idx]}.png",
             left          = left,
             right         = right,
             n_A           = n_A,   # NEW
@@ -265,17 +211,19 @@ class Practice_WTJ(Page):
         topic_label, topic_left, topic_right = practice_left_right()
         trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)
-
+        cfg = player.session.config
+        cost_stage_2 = cu(cfg['COST_STAGE_2'])
+        punishment_stage_2 = cu(cfg['PUNISHMENT_STAGE_2'])
         return dict(
             topic          = topic_label,
             topic_left     = topic_left,
             topic_right    = topic_right,
-            cost_stage_2   = C.COST_STAGE_2,
-            treatment_png  = f"experiment/{C.TREATMENT_CODES[trt_idx]}.png",
+            cost_stage_2   = cost_stage_2,
+            treatment_png  = f"experiment/{TREATMENT_CODES[trt_idx]}.png",
             is_practice    = True,
             n_A            = n_A,
             n_B            = n_B,
-            punishment_stage_2 = C.PUNISHMENT_STAGE_2
+            punishment_stage_2 = punishment_stage_2
         )
 
 
@@ -297,13 +245,13 @@ class Practice_ExpressYourOpinion(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        _, topic_left, topic_right = practice_left_right()
+        topic_label, topic_left, topic_right = practice_left_right()
         left, right = "A", "B"
         trt_idx = practice_treatment_idx(player.session)
         n_A, n_B = counts_for_treatment(trt_idx)   # NEW
         return dict(
-            topic         = C.PRACTICE_TOPIC_LABEL,
-            treatment_png = f"experiment/{C.TREATMENT_CODES[trt_idx]}.png",
+            topic         = topic_label,
+            treatment_png = f"experiment/{TREATMENT_CODES[trt_idx]}.png",
             topic_left    = topic_left,
             topic_right   = topic_right,
             left          = left,
@@ -346,7 +294,7 @@ class Practice_HowManyLied(Page):
         ]
         return dict(
             topic         = topic_label,
-            treatment_png = f"experiment/{C.TREATMENT_CODES[trt_idx]}.png",
+            treatment_png = f"experiment/{TREATMENT_CODES[trt_idx]}.png",
             items         = items,
             topic_left    = topic_left,
             topic_right   = topic_right,
@@ -382,11 +330,11 @@ class TopicTreatment(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        topic       = C.TOPIC_LABELS[player.topic_idx]
-        trt_code    = C.TREATMENT_CODES[player.treatment_idx]
+        topic       = TOPIC_LABELS[player.topic_idx]
+        trt_code    = TREATMENT_CODES[player.treatment_idx]
         png_path    = f"experiment/{trt_code}.png"
 
-        left, right = C.BINARY_OPTIONS[player.topic_idx]
+        left, right = BINARY_OPTIONS[player.topic_idx]
 
         # Keep orientation from Stage 1
         q_order, flips = get_randomised_questions(player.participant)
@@ -428,7 +376,7 @@ class WillingnessToJudgeFixedCost(Page):
 
     @staticmethod
     def vars_for_template(player):
-        topic_left, topic_right = C.BINARY_OPTIONS[player.topic_idx]
+        topic_left, topic_right = BINARY_OPTIONS[player.topic_idx]
 
         # keep Stage-1 orientation
         q_order, flips_q = get_randomised_questions(player.participant)
@@ -438,20 +386,22 @@ class WillingnessToJudgeFixedCost(Page):
 
         # NEW: dynamic A/B counts
         n_A, n_B = counts_for_treatment(player.treatment_idx)
-
+        cfg = player.session.config
+        cost_stage_2 = cu(cfg['COST_STAGE_2'])
+        punishment_stage_2 = cu(cfg['PUNISHMENT_STAGE_2'])
 
         return dict(
-            topic          = C.TOPIC_LABELS[player.topic_idx],
+            topic          = TOPIC_LABELS[player.topic_idx],
             topic_left     = topic_left,
             topic_right    = topic_right,
-            cost_stage_2   = C.COST_STAGE_2,
-            treatment_png  = f"experiment/{C.TREATMENT_CODES[player.treatment_idx]}.png",
+            cost_stage_2   = cost_stage_2,
+            treatment_png  = f"experiment/{TREATMENT_CODES[player.treatment_idx]}.png",
             round_number   = player.round_number,
             total_rounds   = C.NUM_ROUNDS,
             is_practice    = False,
             n_A            = n_A,
             n_B            = n_B,
-            punishment_stage_2 = C.PUNISHMENT_STAGE_2
+            punishment_stage_2 = punishment_stage_2
         )
 
 
@@ -482,7 +432,7 @@ class ExpressYourOpinion(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        topic_left, topic_right = C.BINARY_OPTIONS[player.topic_idx]
+        topic_left, topic_right = BINARY_OPTIONS[player.topic_idx]
 
         # keep Stage-1 orientation
         q_order, flips_q = get_randomised_questions(player.participant)
@@ -504,15 +454,15 @@ class ExpressYourOpinion(Page):
         n_A, n_B = counts_for_treatment(player.treatment_idx)
 
         return dict(
-            topic          = C.TOPIC_LABELS[player.topic_idx],
-            treatment_png  = f"experiment/{C.TREATMENT_CODES[player.treatment_idx]}.png",
+            topic          = TOPIC_LABELS[player.topic_idx],
+            treatment_png  = f"experiment/{TREATMENT_CODES[player.treatment_idx]}.png",
             topic_left     = topic_left,
             topic_right    = topic_right,
             left           = left,
             right          = right,
             is_practice    = False,
-            n_A            = n_A,   # NEW
-            n_B            = n_B,   # NEW
+            n_A            = n_A,
+            n_B            = n_B,
         )
 
     def before_next_page(player, timeout_happened):
@@ -536,7 +486,7 @@ class HowManyLied(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        topic_left, topic_right = C.BINARY_OPTIONS[player.topic_idx]
+        topic_left, topic_right = BINARY_OPTIONS[player.topic_idx]
 
         # keep Stage-1 orientation
         q_order, flips_q = get_randomised_questions(player.participant)
@@ -544,8 +494,8 @@ class HowManyLied(Page):
         if flips_q[pos_topic]:
             topic_left, topic_right = topic_right, topic_left
 
-        topic         = C.TOPIC_LABELS[player.topic_idx]
-        treatment_png = f"experiment/{C.TREATMENT_CODES[player.treatment_idx]}.png"
+        topic         = TOPIC_LABELS[player.topic_idx]
+        treatment_png = f"experiment/{TREATMENT_CODES[player.treatment_idx]}.png"
 
         # NEW: dynamic A/B counts
         n_A, n_B = counts_for_treatment(player.treatment_idx)

@@ -12,33 +12,8 @@ SESSION_CONFIGS = [
         COST_STAGE_2 = 1000,
         PUNISHMENT_STAGE_2 = 3000,
         BONUS_STAGE_2 = 5000,
-        # 10 Binary Questions 
-        TOPIC_LABELS = (
-            "Topic 1",
-            "Topic 2",
-            "Topic 3",
-            "Topic 4",
-            "Topic 5",
-            "Topic 6",
-            "Topic 7",
-            "Topic 8",
-            "Topic 9",
-            "Topic 10",
-        ),
-        # Answers for the 10 binary questions
-        BINARY_OPTIONS = (
-        ('Option H', 'Option L'),  # Question 1
-        ('Option H', 'Option L'),  # Question 2
-        ('Option H', 'Option L'),  # Question 3
-        ('Option H', 'Option L'),  # Question 4
-        ('Option H', 'Option L'),  # Question 5
-        ('Option H', 'Option L'),  # Question 6
-        ('Option H', 'Option L'),  # Question 7
-        ('Option H', 'Option L'),  # Question 8
-        ('Option H', 'Option L'),  # Question 9
-        ('Option H', 'Option L'),  # Question 10
-        ),
-        PRACTICE_ROUNDS=1,
+        # The rest of the parameters are defined in common/params.py because they are used to calculated
+        # NUM_ROUNDS and C constant are inmutable
     ),
 ]
 
