@@ -5,7 +5,7 @@ SESSION_CONFIGS = [
     dict(
         name = 'experiment',
         display_name = "IP Experiment",
-        app_sequence = ['stage_2','payment'], #['actual_exp_phase_1'],
+        app_sequence = ['stage_1'],#['personal_info','stage_2','payment'], #['actual_exp_phase_1'],
         num_demo_participants = 25,
         COST_STAGE_1 = 1000,
         PUNISHMENT_STAGE_1 = 3000,
