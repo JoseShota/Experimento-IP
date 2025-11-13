@@ -152,86 +152,129 @@ def set_stage_2_payoff(player: Player, pairs: list, cost_stage_2, punishment_sta
         treatment_idx=treatment_idx,
     )
     GJ, GE, GH = groups['GJ'], groups['GE'], groups['GH']
+
     #### Lógica de pago para WillingnessToJudgeFixedCost_r ####
     wtj = player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('wtj')
     # si wtj=Sí, extraer al azar un jugador de GJ para posible comparación
     if wtj:
-        judged_player = random.choice(GJ)
-        judged_opinion = judged_player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('public_opinion')
+        target_player = random.choice(GJ)
+        target_opinion = target_player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('public_opinion') 
         ### PREGUNTAR ###
         # public_opinion vs stage_1 opinion?
         # si la opinion del juzgado difiere de la propia, cobrar costo y castigo
-        if judged_opinion != player.participant.vars[f"topic_{topic_idx}"].get('answer',
+        if target_opinion != player.participant.vars[f"topic_{topic_idx}"].get('answer',
                                                                  random.choice(['A', 'B'])):  # in case only run stage 2
             player.payoff -= cost_stage_2
-            judged_player.payoff -= punishment_stage_2
+            target_player.payoff -= punishment_stage_2
             # marcar en particiant.vars para control
-            player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}')['wtj_result'] = {
+            player.participant.vars['wtj_result'] = {
                 'punished_other_player': True,
-                'judged_player_id': judged_player.id_in_subsession}
-    
+                'target_player_id': target_player.id_in_subsession}
+        else:
+            # marcar en participant.vars para control
+            player.participant.vars['wtj_result'] = {
+                'punished_other_player': False,
+                'target_player_id': target_player.id_in_subsession}
+    else:
+        # marcar en participant.vars para control
+        player.participant.vars['wtj_result'] = {
+            'punished_other_player': False}
+        
     #### Lógica de pago para ExpressYourOpinion_r ####
     player_opinion = player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('public_opinion')
     # si la opinion expresada difiere de la propia, cobrar costo por mentir
+    lie = False # guardar si mintió o no
     if player_opinion != player.participant.vars[f"topic_{topic_idx}"].get('answer',
                                                                  random.choice(['A', 'B'])):  # in case only run stage 2
         player.payoff -= cost_to_lie_stage_2
+        lie = True # cambiar valor a mintió
     # obtener una persona del grupo
-    judge_player = random.choice(GE)
-    wtj_j = judge_player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('wtj')
+    judge = random.choice(GE)
+    wtj_j = judge.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('wtj')
     # si esa persona está dispuesta a juzgar y la opinión difiere, cobrar castigo
     if wtj_j:
-        judge_opinion = judge_player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('public_opinion')
+        judge_opinion = judge.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('public_opinion') ### PREGUNTAR ### public_opinion o answer Stage 1?
         # si la opinion del juez difiere de la propia, cobrar costo y castigo
-        if judge_opinion != judged_opinion:
+        if judge_opinion != player_opinion:
             player.payoff -= punishment_stage_2
-            judge_player.payoff -= cost_stage_2
+            judge.payoff -= cost_stage_2
             # marcar en particiant.vars para control
-            player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}')['eyo_result'] = {
-                'get_punished': True,
-                'judge_player_id': judge_player.id_in_subsession}
+            player.participant.vars['eyo_result'] = {
+                'got_punished': True,
+                'judge_player_id': judge.id_in_subsession,
+                'player_lied': lie}
+        else:
+            # marcar en participant.vars para control
+            player.participant.vars['eyo_result'] = {
+                'got_punished': False,
+                'judge_player_id': judge.id_in_subsession,
+                'player_lied': lie}
+    else:
+        # marcar en participant.vars para control
+        player.participant.vars['eyo_result'] = {
+            'got_punished': False,
+            'player_lied': lie}
 
     #### Lógica de pago para HowManyLied_r ####
     prediction_idx = random.randint(1, 4)
+    prediction_list = ['paid_cost_A', 'paid_cost_B', 'expr_A_from_A', 'expr_A_from_B']
     if prediction_idx == 1:
         real = _calculate_how_many_lied(GH, 'A', 'wtj', topic_idx, treatment_idx)
         prediction = player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('paid_cost_A')
         if real == prediction:
             player.payoff += bonus_stage_2
             # marcar en participant.vars para control
-            player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}')['hml_result'] = {
+            player.participant.vars['hml_result'] = {
                 'correct_prediction': True,
-                'prediction_idx': prediction_idx}
+                'prediction': prediction_list[prediction_idx - 1]}
+        else:
+            player.participant.vars['hml_result'] = {
+                'correct_prediction': False,
+                'prediction': prediction_list[prediction_idx - 1]}
     elif prediction_idx == 2:
         real = _calculate_how_many_lied(GH, 'B', 'wtj', topic_idx, treatment_idx)
         prediction = player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('paid_cost_B')
         if real == prediction:
             player.payoff += bonus_stage_2
             # marcar en participant.vars para control
-            player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}')['hml_result'] = {
+            player.participant.vars['hml_result'] = {
                 'correct_prediction': True,
-                'prediction_idx': prediction_idx}
+                'prediction': prediction_list[prediction_idx - 1]}
+        else:
+            player.participant.vars['hml_result'] = {
+                'correct_prediction': False,
+                'prediction': prediction_list[prediction_idx - 1]}
     elif prediction_idx == 3:
         real = _calculate_how_many_lied(GH, 'A', 'public_opinion', topic_idx, treatment_idx)
         prediction = player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('expr_A_from_A')
         if real == prediction:
             player.payoff += bonus_stage_2
             # marcar en participant.vars para control
-            player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}')['hml_result'] = {
+            player.participant.vars['hml_result'] = {
                 'correct_prediction': True,
-                'prediction_idx': prediction_idx}
+                'prediction': prediction_list[prediction_idx - 1]}
+        else:
+            player.participant.vars['hml_result'] = {
+                'correct_prediction': False,
+                'prediction': prediction_list[prediction_idx - 1]}
     else:  # prediction_idx == 4
         real = _calculate_how_many_lied(GH, 'B', 'public_opinion', topic_idx, treatment_idx)
         prediction = player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('expr_A_from_B')
         if real == prediction:
             player.payoff += bonus_stage_2
             # marcar en participant.vars para control
-            player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}')['hml_result'] = {
+            player.participant.vars['hml_result'] = {
                 'correct_prediction': True,
-                'prediction_idx': prediction_idx}
-
-    print("Payment calculation stage_2 for player: ", player.id_in_subsession)
-    pprint.pprint(player.participant.vars)
+                'prediction': prediction_list[prediction_idx - 1]}
+        else:
+            player.participant.vars['hml_result'] = {
+                'correct_prediction': False,
+                'prediction': prediction_list[prediction_idx - 1]}
+    # debugging prints
+    # print("Payment calculation stage_2 for player: ", player.id_in_subsession)
+    # pprint.pprint(player.participant.vars['wtj_result'])
+    # pprint.pprint(player.participant.vars['eyo_result'])
+    # pprint.pprint(player.participant.vars['hml_result'])
 
 # -------- Página invisible que ejecuta el cálculo --------
 class ComputePayoffs(WaitPage):
