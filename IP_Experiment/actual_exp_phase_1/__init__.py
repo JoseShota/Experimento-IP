@@ -418,7 +418,7 @@ def set_stage1_payoffs(subsession: Subsession):
 
 def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
                          opposite_opinion, public_opinion,
-                         punishment_stage_1, cost_stage_1):
+                         punishment_stage_1):
     """
     Simula Stage 1 para 'player' con panel de 10:
       - Si faltan jugadores reales para completar el panel, se re-muestrean (con reposición).
