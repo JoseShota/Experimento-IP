@@ -2,7 +2,7 @@
 import random
 import pprint
 from otree.api import *
-from common.params import TREATMENT_TO_COUNTS, TREATMENT_CODES
+from common.params import TREATMENT_TO_COUNTS, TREATMENT_CODES, TOPIC_LABELS
 
 # Models
 doc = """
@@ -136,8 +136,7 @@ def _calculate_how_many_lied(group:list,option:str,type:str,topic_idx:int,treatm
 
 
 def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
-                         opposite_opinion, public_opinion,
-                         punishment_stage_1):
+                         opposite_opinion, public_opinion):
     """
     Simula Stage 1 para 'player' con panel de 10:
       - Si faltan jugadores reales para completar el panel, se re-muestrean (con reposición).
@@ -247,11 +246,7 @@ def set_stage_1_payoff(player: Player):
     3) Llama a _simulate_punishment y aplica el castigo al jugador si corresponde.
     4) Cobra cost_stage_1 al observador real *una sola vez en toda la ronda*.
     """
-    # get cobrados set
-    cfs = player.subsession.session.vars
-    # setdefault si todavia no hay cobrados
-    cobrados = cfs.setdefault('stage_1_cobrados', set())
-    topic_idx = random.randint(0, 10)  # tópico pagado aleatorio entre 1 y 10
+    topic_idx = random.randint(0,len(TOPIC_LABELS)-1)  # tópico pagado aleatorio entre 1 y 10
     # obtener datos de stage 1 del participante
     ans = player.participant.vars[f'topic_{topic_idx}'].get('answer')
     wtl = player.participant.vars[f'topic_{topic_idx}'].get('stage_1').get('wtl')
@@ -262,10 +257,7 @@ def set_stage_1_payoff(player: Player):
     if prob_punishment <= wtl:
         public_opinion = ans
     else:
-        if ans == 'A':
-            public_opinion = 'B'
-        elif ans == 'B':
-            public_opinion = 'A'
+        public_opinion = 'B' if ans == 'A' else 'A'
 
     # Simula castigo. Esta función YA no cobra el costo al observador.
     result = _simulate_punishment(
@@ -275,29 +267,32 @@ def set_stage_1_payoff(player: Player):
         prob_punishment=prob_punishment,
         opposite_opinion=opposite_opinion,
         public_opinion=public_opinion,
-        punishment_stage_1=player.subsession.session.config['PUNISHMENT_STAGE_1'],
-        cost_stage_1=player.subsession.session.config['COST_STAGE_1'],
     )
 
+    p_stage1 = player.participant.vars.setdefault('stage_1_result', {})
     # Aplicar castigo al jugador si corresponde
     if result.get('castigado'):
         player.payoff -= cu(player.subsession.session.config['PUNISHMENT_STAGE_1'])
         # guardar en participant.vars para control
-        player.participant.vars['stage_1']['got_punished'] = {'topic_idx': topic_idx,
+        p_stage1['got_punished'] = {'topic_idx': topic_idx,
                                 'prob_punishment': prob_punishment,
                                 'opposite_opinion': opposite_opinion,
                                 'judge': result.get('observador').id_in_subsession if result.get('observador') else None}
+        # reasignar
+        player.participant.vars['stage_1_result'] = p_stage1    
     # Si hubo observador real que castigó, se le cobra solo una vez en la ronda.
     obs = result.get('observador')
     if result.get('punisher') and (obs is not None):
-        if obs.id_in_subsession not in cobrados:
+        o_stage1 = obs.participant.vars.setdefault('stage_1_result', {})
+        if not o_stage1.get('got_charged', False):
             obs.payoff -= cu(player.subsession.session.config['COST_STAGE_1'])
-            # marcar como cobrado
-            cobrados.add(obs.id_in_subsession)
-            print(cfs.get('stage_1_cobrados',"ERROR"))
             # guardar en participant.vars para control
-            obs.participant.vars['stage_1']['got_charged'] = True
+            o_stage1['got_charged'] = True
+            obs.participant.vars['stage_1_result'] = o_stage1
 
+    # DEBUGGING prints
+    # print("Payment calculation stage_1 for player: ", player.id_in_subsession)
+    # pprint.pprint(player.participant.vars['stage_1_result'])
 
 # Stage 2 payoff
 def set_stage_2_payoff(player: Player, pairs: list, cost_stage_2, punishment_stage_2, cost_to_lie_stage_2, bonus_stage_2):
@@ -442,7 +437,7 @@ class ComputePayoffs(WaitPage):
 
     def after_all_players_arrive(self):
         for pl in self.subsession.get_players():
-            # set_stage_1_payoff(pl)
+            set_stage_1_payoff(pl)
             set_stage_2_payoff(
                 player=pl,
                 pairs=self.subsession.session.vars['PAIRS'],
