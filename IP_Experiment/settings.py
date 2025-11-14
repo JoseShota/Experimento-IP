@@ -19,7 +19,7 @@ SESSION_CONFIGS = [
     ),
     dict(
         name = 'experiment_stage_1_only',
-        display_name = "IP Experiment",
+        display_name = "IP Experiment Stage 1 Only",
         app_sequence = ['personal_info', 'stage_1', 'payment'],
         num_demo_participants = num_demo_participants,
         COST_STAGE_1 = 1000,
@@ -29,7 +29,7 @@ SESSION_CONFIGS = [
     ),
     dict(
         name = 'experiment_stage_2_only',
-        display_name = "IP Experiment",
+        display_name = "IP Experiment Stage 2 Only",
         app_sequence = ['personal_info', 'stage_2', 'payment'],
         num_demo_participants = num_demo_participants,
         COST_STAGE_2 = 1000,
