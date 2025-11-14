@@ -290,7 +290,7 @@ def set_stage_1_payoff(player: Player):
             o_stage1['got_charged'] = True
             obs.participant.vars['stage_1_result'] = o_stage1
 
-    # DEBUGGING prints
+    # # DEBUGGING prints
     # print("Payment calculation stage_1 for player: ", player.id_in_subsession)
     # pprint.pprint(player.participant.vars['stage_1_result'])
 
@@ -308,6 +308,8 @@ def set_stage_2_payoff(player: Player, pairs: list, cost_stage_2, punishment_sta
     )
     GJ, GE, GH = groups['GJ'], groups['GE'], groups['GH']
 
+    # control
+    p_stage2 = player.participant.vars.setdefault('stage_2_result', {})
     #### Lógica de pago para WillingnessToJudgeFixedCost_r ####
     wtj = player.participant.vars[f"topic_{topic_idx}"].get(f'treatment_{treatment_idx}').get('wtj')
     # si wtj=Sí, extraer al azar un jugador de GJ para posible comparación
@@ -322,17 +324,17 @@ def set_stage_2_payoff(player: Player, pairs: list, cost_stage_2, punishment_sta
             player.payoff -= cost_stage_2
             target_player.payoff -= punishment_stage_2
             # marcar en particiant.vars para control
-            player.participant.vars['wtj_result'] = {
+            p_stage2['wtj_result'] = {
                 'punished_other_player': True,
                 'target_player_id': target_player.id_in_subsession}
         else:
             # marcar en participant.vars para control
-            player.participant.vars['wtj_result'] = {
+            p_stage2['wtj_result'] = {
                 'punished_other_player': False,
                 'target_player_id': target_player.id_in_subsession}
     else:
         # marcar en participant.vars para control
-        player.participant.vars['wtj_result'] = {
+        p_stage2['wtj_result'] = {
             'punished_other_player': False}
         
     #### Lógica de pago para ExpressYourOpinion_r ####
@@ -354,19 +356,19 @@ def set_stage_2_payoff(player: Player, pairs: list, cost_stage_2, punishment_sta
             player.payoff -= punishment_stage_2
             judge.payoff -= cost_stage_2
             # marcar en particiant.vars para control
-            player.participant.vars['eyo_result'] = {
+            p_stage2['eyo_result'] = {
                 'got_punished': True,
                 'judge_player_id': judge.id_in_subsession,
                 'player_lied': lie}
         else:
             # marcar en participant.vars para control
-            player.participant.vars['eyo_result'] = {
+            p_stage2['eyo_result'] = {
                 'got_punished': False,
                 'judge_player_id': judge.id_in_subsession,
                 'player_lied': lie}
     else:
         # marcar en participant.vars para control
-        player.participant.vars['eyo_result'] = {
+        p_stage2['eyo_result'] = {
             'got_punished': False,
             'player_lied': lie}
 
@@ -379,11 +381,11 @@ def set_stage_2_payoff(player: Player, pairs: list, cost_stage_2, punishment_sta
         if real == prediction:
             player.payoff += bonus_stage_2
             # marcar en participant.vars para control
-            player.participant.vars['hml_result'] = {
+            p_stage2['hml_result'] = {
                 'correct_prediction': True,
                 'prediction': prediction_list[prediction_idx - 1]}
         else:
-            player.participant.vars['hml_result'] = {
+            p_stage2['hml_result'] = {
                 'correct_prediction': False,
                 'prediction': prediction_list[prediction_idx - 1]}
     elif prediction_idx == 2:
@@ -392,11 +394,11 @@ def set_stage_2_payoff(player: Player, pairs: list, cost_stage_2, punishment_sta
         if real == prediction:
             player.payoff += bonus_stage_2
             # marcar en participant.vars para control
-            player.participant.vars['hml_result'] = {
+            p_stage2['hml_result'] = {
                 'correct_prediction': True,
                 'prediction': prediction_list[prediction_idx - 1]}
         else:
-            player.participant.vars['hml_result'] = {
+            p_stage2['hml_result'] = {
                 'correct_prediction': False,
                 'prediction': prediction_list[prediction_idx - 1]}
     elif prediction_idx == 3:
@@ -405,11 +407,11 @@ def set_stage_2_payoff(player: Player, pairs: list, cost_stage_2, punishment_sta
         if real == prediction:
             player.payoff += bonus_stage_2
             # marcar en participant.vars para control
-            player.participant.vars['hml_result'] = {
+            p_stage2['hml_result'] = {
                 'correct_prediction': True,
                 'prediction': prediction_list[prediction_idx - 1]}
         else:
-            player.participant.vars['hml_result'] = {
+            p_stage2['hml_result'] = {
                 'correct_prediction': False,
                 'prediction': prediction_list[prediction_idx - 1]}
     else:  # prediction_idx == 4
@@ -418,18 +420,19 @@ def set_stage_2_payoff(player: Player, pairs: list, cost_stage_2, punishment_sta
         if real == prediction:
             player.payoff += bonus_stage_2
             # marcar en participant.vars para control
-            player.participant.vars['hml_result'] = {
+            p_stage2['hml_result'] = {
                 'correct_prediction': True,
                 'prediction': prediction_list[prediction_idx - 1]}
         else:
-            player.participant.vars['hml_result'] = {
+            p_stage2['hml_result'] = {
                 'correct_prediction': False,
                 'prediction': prediction_list[prediction_idx - 1]}
+            
+    # reasignar
+    player.participant.vars['stage_2_result'] = p_stage2
     # debugging prints
     # print("Payment calculation stage_2 for player: ", player.id_in_subsession)
-    # pprint.pprint(player.participant.vars['wtj_result'])
-    # pprint.pprint(player.participant.vars['eyo_result'])
-    # pprint.pprint(player.participant.vars['hml_result'])
+    # pprint.pprint(player.participant.vars['stage_2_result'])
 
 # -------- Página invisible que ejecuta el cálculo --------
 class ComputePayoffs(WaitPage):
@@ -437,15 +440,19 @@ class ComputePayoffs(WaitPage):
 
     def after_all_players_arrive(self):
         for pl in self.subsession.get_players():
-            set_stage_1_payoff(pl)
-            set_stage_2_payoff(
-                player=pl,
-                pairs=self.subsession.session.vars['PAIRS'],
-                cost_stage_2=cu(self.subsession.session.config['COST_STAGE_2']),
-                punishment_stage_2=cu(self.subsession.session.config['PUNISHMENT_STAGE_2']),
-                cost_to_lie_stage_2=cu(self.subsession.session.config['COST_STAGE_2']),
-                bonus_stage_2=cu(self.subsession.session.config['BONUS_STAGE_2']),
-                )
-
+            played_stage_1 = pl.participant.vars.get('played_stage_1', False)
+            played_stage_2 = pl.participant.vars.get('played_stage_2', False)
+            if played_stage_1:
+                set_stage_1_payoff(pl)
+            if played_stage_2:
+                set_stage_2_payoff(
+                    player=pl,
+                    pairs=self.subsession.session.vars['PAIRS'],
+                    cost_stage_2=cu(self.subsession.session.config['COST_STAGE_2']),
+                    punishment_stage_2=cu(self.subsession.session.config['PUNISHMENT_STAGE_2']),
+                    cost_to_lie_stage_2=cu(self.subsession.session.config['COST_STAGE_2']),
+                    bonus_stage_2=cu(self.subsession.session.config['BONUS_STAGE_2']),
+                    )
+                
 
 page_sequence = [ComputePayoffs]
