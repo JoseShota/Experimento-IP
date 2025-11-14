@@ -49,6 +49,11 @@ def creating_session(subsession: Subsession):
         p.topic_idx = t_idx
         p.treatment_idx = trt_idx
 
+    # asignar que sí jugó stage 2
+    if subsession.round_number == C.NUM_ROUNDS:
+        for p in subsession.get_players():
+            p.participant.vars['played_stage_2'] = True
+
 
 class Group(BaseGroup):
     pass
