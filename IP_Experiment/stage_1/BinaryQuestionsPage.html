@@ -1,0 +1,197 @@
+{% extends "global/Page.html" %}
+
+{% block styles %}
+<style>
+  .choice-inline .form-check { margin-right: 1rem; }
+  .scale-row { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+  .scale-row input[type="radio"] { margin-top: .15rem; }
+  .scale-notes { display: flex; justify-content: space-between; font-size: .9rem; color: #6c757d; }
+  .question-section + .question-section { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee; }
+  .help { font-size: .95rem; }
+  .dynamic-feedback { margin-top: .5rem; font-size: .95rem; }
+  .is-hidden { display: none; }
+  .badge-soft { background: #f8f9fa; border: 1px solid #e9ecef; padding: .15rem .4rem; border-radius: .25rem; }
+  .legend { font-weight: 600; margin-bottom: .5rem; }
+  .help-collapsed { font-size: .95rem; color: #6c757d; }
+  .see-more { text-decoration: underline; cursor: help; }
+  .popover-wrap { position: relative; display: inline-block; }
+  .popover-content {
+    display: none; position: absolute; top: 1.4rem; left: 0; z-index: 10;
+    width: 36rem; max-width: 90vw; background: #fff; border: 1px solid #e9ecef; border-radius: .5rem;
+    padding: .75rem; box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  }
+  .popover-wrap:hover .popover-content { display: block; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h1>Stage&nbsp;1: Questions on Various Topics</h1>
+
+<p>
+  You will now see <strong>3 questions</strong> related to the same topic. Please select the option that best reflects your opinion.<br>
+  <strong>Your responses are completely anonymous, even the researchers cannot link them to you. There is no advantage to lying at this stage—because of how we will balance who you interact with,
+  there is no payoff benefit from choosing an opinion different from the one that best reflects your opinion.</strong><br>
+  <em>Try not to over-think your responses; we are interested in your immediate and honest reaction.</em>
+</p>
+
+<div class="card mb-4 shadow-sm">
+  <div class="card-body">
+    <h5 class="card-title mb-3">{{ topic_index }}.&nbsp;{{ topic_question }}</h5>
+    <!-- QUESTION 1: Binary choice -->
+    <div class="form-group">
+      <label>
+        <input type="radio" name="answer" value="{{ left }}" required>
+        {{ topic_left }}
+      </label><br>
+      <label>
+        <input type="radio" name="answer" value="{{ right }}">
+        {{ topic_right }}
+      </label>
+    </div>
+
+    <!-- QUESTION 2: Maximum acceptable punishment probability (for expressing your opinion) -->
+    <div class="question-section">
+      {% if show_help %}
+        <div class="help mb-2">
+          <p class="mb-2">
+            You will be asked to express an opinion to another person in two circumstances. This is the first of those circumstances.
+            You must decide whether to express an opinion to someone who, with some probability, will “punish” you by subtracting { punishment_stage_1 } points for expressing the opinion you just expressed.
+            The probability of being punished goes from 0 in 10 to 10 in 10. We would like you to indicate the maximum probability of being punished such that you would express the opinion you just expressed.
+            So if you indicate the maximum probability is <em>x in 10</em>, then you are indicating that you would express your opinion if the probability is <em>x in 10</em> or lower.
+          </p>
+          <p class="mb-2">
+            There are monetary consequences for your decision. We will build a group of size ten, and choose one person at random from this group to see the opinion you expressed.
+            In order to form this group, we will include some people that will punish you for expressing the opinion you just expressed, and some that will not.
+            We will choose a number at random between zero and ten to decide how many would punish you. If the selected person decided to punish the opinion you expressed, {{ punishment_stage_1 }} points will be deducted from your payment.
+          </p>
+          <p class="mb-2">
+            What are the consequences of us choosing a number at random? Suppose that you would be willing to express your true opinion if the probability of being punished is at most <em>x in 10</em>.
+            If you answer a number greater than <em>x</em>, we may choose a number higher than <em>x</em> such that you will express your true opinion even though you would not have wanted to at that probability.
+            If you answer a number smaller than <em>x</em>, we may choose a number lower than <em>x</em> such that you will not express your true opinion even though the probability is low enough that you would have preferred to state it.
+          </p>
+          <p class="mb-2"><strong>What is the maximum punishment probability at which you would still express the opinion you decided to express?</strong></p>
+        </div>
+      {% else %}
+        <p class="mb-2"><strong>What is the maximum punishment probability at which you would still express the opinion you decided to express?</strong></p>
+        <div class="help-collapsed mb-2">
+          <div class="popover-wrap">
+            <span class="see-more">(see more)</span>
+            <div class="popover-content">
+              <p class="mb-2">
+                You must decide whether to express an opinion to someone who, with some probability, will “punish” you by subtracting { punishment_stage_1 } points for expressing the opinion you just expressed.
+                The probability of being punished goes from 0 in 10 to 10 in 10. Indicate the maximum probability at which you would still express your opinion.
+              </p>
+              <p class="mb-0">
+                We will choose a number at random between zero and ten to decide how many would punish you. If the selected person punishes, { punishment_stage_1 } points will be deducted.
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <p>
+        {{ form.wtl.label }}
+        {{ form.wtl }}
+      </p>
+
+      <div class="scale-notes">
+        <span class="text-muted"><span class="badge-soft">0 in 10</span> No chance of punishment</span>
+        <span class="text-muted">Certain punishment <span class="badge-soft">10 in 10</span></span>
+      </div>
+      <div id="wtl_feedback" class="dynamic-feedback is-hidden" aria-live="polite"></div>
+    </div>
+
+    <!-- QUESTION 3 (replacement for old JR + WTP): Opposite-opinion threshold to pay to punish -->
+    <div class="question-section">
+      <div class="legend">Punishment threshold (opposite opinions in the group)</div>
+
+      {% if show_help %}
+        <div class="help mb-2">
+          <p class="mb-2">
+            You will be asked whether to punish another person in two circumstances. This is the first of those circumstances.
+            You must decide whether to punish someone <strong>if they expressed an opinion different from your own</strong>.
+            The cost of punishing is {{ cost_stage_1 }}, and the person you punish will lose {{ punishment_stage_1 }} points.
+            We will randomly select the person you may punish from a group of 10 people. In that group, some people share your opinion on this topic and some have the opposite opinion.
+          </p>
+          <p class="mb-2">
+            We would like you to indicate the <strong>minimum number of people with the opposite opinion</strong> (out of 10) at which you are willing to pay to punish someone who expressed an opinion different from your own.
+            For example, if you indicate <em>x out of 10</em>, then you are saying you would pay the cost to punish if the value we choose is <em>x out of 10</em> or <em>more</em>.
+          </p>
+          <p class="mb-2">
+            What are the consequences of us choosing a number at random? Suppose you would be willing to pay the cost to punish if the number of people with the opposite opinion is at least <em>x out of 10</em>.
+            If you answer a number <em>greater</em> than <em>x</em>, we may choose a number between <em>x</em> and your answer such that you would pay the cost to punish even though you would have preferred not to.
+            If you answer a number <em>smaller</em> than <em>x</em>, we may choose a number between your answer and <em>x</em> such that you would not pay the cost to punish even though you would have preferred to.
+          </p>
+          <p class="mb-2"><strong>What is the minimum number (out of 10) at which you would pay the cost to punish someone who expressed an opinion different from your own?</strong></p>
+        </div>
+      {% else %}
+        <p class="mb-2"><strong>Minimum number (out of 10) of people with the opposite opinion at which you would pay to punish someone who expressed an opinion different from your own?</strong></p>
+        <div class="help-collapsed mb-2">
+          <div class="popover-wrap">
+            <span class="see-more">(see more)</span>
+            <div class="popover-content">
+              <p class="mb-2">
+                The cost of punishing is {{ cost_stage_1 }}, and the person you punish will lose {{ punishment_stage_1 }} points.
+                We will randomly select one person from a group of 10 (some share your opinion, some have the opposite opinion).
+              </p>
+              <p class="mb-0">
+                Indicate the <em>minimum</em> number (out of 10) with the opposite opinion that would make you willing to pay to punish.
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <p>
+        {{ form.min_opp_punish.label }}
+        {{ form.min_opp_punish }}
+      </p>
+
+      <div class="scale-notes">
+        <span class="text-muted"><span class="badge-soft">0 of 10</span> Punish even if none oppose</span>
+        <span class="text-muted">Punish only if all oppose <span class="badge-soft">10 of 10</span></span>
+      </div>
+
+      <div id="min_opp_punish_feedback" class="dynamic-feedback is-hidden" aria-live="polite"></div>
+    </div>
+
+  </div>
+</div>
+
+{{ next_button }}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    function messageFor(type, value) {
+      var v = parseInt(value, 10);
+      if (isNaN(v)) return "";
+      if (type === 'prob') {
+        return "I would express the opinion I chose if the punishment probability is " + v + " in 10 or lower.";
+      }
+      if (type === 'opp') {
+        return "I would pay the cost to punish if the number of people with the opposite opinion we choose is " + v + " out of 10 or higher.";
+      }
+      return "";
+    }
+
+    document.addEventListener("change", function (e) {
+      if (e.target && e.target.matches('input[type="radio"][data-feedback-target]')) {
+        var targetId = e.target.getAttribute("data-feedback-target");
+        var type = e.target.getAttribute("data-feedback-type");
+        var panel = document.getElementById(targetId);
+        if (!panel) return;
+        var text = messageFor(type, e.target.value);
+        if (text) {
+          panel.textContent = text;
+          panel.classList.remove("is-hidden");
+        }
+      }
+    }, { passive: true });
+  })();
+</script>
+{% endblock %}
+

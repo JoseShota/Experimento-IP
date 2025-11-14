@@ -135,9 +135,169 @@ def _calculate_how_many_lied(group:list,option:str,type:str,topic_idx:int,treatm
     return count
 
 
+def _simulate_punishment(player, all_players, topic_idx, prob_punishment,
+                         opposite_opinion, public_opinion,
+                         punishment_stage_1):
+    """
+    Simula Stage 1 para 'player' con panel de 10:
+      - Si faltan jugadores reales para completar el panel, se re-muestrean (con reposición).
+      - Solo si NO hay ningún jugador real disponible, se usa 'ficticio'.
+      - Observador ficticio => solo el jugador pierde (sin costo a observador).
+      - Observador real castigador => jugador pierde y el observador paga costo AQUÍ.
+      - Observador real no castigador => no hay castigo.
+
+    Returns (dict):
+      {
+        'castigado': bool,
+        'observador': Player | None,   # None si fue ficticio o no hubo panel
+        'punisher': bool               # True si el observador (real o ficticio) castiga
+      }
+    """
+    PANEL_SIZE = 10
+
+    # 1) Clasificar posibles castigadores / no castigadores (excluyendo al propio jugador)
+    castigadores = []
+    no_castigadores = []
+    for other in all_players:
+        if other.id_in_subsession == player.id_in_subsession:
+            continue
+        min_opp = (
+            other.participant.vars
+            .get(f'topic_{topic_idx}')
+            .get(f'stage_1')
+            .get(f'min_opp_punish')
+        )
+        answer_other = (
+            other.participant.vars
+            .get(f'topic_{topic_idx}')
+            .get(f'answer')
+        )
+
+        if (opposite_opinion >= min_opp) and (public_opinion != answer_other):
+            castigadores.append(other)
+        elif (public_opinion == answer_other) or (opposite_opinion < min_opp):
+            no_castigadores.append(other)
+
+    # Si no hay NADIE real disponible, usar ficticios
+    if (not castigadores) and (not no_castigadores):
+        grupo_total = ["ficticio"] * PANEL_SIZE
+    else:
+        # 2) Armar panel con objetivo: kC_desired castigadores y (10 - kC_desired) no castigadores
+        kC_desired = min(prob_punishment, PANEL_SIZE)
+
+        # 2.a) Bloque de castigadores (preferir sin reposición; si faltan, re-muestrear con reposición)
+        if len(castigadores) >= kC_desired:
+            grupo_castigadores = random.sample(castigadores, kC_desired)
+        else:
+            if len(castigadores) > 0:
+                grupo_castigadores = random.choices(castigadores, k=kC_desired)  # con reposición
+            else:
+                grupo_castigadores = []
+
+        # 2.b) Completar hasta PANEL_SIZE con no castigadores (misma lógica)
+        remaining = PANEL_SIZE - len(grupo_castigadores)
+        if remaining > 0:
+            if len(no_castigadores) >= remaining:
+                grupo_no_castigadores = random.sample(no_castigadores, remaining)
+            elif len(no_castigadores) > 0:
+                grupo_no_castigadores = random.choices(no_castigadores, k=remaining)  # con reposición
+            else:
+                # No hay no castigadores reales; completar re-muestreando castigadores reales
+                # (si tampoco hubiera castigadores, ya habríamos entrado al caso de ficticios arriba)
+                grupo_no_castigadores = random.choices(
+                    castigadores, k=remaining
+                ) if castigadores else []
+        else:
+            grupo_no_castigadores = []
+
+        grupo_total = grupo_castigadores + grupo_no_castigadores
+
+    # 3) Elegir observador
+    observador = random.choice(grupo_total)
+
+    # 4) Aplicar resultado
+    if observador == "ficticio":
+        # Ficticio castiga: solo el jugador pierde; sin costo de observador real
+        return {'castigado': True, 'observador': None, 'punisher': True}
+
+    # Si el observador (real) está en el bloque de castigadores, castiga
+    # OJO: grupo_castigadores puede no existir si entramos al caso de ficticios directo
+    if isinstance(observador, type(player)):
+        # Determinar si es castigador revisando su regla respecto al jugador
+        min_opp_obs = observador.participant.vars.get(f'topic_{topic_idx}').get('stage_1').get('min_opp_punish', None)
+        answer_obs = observador.participant.vars.get(f'topic_{topic_idx}').get('answer', None)
+        es_castigador = (min_opp_obs is not None and answer_obs is not None
+                         and (opposite_opinion >= min_opp_obs)
+                         and (public_opinion != answer_obs))
+
+        if es_castigador:
+            return {'castigado': True, 'observador': observador, 'punisher': True}
+        else:
+            return {'castigado': False, 'observador': observador, 'punisher': False}
+
+    # Por seguridad, si llegara un tipo inesperado
+    raise ValueError("Observador tiene tipo inesperado.")
+
 # Stage 1 payoff
-def set_stage_1_payoff(player):
-    pass
+def set_stage_1_payoff(player: Player):
+    """
+    Para cada jugador:
+    1) Sortea el tópico pagado (1..10) y parámetros de castigo (prob_punishment, opposite_opinion).
+    2) Decide si miente o no según su wtl vs prob_punishment.
+    3) Llama a _simulate_punishment y aplica el castigo al jugador si corresponde.
+    4) Cobra cost_stage_1 al observador real *una sola vez en toda la ronda*.
+    """
+    # get cobrados set
+    cfs = player.subsession.session.vars
+    # setdefault si todavia no hay cobrados
+    cobrados = cfs.setdefault('stage_1_cobrados', set())
+    topic_idx = random.randint(0, 10)  # tópico pagado aleatorio entre 1 y 10
+    # obtener datos de stage 1 del participante
+    ans = player.participant.vars[f'topic_{topic_idx}'].get('answer')
+    wtl = player.participant.vars[f'topic_{topic_idx}'].get('stage_1').get('wtl')
+    # calcular parametros para pagos
+    prob_punishment   = random.randint(0, 10)
+    opposite_opinion  = random.randint(0, 10)
+    # Regla: si la prob. de ser castigado es <= a su umbral wtl, dice su verdad; si no, invierte.
+    if prob_punishment <= wtl:
+        public_opinion = ans
+    else:
+        if ans == 'A':
+            public_opinion = 'B'
+        elif ans == 'B':
+            public_opinion = 'A'
+
+    # Simula castigo. Esta función YA no cobra el costo al observador.
+    result = _simulate_punishment(
+        player=player,
+        all_players=player.subsession.get_players(),
+        topic_idx=topic_idx,
+        prob_punishment=prob_punishment,
+        opposite_opinion=opposite_opinion,
+        public_opinion=public_opinion,
+        punishment_stage_1=player.subsession.session.config['PUNISHMENT_STAGE_1'],
+        cost_stage_1=player.subsession.session.config['COST_STAGE_1'],
+    )
+
+    # Aplicar castigo al jugador si corresponde
+    if result.get('castigado'):
+        player.payoff -= cu(player.subsession.session.config['PUNISHMENT_STAGE_1'])
+        # guardar en participant.vars para control
+        player.participant.vars['stage_1']['got_punished'] = {'topic_idx': topic_idx,
+                                'prob_punishment': prob_punishment,
+                                'opposite_opinion': opposite_opinion,
+                                'judge': result.get('observador').id_in_subsession if result.get('observador') else None}
+    # Si hubo observador real que castigó, se le cobra solo una vez en la ronda.
+    obs = result.get('observador')
+    if result.get('punisher') and (obs is not None):
+        if obs.id_in_subsession not in cobrados:
+            obs.payoff -= cu(player.subsession.session.config['COST_STAGE_1'])
+            # marcar como cobrado
+            cobrados.add(obs.id_in_subsession)
+            print(cfs.get('stage_1_cobrados',"ERROR"))
+            # guardar en participant.vars para control
+            obs.participant.vars['stage_1']['got_charged'] = True
+
 
 # Stage 2 payoff
 def set_stage_2_payoff(player: Player, pairs: list, cost_stage_2, punishment_stage_2, cost_to_lie_stage_2, bonus_stage_2):
