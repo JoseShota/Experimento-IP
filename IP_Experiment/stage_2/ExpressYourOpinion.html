@@ -1,0 +1,67 @@
+{% extends "global/Page.html" %}
+
+{% block content %}
+
+<h1>Stage 2: Express Your Opinion</h1>
+
+{% if is_practice %}
+  <p class="mb-3"><strong>Practice round</strong></p>
+{% else %}
+  <p class="mb-3">You are now in <strong>Round {{ player.round_number }} of {{ C.NUM_ROUNDS }}</strong>.</p>
+{% endif %}
+
+
+<p>
+  You will make a decision that involves a participant randomly drawn from one of the groups of ten participants we previously formed. This participant may or may not be the same one you interacted with in the previous stage.
+</p>
+<p>
+  Remember that your decision is related to the following question:<br>
+  <strong>{{ topic }}</strong>
+</p>
+
+<ul class="list-unstyled ms-2">
+  <li><strong>Response&nbsp;A:</strong> {{ topic_left }}</li>
+  <li><strong>Response&nbsp;B:</strong> {{ topic_right }}</li>
+</ul>
+
+<p>
+    As you know, the group in which we randomly draw the participant has the following distribution:
+</p>
+
+<div class="text-center my-4">
+    <img src="{{ static treatment_png }}"
+         alt="Treatment diagram"
+         class="img-fluid"
+         style="max-width: 420px;">
+</div>
+
+<p>In this group, <strong>{{ n_A }}</strong> chose A and <strong>{{ n_B }}</strong> chose B.</p>
+
+
+  
+ <p>The drawn participant also knows that they will interact with a randomly drawn participant from a group of ten with <strong>{{ n_A }}</strong> A and <strong>{{ n_B }}</strong> B responses. You have to decide which opinion you would express to this participant. The participant may have paid a cost of { cost_stage_2 } points to punish you with a { punishment_stage_2 } point penalty depending on the opinion you express.</p>
+ </p>
+ <div class="alert alert-secondary">
+  <strong>Note:</strong> The other participant may have made a decision to punish the person they were going to interact with. This person happens to be you, but they made that choice knowing only the distribution of opinions in the group (<strong>{{ n_A }}</strong> A and <strong>{{ n_B }}</strong> B).
+</div>
+<hr>
+<p>What opinion would you express?</p>
+
+  <!-- show required‐field error if they didn’t pick one -->
+  <div class="text-danger mb-2">
+    {{ formfield_errors 'public_opinion' }}
+  </div>
+
+  <div class="form-group">
+    <label>
+      <input type="radio" name="public_opinion" value="{{ left }}" required>
+      {{ topic_left }}
+    </label><br>
+    <label>
+      <input type="radio" name="public_opinion" value="{{ right }}">
+      {{ topic_right }}
+    </label>
+  </div>
+
+  {{ next_button }}
+{% endblock %}

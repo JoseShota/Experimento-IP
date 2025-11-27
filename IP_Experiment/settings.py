@@ -1,13 +1,43 @@
 from os import environ
 
+# players per group demo
+num_demo_participants = 15
 
 SESSION_CONFIGS = [
-    {
-        'name': 'experiment',
-        'display_name': "IP Experiment",
-        'num_demo_participants': 6,
-        'app_sequence': ['actual_exp_phase_1'],
-    },
+    dict(
+        name = 'experiment',
+        display_name = "IP Experiment",
+        app_sequence = ['personal_info', 'stage_1', 'stage_2','payment'],
+        num_demo_participants = num_demo_participants,
+        COST_STAGE_1 = 1000,
+        PUNISHMENT_STAGE_1 = 3000,
+        COST_STAGE_2 = 1000,
+        PUNISHMENT_STAGE_2 = 3000,
+        BONUS_STAGE_2 = 5000,
+        # The rest of the parameters are defined in common/params.py because they are used to calculated
+        # NUM_ROUNDS and C constant are inmutable
+    ),
+    dict(
+        name = 'experiment_stage_1_only',
+        display_name = "IP Experiment Stage 1 Only",
+        app_sequence = ['personal_info', 'stage_1', 'payment'],
+        num_demo_participants = num_demo_participants,
+        COST_STAGE_1 = 1000,
+        PUNISHMENT_STAGE_1 = 3000,
+        # The rest of the parameters are defined in common/params.py because they are used to calculated
+        # NUM_ROUNDS and C constant are inmutable
+    ),
+    dict(
+        name = 'experiment_stage_2_only',
+        display_name = "IP Experiment Stage 2 Only",
+        app_sequence = ['personal_info', 'stage_2', 'payment'],
+        num_demo_participants = num_demo_participants,
+        COST_STAGE_2 = 1000,
+        PUNISHMENT_STAGE_2 = 3000,
+        BONUS_STAGE_2 = 5000,
+        # The rest of the parameters are defined in common/params.py because they are used to calculated
+        # NUM_ROUNDS and C constant are inmutable
+    ),
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
@@ -18,8 +48,6 @@ SESSION_CONFIGS = [
 
 SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00, participation_fee=0.00, doc="",
-    practice_topic_label='Emmanuel o Mijares',     # any string 
-    practice_binary_options=('Option H', 'Option L'),         # tuple/list of 2 strings
     practice_treatment='New_Fifty_Fifty',                       # one of C.TREATMENT_CODES
 )
 
